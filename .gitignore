@@ -26,3 +26,4 @@ node_modules
 # vendor/
 # 本地联调脚本产物 (dev.sh)
 .dev/
+deploy/start/.env
