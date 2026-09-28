@@ -32,6 +32,8 @@ export default {
   getMessages: () => request.get('/message/list'),
   /** 友链列表 */
   getLinks: () => request.get('/link/list'),
+  /** 项目展示列表 */
+  getProjects: () => request.get('/project/list'),
   /** 说说列表 */
   getTalks: (params = {}) => request.get('/talk/list', { params }),
   /** 说说详情 */

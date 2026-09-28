@@ -23,6 +23,7 @@ var (
 	uploadAPI       handle.Upload       // 文件上传
 	messageAPI      handle.Message      // 留言
 	linkAPI         handle.Link         // 友情链接
+	projectAPI      handle.Project      // 项目展示
 	roleAPI         handle.Role         // 角色
 	resourceAPI     handle.Resource     // 资源
 	menuAPI         handle.Menu         // 菜单
@@ -152,6 +153,13 @@ func registerAdminHandler(r *gin.Engine) {
 		link.POST("", linkAPI.SaveOrUpdate) // 新增/编辑友链
 		link.DELETE("", linkAPI.Delete)     // 删除友链
 	}
+	// 项目展示
+	project := auth.Group("/project")
+	{
+		project.GET("/list", projectAPI.GetList)  // 项目列表
+		project.POST("", projectAPI.SaveOrUpdate) // 新增/编辑项目
+		project.DELETE("", projectAPI.Delete)     // 删除项目
+	}
 	// 资源模块
 	resource := auth.Group("/resource")
 	{
@@ -238,6 +246,10 @@ func registerBlogHandler(r *gin.Engine) {
 	link := base.Group("/link")
 	{
 		link.GET("/list", frontAPI.GetLinkList) // 前台友链列表
+	}
+	project := base.Group("/project")
+	{
+		project.GET("/list", projectAPI.GetFrontList) // 前台项目列表
 	}
 	message := base.Group("/message")
 	{

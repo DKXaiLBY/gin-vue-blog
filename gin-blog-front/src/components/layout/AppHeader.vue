@@ -57,6 +57,7 @@ const menuOptions = [
       { text: '标签', icon: 'i-mdi:tag', path: '/tags' },
     ],
   },
+  { text: '项目', icon: 'i-mdi:rocket-launch-outline', path: '/projects' },
   {
     text: '娱乐',
     icon: 'i-mdi:gamepad-circle',
@@ -66,7 +67,15 @@ const menuOptions = [
     ],
   },
   { text: '友链', icon: 'i-mdi:vector-link', path: '/links' },
-  { text: '关于', icon: 'i-mdi:information-outline', path: '/about' },
+  {
+    text: '关于',
+    icon: 'i-mdi:information-outline',
+    subMenu: [
+      { text: '关于我', icon: 'i-mdi:account-outline', path: '/about' },
+      { text: '我的简历', icon: 'i-mdi:file-document-outline', path: '/resume' },
+      { text: '我的历程', icon: 'i-mdi:timeline-outline', path: '/timeline' },
+    ],
+  },
   { text: '留言', icon: 'i-mdi:forum', path: '/message' },
 ]
 

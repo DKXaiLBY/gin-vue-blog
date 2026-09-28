@@ -5,6 +5,7 @@ import InfiniteLoading from 'v3-infinite-loading'
 import { onMounted, reactive, ref } from 'vue'
 
 import api from '@/api'
+import GitHubHeatmap from '@/components/GitHubHeatmap.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import { stripMarkdown } from '@/utils'
 import Announcement from './components/Announcement.vue'
@@ -112,10 +113,12 @@ function backTop() {
         <div class="sticky top-5 space-y-5">
           <!-- 博主信息 -->
           <AuthorInfo :style="{ '--i': 0 }" />
+          <!-- GitHub 提交热力图 (site.js 未配置用户名时自动隐藏) -->
+          <GitHubHeatmap :style="{ '--i': 1 }" />
           <!-- 公告 -->
-          <Announcement :style="{ '--i': 1 }" />
+          <Announcement :style="{ '--i': 2 }" />
           <!-- 网站资讯 -->
-          <WebsiteInfo :style="{ '--i': 2 }" />
+          <WebsiteInfo :style="{ '--i': 3 }" />
         </div>
       </div>
     </div>

@@ -168,4 +168,12 @@ var AdminResources = []ResourceModule{
 			{Name: "删除前端错误日志", Url: "/error/log", Method: "DELETE"},
 		},
 	},
+	{
+		Name: "项目展示模块",
+		Items: []ResourceItem{
+			{Name: "项目列表", Url: "/project/list", Method: "GET"},
+			{Name: "新增/编辑项目", Url: "/project", Method: "POST"},
+			{Name: "删除项目", Url: "/project", Method: "DELETE"},
+		},
+	},
 }

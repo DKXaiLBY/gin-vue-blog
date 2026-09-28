@@ -87,68 +87,63 @@ async function handleLogin() {
 
   // doLogin 里只有 try/finally, 失败时的 rejection 需要在这里兜住
   doLogin(username, password).catch(err => console.error(err))
-
-  // 判断是否需要验证码
-  // if (JSON.parse(import.meta.env.VITE_USE_CAPTCHA)) {
-  //   // 腾讯滑块验证码 (在 index.html 中引入 js 文件)
-  //   const captcha = new TencentCaptcha(config.TENCENT_CAPTCHA, async res => res.ret === 0 && doLogin(username, password))
-  //   captcha.show()
-  // }
-  // else {
-  // doLogin(username, password)
-  // }
 }
 </script>
 
 <template>
-  <!-- FIXME: 使用 style="background-image: url(/image/login_bg.webp);" 不生效, 需要写到 style 里的 class 中 -->
-  <AppPage class="backgroundImg bg-cover">
-    <div style="transform: translateY(25px)" class="m-auto max-w-[700px] min-w-[345px] flex items-center justify-center rounded-2 bg-white bg-opacity-60 p-4 shadow">
-      <div class="hidden w-[380px] px-5 py-9 md:block">
-        <img src="/image/login_banner.webp" class="w-full" alt="login_banner">
-      </div>
+  <!-- 登录页: 深蓝渐变呼应前台横幅, 单卡片居中 -->
+  <AppPage class="login-bg">
+    <div class="min-h-[80vh] flex items-center justify-center">
+      <div class="w-[380px] rounded-2xl bg-white/95 p-9 shadow-2xl backdrop-blur dark:bg-[#1d2025]/95">
+        <div class="mb-8 text-center">
+          <span class="i-mdi:rocket-launch-outline mx-auto mb-3 block h-14 w-14 text-[#3b82f6]" />
+          <h1 class="text-2xl font-bold">
+            {{ title }}
+          </h1>
+          <p class="mt-1 text-sm text-gray-400">
+            管理系统 · 内容从这里出发
+          </p>
+        </div>
 
-      <div class="w-[320px] flex flex-col px-4 py-9 space-y-5.5">
-        <h5 class="flex items-center justify-center text-2xl text-gray font-normal">
-          <img src="/image/logo.svg" alt="logo" class="mr-2 h-[50px] w-[50px]">
-          <span> {{ title }} </span>
-        </h5>
-        <NInput
-          v-model:value="loginForm.username"
-          class="h-[50px] items-center pl-2"
-          autofocus
-          placeholder="用户名"
-          :maxlength="20"
-        />
-        <NInput
-          v-model:value="loginForm.password"
-          class="h-[50px] items-center pl-2"
-          type="password"
-          show-password-on="mousedown"
-          placeholder="密码"
-          :maxlength="20"
-          @keydown.enter="handleLogin"
-        />
-        <NCheckbox
-          :checked="isRemember"
-          label="记住我"
-          :on-update:checked="(val) => (isRemember = val)"
-        />
-        <NButton
-          class="h-[50px] w-full rounded-5"
-          type="primary"
-          :loading="loading"
-          @click="handleLogin"
-        >
-          登录
-        </NButton>
+        <div class="space-y-5">
+          <NInput
+            v-model:value="loginForm.username"
+            class="h-[46px] items-center"
+            autofocus
+            placeholder="用户名"
+            :maxlength="20"
+          />
+          <NInput
+            v-model:value="loginForm.password"
+            class="h-[46px] items-center"
+            type="password"
+            show-password-on="mousedown"
+            placeholder="密码"
+            :maxlength="20"
+            @keydown.enter="handleLogin"
+          />
+          <NCheckbox
+            :checked="isRemember"
+            label="记住我"
+            :on-update:checked="(val) => (isRemember = val)"
+          />
+          <NButton
+            class="h-[46px] w-full rounded-xl"
+            type="primary"
+            :loading="loading"
+            @click="handleLogin"
+          >
+            登 录
+          </NButton>
+        </div>
       </div>
     </div>
   </AppPage>
 </template>
 
 <style scoped>
-.backgroundImg{
-  background-image: url(/image/login_bg.webp);
+/* 与前台首页横幅同源的深蓝渐变 */
+.login-bg {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #0c4a6e 100%);
 }
 </style>

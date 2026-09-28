@@ -9,10 +9,11 @@ export default {
   },
   naiveThemeOverrides: {
     common: {
-      primaryColor: '#316C72FF',
-      primaryColorHover: '#316C72E3',
-      primaryColorPressed: '#2B4C59FF',
-      primaryColorSuppl: '#316C72E3',
+      // 品牌色与前台 --c-primary 同源 (#3b82f6), 全后台的按钮/菜单/开关跟着变
+      primaryColor: '#3B82F6FF',
+      primaryColorHover: '#60A5FAFF',
+      primaryColorPressed: '#2563EBFF',
+      primaryColorSuppl: '#60A5FAFF',
 
       infoColor: '#2080F0FF',
       infoColorHover: '#4098FCFF',

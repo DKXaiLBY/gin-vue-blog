@@ -80,6 +80,30 @@ const basicRoutes = [
     },
   },
   {
+    name: 'Projects',
+    path: '/projects',
+    component: () => import('@/views/project/index.vue'),
+    meta: {
+      title: '项目',
+    },
+  },
+  {
+    name: 'Resume',
+    path: '/resume',
+    component: () => import('@/views/resume/index.vue'),
+    meta: {
+      title: '简历',
+    },
+  },
+  {
+    name: 'Timeline',
+    path: '/timeline',
+    component: () => import('@/views/timeline/index.vue'),
+    meta: {
+      title: '历程',
+    },
+  },
+  {
     name: 'Link',
     path: '/links',
     component: () => import('@/views/link/index.vue'),

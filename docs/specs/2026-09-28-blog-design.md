@@ -153,6 +153,23 @@ Umami 统计 → 站内搜索 → 通读 Go 后端源码 → 自研 1~2 个个�
 4. **评论用 giscus**（访客需 GitHub 账号，面试官/开发者都有；若要免登录评论需换 Twikoo 并多部署一个服务）—— 推荐 giscus
 5. **Umami 放到 P3**（上线优先 + 内存考虑）—— 推荐
 
+## 13. 后台管理魔改规划（P2.5，2026-09-29 用户新增）
+
+后台技术栈（已核实）：naive-ui + UnoCSS + md-editor-v3 + pinia，主题定制点在 `src/assets/themes` 的 `naiveThemeOverrides`。魔改分四步，每步独立可上线：
+
+1. **主题统一（约 1 天）**：naive-ui 品牌色对齐前台 `#3b82f6` 系（一处 override 全局生效）；侧边栏 Logo/站名/图标换个人品牌；登录页改为前台同款深蓝渐变背景 + 卡片式登录框。
+2. **仪表盘重做（2~3 天）**：统计卡片改前台同款现代卡片风；图表（如有 echarts/SVG 统计）配色统一蓝橙双主色；深色模式与 naive darkTheme 联动。
+3. **自研模块后台（P2 大头，与前台联动）**：项目展示管理（新表 + CRUD 页 + 封面上传）、时间线管理、简历结构化编辑（喂给前台 /resume 页）。
+4. **编辑体验**：md-editor-v3 定制工具栏；编辑器内图片粘贴直传本地存储。
+
+## 14. 服务器部署事实（2026-09-29）
+
+- 阿里云 ECS `47.121.119.191`（大陆，Ubuntu 24.04，2核1.6G，宝塔面板，swap 1G）
+- 服务器已有服务：宝塔 nginx（80/888）、lovegirl-web(8080)/lovegirl-mysql(3307)（疑似用户旧博客）、MongoDB(本地)、/opt/tomat node 服务(3000)、本地 sparkkeeper 在用户 Windows 机
+- 部署形态：`/opt/blog`，4 容器端口全部收进 127.0.0.1（web 8081 / server 8765 / mysql 33066 / redis 63799，见 `docker-compose.override.yml`），宝塔 nginx `default_server` 反代 80 → 8081（配置 `/www/server/panel/vhost/nginx/gvb-blog.conf`）
+- 镜像策略：本地 build → `docker save|gzip|ssh load`（web/server），mysql:8.0+redis 服务器自拉（1ms.run 源），gvb-mysql 服务器上小构建
+- 已知约束：内存紧张（部署时 swap 已用 795M），Umami(P3) 上前需先评估或清理 lovegirl/mongo；域名/备案未确认，当前以 IP 访问
+
 ---
 
-*自查（brainstorming 规格）：范围未蔓延（功能全部来自共识清单）；边界情况已覆盖（备案期访问、2G 内存、上游冲突、备份恢复）；非目标明确；每阶段有可验收标准。*
+*自查（brainstorming 规格）：范围未蔓延（功能全部来自共识清单 + 用户新增的后台魔改）；边界情况已覆盖（备案期访问、2G 内存、上游冲突、备份恢复、服务器端口共存）；非目标明确；每阶段有可验收标准。*

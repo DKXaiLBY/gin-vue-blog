@@ -160,7 +160,7 @@ async function getOneSentence() {
           <NAvatar round :size="60" :src="userStore.avatar" />
           <div class="ml-5">
             <p> Hello, {{ userStore.nickname }} </p>
-            <NGradientText class="mt-1 op-60" gradient="linear-gradient(90deg, red 0%, green 50%, blue 100%)">
+            <NGradientText class="mt-1 op-60" gradient="linear-gradient(90deg, #3b82f6 0%, #60a5fa 50%, #2563eb 100%)">
               {{ sentence }}
             </NGradientText>
           </div>

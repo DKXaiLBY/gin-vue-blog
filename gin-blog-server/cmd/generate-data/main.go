@@ -391,6 +391,7 @@ func generateDefaultMenus(db *gorm.DB) {
 		{Name: "页面管理", Path: "page", Component: "/setting/page", Icon: "iconoir:journal-page", OrderNum: 2, ParentId: parents[6].ID},
 		{Name: "友链管理", Path: "link", Component: "/setting/link", Icon: "mdi:telegram", OrderNum: 3, ParentId: parents[6].ID},
 		{Name: "关于我", Path: "about", Component: "/setting/about", Icon: "cib:about-me", OrderNum: 4, ParentId: parents[6].ID},
+		{Name: "项目管理", Path: "project", Component: "/setting/project", Icon: "mdi:rocket-launch-outline", OrderNum: 5, ParentId: parents[6].ID},
 	}
 
 	for i := range menus {

@@ -44,6 +44,11 @@ export default {
   deleteLinks: (data = []) => request.delete('/link', { data }),
   saveOrUpdateLink: data => request.post('/link', data),
 
+  // 项目展示相关接口
+  getProjects: (params = {}) => request.get('/project/list', { params }),
+  saveOrUpdateProject: data => request.post('/project', data),
+  deleteProjects: (data = []) => request.delete('/project', { data }),
+
   // 说说相关接口
   getTalks: (params = {}) => request.get('/talk/list', { params }),
   getTalkById: id => request.get(`/talk/${id}`),

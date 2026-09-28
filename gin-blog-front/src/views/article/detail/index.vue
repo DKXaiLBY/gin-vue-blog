@@ -11,6 +11,7 @@ import { useRoute } from 'vue-router'
 import api from '@/api'
 
 import Comment from '@/components/comment/Comment.vue'
+import GiscusComment from '@/components/GiscusComment.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import { convertImgUrl } from '@/utils'
 import { addCopyButtons } from '@/utils/code-block'
@@ -176,6 +177,8 @@ const styleVal = computed(() =>
         <hr class="my-10 border-2 border-color-divider border-dashed lg:mx-5">
         <!-- 文章评论 -->
         <Comment :type="1" class="lg:mx-5" />
+        <!-- giscus 评论 (site.js 配置后生效) -->
+        <GiscusComment class="lg:mx-5" />
       </div>
       <!-- 文章侧边栏 -->
       <div class="col-span-0 lg:col-span-3">
