@@ -1,0 +1,366 @@
+package model
+
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
+const (
+	STATUS_PUBLIC = iota + 1 // 公开
+	STATUS_SECRET            // 私密
+	STATUS_DRAFT             // 草稿
+)
+
+const (
+	TYPE_ORIGINAL  = iota + 1 // 原创
+	TYPE_REPRINT              // 转载
+	TYPE_TRANSLATE            // 翻译
+)
+
+// belongTo: 一个文章 属于 一个分类
+// belongTo: 一个文章 属于 一个用户
+// many2many: 一个文章 可以拥有 多个标签, 多个文章 可以使用 一个标签
+type Article struct {
+	Model
+
+	Title       string `gorm:"type:varchar(100);not null" json:"title"`
+	Desc        string `json:"desc"`
+	Content     string `json:"content"`
+	Img         string `json:"img"`
+	Type        int    `gorm:"type:tinyint;comment:类型(1-原创 2-转载 3-翻译)" json:"type"`                                // 1-原创 2-转载 3-翻译
+	Status      int    `gorm:"type:tinyint;index:idx_article_list,priority:2;comment:状态(1-公开 2-私密)" json:"status"` // 1-公开 2-私密
+	IsTop       bool   `json:"is_top"`
+	IsDelete    bool   `gorm:"index:idx_article_list,priority:1" json:"is_delete"`
+	OriginalUrl string `json:"original_url"`
+
+	CategoryId int `gorm:"index:idx_article_category" json:"category_id"`
+	UserId     int `gorm:"index:idx_article_user" json:"-"` // user_auth_id
+
+	Tags     []*Tag    `gorm:"many2many:article_tag;joinForeignKey:article_id" json:"tags"`
+	Category *Category `gorm:"foreignkey:CategoryId" json:"category"`
+	User     *UserAuth `gorm:"foreignkey:UserId" json:"user"`
+}
+
+type ArticleTag struct {
+	// gorm 依据 many2many 自建这张表, 主键就是 (tag_id, article_id), 已经带索引
+	ArticleId int
+	TagId     int
+}
+
+type BlogArticleVO struct {
+	Article
+
+	CommentCount int64 `json:"comment_count"` // 评论数量
+	LikeCount    int64 `json:"like_count"`    // 点赞数量
+	ViewCount    int64 `json:"view_count"`    // 访问数量
+
+	LastArticle       ArticlePaginationVO  `gorm:"-" json:"last_article"`       // 上一篇
+	NextArticle       ArticlePaginationVO  `gorm:"-" json:"next_article"`       // 下一篇
+	RecommendArticles []RecommendArticleVO `gorm:"-" json:"recommend_articles"` // 推荐文章
+	NewestArticles    []RecommendArticleVO `gorm:"-" json:"newest_articles"`    // 最新文章
+}
+
+type ArticlePaginationVO struct {
+	ID    int    `json:"id"`
+	Img   string `json:"img"`
+	Title string `json:"title"`
+}
+
+type RecommendArticleVO struct {
+	ID        int       `json:"id"`
+	Img       string    `json:"img"`
+	Title     string    `json:"title"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+// 文章的详细信息
+func GetArticle(db *gorm.DB, id int) (data *Article, err error) {
+	result := db.Preload("Category").Preload("Tags").
+		Where(Article{Model: Model{ID: id}}).
+		First(&data)
+	return data, result.Error
+}
+
+// 获取第一个可获得的文章 （不在回收站并且状态为公开）
+func GetBlogArticle(db *gorm.DB, id int) (data *Article, err error) {
+	result := db.Preload("Category").Preload("Tags").
+		Where(Article{Model: Model{ID: id}}).
+		Where("is_delete = 0 AND status = 1"). // *
+		First(&data)
+	return data, result.Error
+}
+
+// 前台文章列表（不在回收站并且状态为公开）
+func GetBlogArticleList(db *gorm.DB, page, size, categoryId, tagId int) (data []Article, total int64, err error) {
+	db = db.Model(Article{})
+	db = db.Where("is_delete = 0 AND status = 1") // *
+
+	if categoryId != 0 {
+		db = db.Where("category_id = ?", categoryId)
+	}
+	if tagId != 0 {
+		db = db.Where("id IN (SELECT article_id FROM article_tag WHERE tag_id = ?)", tagId)
+	}
+
+	db = db.Count(&total)
+	result := db.Preload("Tags").Preload("Category").
+		Order("is_top DESC, id DESC").
+		Scopes(Paginate(page, size)).
+		Find(&data)
+
+	return data, total, result.Error
+}
+
+// 前台归档列表: 按发布时间倒序
+//
+// 不复用 GetBlogArticleList: 它按 "is_top DESC, id DESC" 排,
+// 用在归档上会把置顶文章顶到时间轴最前面, 其余文章也是按 id 而不是发布时间排 ——
+// 后补旧文或导入历史文章后, id 顺序和时间顺序就不一致了。
+// created_at 相同时再按 id 兜底, 保证分页边界稳定。
+func GetBlogArticleArchiveList(db *gorm.DB, page, size int) (data []Article, total int64, err error) {
+	data = make([]Article, 0)
+	db = db.Model(Article{}).Where("is_delete = 0 AND status = 1")
+
+	db = db.Count(&total)
+	result := db.Select("id", "title", "created_at").
+		Order("created_at DESC, id DESC").
+		Scopes(Paginate(page, size)).
+		Find(&data)
+
+	return data, total, result.Error
+}
+
+func GetArticleList(db *gorm.DB, page, size int, title string, isDelete *bool, status, typ, categoryId, tagId int) (list []Article, total int64, err error) {
+	// 零行时 gorm 会把 list 留成 nil, 调用方容易把"查不到"误判成出错, 这里统一给空切片
+	list = make([]Article, 0)
+	db = db.Model(Article{})
+
+	if title != "" {
+		db = db.Where("title LIKE ?", "%"+title+"%")
+	}
+	if isDelete != nil {
+		db = db.Where("is_delete", isDelete)
+	}
+	if status != 0 {
+		db = db.Where("status", status)
+	}
+	if categoryId != 0 {
+		db = db.Where("category_id", categoryId)
+	}
+	if typ != 0 {
+		db = db.Where("type", typ)
+	}
+
+	db = db.Preload("Category").Preload("Tags").
+		Joins("LEFT JOIN article_tag ON article_tag.article_id = article.id").
+		Group("id") // 去重
+	if tagId != 0 {
+		db = db.Where("tag_id = ?", tagId)
+	}
+
+	result := db.Count(&total).
+		Scopes(Paginate(page, size)).
+		Order("is_top DESC, article.id DESC").
+		Find(&list)
+	return list, total, result.Error
+}
+
+// 查询 n 篇推荐文章 (根据标签)
+func GetRecommendList(db *gorm.DB, id, n int) (list []RecommendArticleVO, err error) {
+	// sub1: 查出标签id列表
+	// SELECT tag_id FROM `article_tag` WHERE `article_id` = ?
+	sub1 := db.Table("article_tag").
+		Select("tag_id").
+		Where("article_id", id)
+	// sub2: 查出这些标签对应的文章id列表 (去重, 且不包含当前文章)
+	// SELECT DISTINCT article_id FROM (sub1) t
+	// JOIN article_tag t1 ON t.tag_id = t1.tag_id
+	// WHERE `article_id` != ?
+	sub2 := db.Table("(?) t1", sub1).
+		Select("DISTINCT article_id").
+		Joins("JOIN article_tag t ON t.tag_id = t1.tag_id").
+		Where("article_id != ?", id)
+	// 根据 文章id列表 查出文章信息 (前 n 个)
+	result := db.Table("(?) t2", sub2).
+		Select("id, title, img, created_at").
+		Joins("JOIN article a ON t2.article_id = a.id").
+		Where("a.is_delete = 0").
+		Order("is_top, id DESC").
+		Limit(n).
+		Find(&list)
+	return list, result.Error
+}
+
+// 查询上一篇文章 (id < 当前文章 id)
+func GetLastArticle(db *gorm.DB, id int) (val ArticlePaginationVO, err error) {
+	sub := db.Table("article").Select("max(id)").Where("id < ?", id)
+	result := db.Table("article").
+		Select("id, title, img").
+		Where("is_delete = 0 AND status = 1 AND id = (?)", sub).
+		Limit(1).
+		Find(&val)
+	return val, result.Error
+}
+
+// 查询下一篇文章 (id > 当前文章 id)
+func GetNextArticle(db *gorm.DB, id int) (data ArticlePaginationVO, err error) {
+	result := db.Model(&Article{}).
+		Select("id, title, img").
+		Where("is_delete = 0 AND status = 1 AND id > ?", id).
+		Limit(1).
+		Find(&data)
+	return data, result.Error
+}
+
+// 查询最新的 n 篇文章
+func GetNewestList(db *gorm.DB, n int) (data []RecommendArticleVO, err error) {
+	result := db.Model(&Article{}).
+		Select("id, title, img, created_at").
+		Where("is_delete = 0 AND status = 1").
+		Order("created_at DESC, id ASC").
+		Limit(n).
+		Find(&data)
+	return data, result.Error
+}
+
+/*
+前台搜索文章: 标题或正文命中关键字
+
+只取渲染搜索结果需要的字段并限制条数, 以前是 SELECT * 且不限条数,
+命中多少篇就把多少篇的完整正文全查回来, 只为截取关键字附近的一小段。
+*/
+func SearchArticle(db *gorm.DB, keyword string, limit int) (list []Article, err error) {
+	like := "%" + keyword + "%"
+	result := db.Model(&Article{}).
+		Select("id", "title", "content").
+		Where("is_delete = ? AND status = ? AND (title LIKE ? OR content LIKE ?)",
+			false, STATUS_PUBLIC, like, like).
+		Order("id DESC").
+		Limit(limit).
+		Find(&list)
+	return list, result.Error
+}
+
+/*
+物理删除文章, 同时删除 [文章-标签] 关联 和 文章下的评论
+
+返回被删除的行数和被删掉的评论 id:
+评论的点赞数存在 Redis 里, 调用方需要拿这些 id 去清理, 否则会留下永远访问不到的数据
+*/
+func DeleteArticle(db *gorm.DB, ids []int) (rows int64, commentIds []int, err error) {
+	err = db.Transaction(func(tx *gorm.DB) error {
+		// 删除 [文章-标签] 关联
+		if err := tx.Where("article_id IN ?", ids).Delete(&ArticleTag{}).Error; err != nil {
+			return err
+		}
+
+		// 文章下的评论(含回复, 回复的 topic_id 与父评论一致)
+		if err := tx.Model(&Comment{}).
+			Where("type = ? AND topic_id IN ?", TYPE_ARTICLE, ids).
+			Pluck("id", &commentIds).Error; err != nil {
+			return err
+		}
+		if len(commentIds) > 0 {
+			if err := tx.Where("id IN ?", commentIds).Delete(&Comment{}).Error; err != nil {
+				return err
+			}
+		}
+
+		// 删除 [文章]
+		result := tx.Where("id IN ?", ids).Delete(&Article{})
+		if result.Error != nil {
+			return result.Error
+		}
+		rows = result.RowsAffected
+
+		return nil
+	})
+	if err != nil {
+		return 0, nil, err
+	}
+	return rows, commentIds, nil
+}
+
+// 软删除文章（修改）
+func UpdateArticleSoftDelete(db *gorm.DB, ids []int, isDelete bool) (int64, error) {
+	result := db.Model(Article{}).
+		Where("id IN ?", ids).
+		Update("is_delete", isDelete)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return result.RowsAffected, nil
+}
+
+// 新增/编辑文章, 同时根据 分类名称, 标签名称 维护关联表
+func SaveOrUpdateArticle(db *gorm.DB, article *Article, categoryName string, tagNames []string) error {
+	return db.Transaction(func(tx *gorm.DB) error {
+		// 分类不存在则创建
+		category := Category{Name: categoryName}
+		result := tx.Model(&Category{}).Where("name", categoryName).FirstOrCreate(&category)
+		if result.Error != nil {
+			return result.Error
+		}
+		article.CategoryId = category.ID
+
+		// 先 添加/更新 文章, 获取到其 ID
+		if article.ID == 0 {
+			result = tx.Create(&article)
+		} else {
+			result = tx.Model(&article).Where("id", article.ID).Updates(article)
+		}
+		if result.Error != nil {
+			return result.Error
+		}
+
+		// 清空文章标签关联
+		result = tx.Delete(ArticleTag{}, "article_id", article.ID)
+		if result.Error != nil {
+			return result.Error
+		}
+
+		var articleTags []ArticleTag
+		for _, tagName := range tagNames {
+			// 标签不存在则创建
+			tag := Tag{Name: tagName}
+			result := tx.Model(&Tag{}).Where("name", tagName).FirstOrCreate(&tag)
+			if result.Error != nil {
+				return result.Error
+			}
+			articleTags = append(articleTags, ArticleTag{
+				ArticleId: article.ID,
+				TagId:     tag.ID,
+			})
+		}
+		// 没有标签时不能调 Create, gorm 对空切片会直接报 ErrEmptySlice
+		if len(articleTags) == 0 {
+			return nil
+		}
+		result = tx.Create(&articleTags)
+		return result.Error
+	})
+}
+
+func UpdateArticleTop(db *gorm.DB, id int, isTop bool) error {
+	result := db.Model(&Article{Model: Model{ID: id}}).Update("is_top", isTop)
+	return result.Error
+}
+
+// 导入 Markdown 文章: 状态为草稿, 不带分类和标签
+//
+// 以前会把分类/标签硬编码成 "学习"/"Golang" 并用 FirstOrCreate 建出来,
+// 等于每次导入都可能给博客凭空多两条分类标签。导入本来就是草稿,
+// 分类和标签留空, 由用户在后台编辑时自己补。
+func ImportArticle(db *gorm.DB, userId int, title, content, img string) (*Article, error) {
+	article := Article{
+		Title:   title,
+		Content: content,
+		Img:     img,
+		Status:  STATUS_DRAFT,
+		Type:    TYPE_ORIGINAL,
+		UserId:  userId,
+	}
+	result := db.Create(&article)
+	return &article, result.Error
+}

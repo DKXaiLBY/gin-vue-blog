@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+  <title>阵、雨的博客</title>
+
+  <!-- 允许加载 http 资源 -->
+  <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
+  <!-- 腾讯验证码 -->
+  <!-- <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script> -->
+
+  <!-- mathjax 配置: 真正的 MathJax 由 utils/mathjax.js 在正文含公式时才动态加载 -->
+  <script src="/js/mathjax.js"></script>
+
+  <!-- 主题要在首屏渲染前定好, 否则深色模式下会先闪一下白底 -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('blog-theme')
+        var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
+        document.documentElement.classList.toggle('dark', dark)
+      } catch (e) { /* localStorage 被禁用时保持默认浅色 */ }
+    })()
+  </script>
+</head>
+
+
+<body>
+  <div id="app"> </div>
+  <script type="module" src="/src/main.js"></script>
+  <!-- TODO: 添加页面切换加载效果 -->
+</body>
+
+</html>

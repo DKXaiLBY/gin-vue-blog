@@ -1,0 +1,184 @@
+package utils
+
+import (
+	"errors"
+	"log/slog"
+	"net"
+	"strings"
+	"sync"
+
+	"github.com/gin-gonic/gin"
+	"github.com/lionsoul2014/ip2region/binding/golang/xdb"
+	"xojoc.pw/useragent"
+)
+
+var IP = new(ipUtil)
+
+type ipUtil struct{}
+
+// 获取用户发送请求的 IP 地址
+/*
+   走 gin 的 c.ClientIP(): 它先判断直连对端(RemoteAddr) 是否落在可信代理名单里,
+   只有可信时才去读 X-Forwarded-For / X-Real-IP, 否则一律用对端地址。
+
+   原来是无条件 `c.Request.Header.Get("X-Real-IP")`, 配合 SetTrustedProxies("*")
+   等于任何人都能自称任意 IP: 登录失败计数键里带 IP(handle_auth.go 的 LOGIN_FAIL),
+   轮换这个请求头就能对同一账号无限试密码; 访客地域统计和 user_auth.ip_address 同样会被污染。
+
+   可信名单由 config.yml 的 server.trusted-proxies 决定, 见 cmd/main.go 与 global/config.go。
+*/
+func (*ipUtil) GetIpAddress(c *gin.Context) (ipAddress string) {
+	ipAddress = c.ClientIP()
+	if ipAddress == "" {
+		// ClientIP 解析不出合法 IP 时兜底(如单元测试里构造的非常规 RemoteAddr)
+		ipAddress = c.RemoteIP()
+	}
+
+	// 检测到是本机 IP, 读取其局域网 IP 地址
+	if strings.HasPrefix(ipAddress, "127.0.0.1") || strings.HasPrefix(ipAddress, "[::1]") || ipAddress == "::1" {
+		ip, err := externalIP()
+		if err != nil {
+			slog.Error("GetIpAddress, externalIP", "err", err)
+			return ipAddress
+		}
+		ipAddress = ip.String()
+	}
+	return ipAddress
+}
+
+// 获取 IP 来源
+// https://github.com/lionsoul2014/ip2region
+const xdbPath = "../assets/ip2region.xdb" // IP 数据库文件, 路径相对于 main.go
+
+var (
+	xdbOnce    sync.Once
+	xdbContent []byte
+	xdbErr     error
+)
+
+/*
+第一次用到时把整个 xdb(约 11MB) 读进内存并复用
+
+之前每次查询都要重新打开文件、构造 searcher, 而访客上报和登录都会走到这里。
+用内存缓存换掉这部分 IO, 代价是常驻内存多 11MB, 且只在真正查过 IP 后才占用。
+*/
+func loadXdbContent() ([]byte, error) {
+	xdbOnce.Do(func() {
+		xdbContent, xdbErr = xdb.LoadContentFromFile(xdbPath)
+		if xdbErr != nil {
+			slog.Error("加载 IP 数据库失败", "path", xdbPath, "err", xdbErr)
+		}
+	})
+	return xdbContent, xdbErr
+}
+
+// 获取地域信息: 中国|0|江苏省|苏州市|电信
+func (*ipUtil) GetIpSource(ipAddress string) string {
+	content, err := loadXdbContent()
+	if err != nil {
+		return ""
+	}
+
+	// searcher 只是包了一层 buffer, 构造过程没有 IO;
+	// 但它本身不是并发安全的, 所以不共享, 每次查询新建一个
+	searcher, err := xdb.NewWithBuffer(content)
+	if err != nil {
+		slog.Error("创建 IP 查询器失败", "err", err)
+		return ""
+	}
+	defer searcher.Close()
+
+	// 国家|区域|省份|城市|ISP
+	// 只有中国的数据绝大部分精确到了城市, 其他国家部分数据只能定位到国家, 后面的选项全部是 0
+	region, err := searcher.SearchByStr(ipAddress)
+	if err != nil {
+		slog.Error("查询 IP 归属失败", "ip", ipAddress, "err", err)
+		return ""
+	}
+	return region
+}
+
+// 获取 IP 简易信息, 例如: "江苏省苏州市 电信"
+func (i *ipUtil) GetIpSourceSimpleIdle(ipAddress string) string {
+	region := i.GetIpSource(ipAddress) // 国家|区域|省份|城市|ISP
+
+	// 检测到是内网, 直接返回 "内网IP"
+	// 0|0|0|内网IP|内网IP
+	if strings.Contains(region, "内网IP") {
+		return "内网IP"
+	}
+
+	// 一般无法获取到区域
+	// 中国|0|江苏省|苏州市|电信
+	ipSource := strings.Split(region, "|")
+	if ipSource[0] != "中国" && ipSource[0] != "0" {
+		return ipSource[0]
+	}
+	if ipSource[2] == "0" {
+		ipSource[2] = ""
+	}
+	if ipSource[3] == "0" {
+		ipSource[3] = ""
+	}
+	if ipSource[4] == "0" {
+		ipSource[4] = ""
+	}
+	if ipSource[2] == "" && ipSource[3] == "" && ipSource[4] == "" {
+		return ipSource[0]
+	}
+	return ipSource[2] + ipSource[3] + " " + ipSource[4]
+}
+
+func (*ipUtil) GetUserAgent(c *gin.Context) *useragent.UserAgent {
+	return useragent.Parse(c.Request.UserAgent())
+}
+
+// 获取非 127.0.0.1 的局域网 IP
+func externalIP() (net.IP, error) {
+	// 获取服务器的网络接口列表
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return nil, err
+	}
+	for _, iface := range ifaces {
+		// 不在活动状态
+		if iface.Flags&net.FlagUp == 0 {
+			continue
+		}
+		// 环回
+		if iface.Flags&net.FlagLoopback != 0 {
+			continue
+		}
+		// 单播接口地址列表
+		addrs, err := iface.Addrs()
+		if err != nil {
+			return nil, err
+		}
+		for _, addr := range addrs {
+			ip := getIpFromAddr(addr)
+			if ip == nil {
+				continue
+			}
+			return ip, nil
+		}
+	}
+	return nil, errors.New("connected to the network")
+}
+
+func getIpFromAddr(addr net.Addr) net.IP {
+	var ip net.IP
+	switch v := addr.(type) {
+	case *net.IPNet:
+		ip = v.IP
+	case *net.IPAddr:
+		ip = v.IP
+	}
+	if ip == nil || ip.IsLoopback() {
+		return nil
+	}
+	ip = ip.To4()
+	if ip == nil {
+		return nil
+	}
+	return ip
+}

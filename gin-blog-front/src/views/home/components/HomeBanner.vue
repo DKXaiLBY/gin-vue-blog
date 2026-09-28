@@ -1,0 +1,79 @@
+<script setup>
+import EasyTyper from 'easy-typer-js'
+import { storeToRefs } from 'pinia'
+
+import { computed, onMounted, reactive } from 'vue'
+import { useAppStore } from '@/store'
+import { getOneSentence } from '@/utils'
+
+const { pageList, blogConfig } = storeToRefs(useAppStore())
+
+// 打字机特效配置
+const typer = reactive({
+  output: '',
+  isEnd: false, // 全局控制是否终止
+  speed: 100, // 打字速度(每字毫秒), 300 一句话要打七八秒, 太慢
+  singleBack: false, // 单次的回滚
+  sleep: 0, // 完整输出一句话后, 睡眠一定时候后触发回滚事件
+  type: 'normal', // rollback, normal
+  backSpeed: 80, // 回滚速度
+  sentencePause: false, // 运行完毕后, 句子是否暂停显示
+})
+
+onMounted(() => {
+  startTyper()
+})
+
+async function startTyper() {
+  // 一言 + 打字机特效, 接口不通时 getOneSentence 内部会随机取一句内置文案
+  const one = await getOneSentence()
+  // EasyTyper 靠构造函数直接开始打字, 返回实例只是为了不写成裸 new
+  return new EasyTyper(typer, one, () => {}, () => {})
+}
+
+function scrollDown() {
+  window.scrollTo({
+    behavior: 'smooth',
+    top: document.documentElement.clientHeight,
+  })
+}
+
+// 根据后端配置动态获取封面
+const coverStyle = computed(() => {
+  const page = pageList.value.find(e => e.label === 'home')
+  return page
+    ? `background: url('${page.cover}') center center / cover no-repeat;`
+    : 'background: grey center center / cover no-repeat;'
+})
+</script>
+
+<template>
+  <div class="banner-fade-down absolute bottom-0 left-0 right-0 h-screen text-center text-white" :style="coverStyle">
+    <div class="absolute inset-x-0 mt-[43vh] text-center space-y-3">
+      <h1 class="animate-zoom-in text-4xl font-bold lg:text-5xl">
+        {{ blogConfig.website_name }}
+      </h1>
+      <!-- min-h: 打字过程中句子从 1 行变 2 行时不要把下面的内容顶下去 -->
+      <div class="min-h-14 text-lg lg:text-xl">
+        {{ typer.output }}
+        <span class="animate-ping"> | </span>
+      </div>
+      <!-- 社交信息（移动端专用） -->
+      <div class="text-2xl lg:hidden space-x-5">
+        <a :href="`http://wpa.qq.com/msgrd?v=3&uin=${blogConfig.qq}&site=qq&menu=yes`" target="_blank">
+          <span class="i-ant-design:qq-circle-filled inline-block" />
+        </a>
+        <a :href="blogConfig.github" target="_blank">
+          <span class="i-mdi:github inline-block" />
+        </a>
+        <a :href="blogConfig.gitee" target="_blank">
+          <span class="i-simple-icons:gitee inline-block" />
+        </a>
+      </div>
+    </div>
+    <!-- 向下滚动 -->
+    <div class="absolute bottom-0 w-full cursor-pointer" @click="scrollDown">
+      <span class="i-ep:arrow-down-bold inline-block animate-bounce text-2xl text-white" />
+    </div>
+  </div>
+</template>
