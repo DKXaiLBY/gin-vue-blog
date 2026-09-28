@@ -1,0 +1,15 @@
+# 服务器共存覆写: 端口全部收进 127.0.0.1, 由宿主 nginx 反代 80 -> 8081
+# 仅 80/443 由宝塔 nginx 管理, 本栈不直接暴露公网端口
+services:
+  gvb-web:
+    ports: !override
+      - "127.0.0.1:8081:80"
+  gvb-server:
+    ports: !override
+      - "127.0.0.1:8765:8765"
+  gvb-mysql:
+    ports: !override
+      - "127.0.0.1:33066:3306"
+  gvb-redis:
+    ports: !override
+      - "127.0.0.1:63799:6379"
