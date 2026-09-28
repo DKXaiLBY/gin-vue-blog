@@ -26,18 +26,18 @@ export const blogConfig = {
 }
 
 export const pages = [
-  { id: 1, name: '首页', label: 'home', cover: `${IMG_BASE}/page/home.jpg` },
-  { id: 2, name: '归档', label: 'archive', cover: `${IMG_BASE}/page/archive.png` },
-  { id: 3, name: '分类', label: 'category', cover: `${IMG_BASE}/page/category.png` },
-  { id: 4, name: '标签', label: 'tag', cover: `${IMG_BASE}/page/tag.png` },
-  { id: 5, name: '友链', label: 'link', cover: `${IMG_BASE}/page/link.jpg` },
-  { id: 6, name: '关于', label: 'about', cover: `${IMG_BASE}/page/about.jpg` },
-  { id: 7, name: '留言', label: 'message', cover: `${IMG_BASE}/page/message.jpeg` },
-  { id: 8, name: '个人中心', label: 'user', cover: `${IMG_BASE}/page/user.jpg` },
-  { id: 9, name: '相册', label: 'album', cover: `${IMG_BASE}/page/album.png` },
-  { id: 12, name: '说说', label: 'talk', cover: `${IMG_BASE}/page/talking.jpg` },
-  { id: 10, name: '错误页面', label: '404', cover: `${IMG_BASE}/page/404.jpg` },
-  { id: 11, name: '文章列表', label: 'article_list', cover: `${IMG_BASE}/page/article_list.jpg` },
+  { id: 1, name: '首页', label: 'home', cover: '/covers/home.svg' },
+  { id: 2, name: '归档', label: 'archive', cover: '/covers/archive.svg' },
+  { id: 3, name: '分类', label: 'category', cover: '/covers/category.svg' },
+  { id: 4, name: '标签', label: 'tag', cover: '/covers/tag.svg' },
+  { id: 5, name: '友链', label: 'link', cover: '/covers/link.svg' },
+  { id: 6, name: '关于', label: 'about', cover: '/covers/about.svg' },
+  { id: 7, name: '留言', label: 'message', cover: '/covers/message.svg' },
+  { id: 8, name: '个人中心', label: 'user', cover: '/covers/user.svg' },
+  { id: 9, name: '相册', label: 'album', cover: '/covers/album.svg' },
+  { id: 12, name: '说说', label: 'talk', cover: '/covers/talk.svg' },
+  { id: 10, name: '错误页面', label: '404', cover: '/covers/404.svg' },
+  { id: 11, name: '文章列表', label: 'article_list', cover: '/covers/article_list.svg' },
 ]
 
 export const categories = [

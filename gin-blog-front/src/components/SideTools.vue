@@ -33,7 +33,7 @@ const options = computed(() => [
   <div class="fixed bottom-20 z-4 text-white transition-600 -right-9 space-y-1" :style="styleVal">
     <div
       v-for="item of options" :key="item.icon"
-      class="f-c-c cursor-pointer rounded-sm bg-#49b1f5 p-1 duration-300 hover:bg-amber"
+      class="f-c-c cursor-pointer rounded-sm bg-primary p-1 duration-300 hover:bg-accent"
     >
       <span class="block h-5 w-5" :class="item.icon" @click="item.fn" />
     </div>

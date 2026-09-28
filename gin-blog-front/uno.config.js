@@ -44,9 +44,10 @@ export default defineConfig({
   // 这样切主题只改根元素 class, 不用给每个类名都写一遍 dark: 变体
   theme: {
     colors: {
-      'primary': '#49b1f5',
+      // 品牌色走 CSS 变量(定义在 styles/index.css), 明暗模式自动切换
+      'primary': 'var(--c-primary)',
       // 强调色: 置顶标记、hover 高亮等处用, 原来散落在各处硬编码
-      'accent': '#ff7242',
+      'accent': 'var(--c-accent)',
       'surface': 'var(--c-surface)',
       'surface-soft': 'var(--c-surface-soft)',
       'main': 'var(--c-text)',

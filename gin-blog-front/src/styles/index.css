@@ -30,24 +30,29 @@
 
   /* 主题色板: 深色模式在 html.dark 下整体覆盖 */
   color-scheme: light;
-  --c-surface: #fff;
-  --c-surface-soft: #f3f4f6;
-  --c-text: #18181b;
-  --c-text-muted: #6b7280;
-  --c-border: #d1d5db;
-  --c-divider: #d2ebfd;
-  --c-body-bg: linear-gradient(90deg, rgba(247, 149, 51, 0.1) 0, rgba(243, 112, 85, 0.1) 15%, rgba(239, 78, 123, 0.1) 30%, rgba(161, 102, 171, 0.1) 44%, rgba(80, 115, 184, 0.1) 58%, rgba(16, 152, 173, 0.1) 72%, rgba(7, 179, 155, 0.1) 86%, rgba(109, 186, 130, 0.1) 100%);
+  /* 品牌色唯一出口: UnoCSS 主题与组件样式统一从这里取 */
+  --c-primary: #3b82f6;
+  --c-accent: #f97316;
+  --c-surface: #ffffff;
+  --c-surface-soft: #f1f3f5;
+  --c-text: #191c1f;
+  --c-text-muted: #697180;
+  --c-border: #e4e7ec;
+  --c-divider: #e9edf2;
+  --c-body-bg: #f6f7f9;
 }
 
 html.dark {
   color-scheme: dark;
-  --c-surface: #23272e;
-  --c-surface-soft: #2f343c;
-  --c-text: #d6dae0;
-  --c-text-muted: #8b939f;
-  --c-border: #3d434c;
-  --c-divider: #363c45;
-  --c-body-bg: linear-gradient(90deg, #16181d 0, #1b1e24 50%, #16181d 100%);
+  --c-primary: #60a5fa;
+  --c-accent: #fb923c;
+  --c-surface: #1d2025;
+  --c-surface-soft: #262b32;
+  --c-text: #d5dae1;
+  --c-text-muted: #8b93a1;
+  --c-border: #333a44;
+  --c-divider: #2b323b;
+  --c-body-bg: #141619;
 }
 
 html, body, #app {
@@ -58,9 +63,6 @@ html, body, #app {
 }
 
 body {
-  /* 根路径加载静态资源, 让每个路由下都能加载到 */
-  cursor: url("/cursor/normal.cur"), auto;
-
   width: 100%;
   height: 100%;
   overflow-y: scroll;
@@ -76,13 +78,6 @@ body {
   -webkit-user-select: none; */
 }
 
-/* 设置鼠标图标 */
-a,
-button,
-img {
-  cursor: url("/cursor/link.cur"), auto;
-}
-
 /* 自定义滚动条样式 */
 ::-webkit-scrollbar {
   width: 8px;
@@ -90,14 +85,17 @@ img {
 }
 
 ::-webkit-scrollbar-track {
-  background-color: rgba(73, 177, 245, 0.2);
+  background-color: transparent;
   border-radius: 2em;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #49b1f5;
-  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.4) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0.4) 75%, transparent 75%, transparent);
+  background-color: var(--c-border);
   border-radius: 2em;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--c-text-muted);
 }
 
 ::-webkit-scrollbar-corner {
@@ -106,5 +104,5 @@ img {
 
 ::-moz-selection {
   color: #fff;
-  background-color: #49b1f5;
+  background-color: var(--c-primary);
 }

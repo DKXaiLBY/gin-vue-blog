@@ -126,7 +126,7 @@ const styleVal = computed(() =>
 <template>
   <!-- 阅读进度 -->
   <div
-    class="fixed inset-x-0 top-0 z-999 h-0.5 bg-#49b1f5"
+    class="fixed inset-x-0 top-0 z-999 h-0.5 bg-primary"
     :style="{ width: `${readProgress}%`, transition: 'width .1s linear' }"
   />
   <!-- 头部 -->

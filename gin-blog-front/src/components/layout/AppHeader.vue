@@ -271,7 +271,7 @@ async function logout() {
   background: rgba(255, 255, 255, 0.8) !important;
   box-shadow: 0 5px 6px -5px rgba(133, 133, 133, 0.6);
   & .menu-btn:hover {
-    color: #49b1f5 !important;
+    color: var(--c-primary) !important;
   }
 }
 
