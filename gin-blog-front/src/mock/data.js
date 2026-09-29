@@ -4,23 +4,23 @@
 const IMG_BASE = 'https://raw.githubusercontent.com/szluyu99/gin-vue-blog/main/images'
 
 const COVER = `${IMG_BASE}/page/article_list.jpg`
-const AVATAR = `${IMG_BASE}/common/header.jpeg`
-const TOURIST_AVATAR = `${IMG_BASE}/config/tourist_avatar.jpeg`
+const AVATAR = '/avatar.png'
+const TOURIST_AVATAR = '/avatar.png'
 
 export const blogConfig = {
-  website_name: 'Gin Vue Blog (Mock)',
-  website_author: '阵雨',
-  website_intro: '当前为 Mock 模式, 数据均为本地假数据',
+  website_name: 'DKXaiLBY 的个人博客',
+  website_author: 'DKXaiLBY',
+  website_intro: '记录学习轨迹与项目作品',
   website_notice: '这是 Mock 模式下的公告, 不需要启动后端即可浏览全部页面。',
-  website_createtime: '2023-12-27 22:00:00',
-  website_record: '粤ICP备2021032312号',
+  website_createtime: '2026-09-28 22:00:00',
+  website_record: '粤ICP备XXXXXXXX号',
   website_avatar: AVATAR,
   article_cover: COVER,
   user_avatar: AVATAR,
   tourist_avatar: TOURIST_AVATAR,
-  github: 'https://github.com/szluyu99',
-  gitee: 'https://gitee.com/szluyu99',
-  qq: '123456789',
+  github: 'https://github.com/DKXaiLBY',
+  gitee: '',
+  qq: '',
   is_comment_review: 'false',
   is_message_review: 'false',
 }
