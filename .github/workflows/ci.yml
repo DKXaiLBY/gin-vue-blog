@@ -230,6 +230,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # .env 已从仓库移除(示例密码有安全风险), CI 用模板生成
+      - name: Prepare .env
+        working-directory: deploy/start
+        run: cp .env.example .env
+
       - name: Bring up the stack
         working-directory: deploy
         run: sh bootstrap.sh

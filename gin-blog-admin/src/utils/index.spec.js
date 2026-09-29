@@ -73,7 +73,7 @@ describe('setupThemeVars', () => {
     const el = document.createElement('div')
     setupThemeVars(el)
 
-    expect(el.style.getPropertyValue('--primary-color')).toBe('#316C72FF')
+    expect(el.style.getPropertyValue('--primary-color')).toBe('#3B82F6FF')
     expect(el.style.getPropertyValue('--info-color')).toBe('#2080F0FF')
     expect(el.style.getPropertyValue('--success-color')).toBe('#18A058FF')
     expect(el.style.getPropertyValue('--warning-color')).toBe('#F0A020FF')
@@ -84,10 +84,10 @@ describe('setupThemeVars', () => {
     const el = document.createElement('div')
     setupThemeVars(el)
 
-    expect(el.style.getPropertyValue('--primary-color-hover')).toBe('#316C72E3')
-    expect(el.style.getPropertyValue('--primary-color-pressed')).toBe('#2B4C59FF')
+    expect(el.style.getPropertyValue('--primary-color-hover')).toBe('#60A5FAFF')
+    expect(el.style.getPropertyValue('--primary-color-pressed')).toBe('#2563EBFF')
     // uno.config.js 里叫 primary_active, naive 里对应的是 primaryColorSuppl
-    expect(el.style.getPropertyValue('--primary-color-active')).toBe('#316C72E3')
+    expect(el.style.getPropertyValue('--primary-color-active')).toBe('#60A5FAFF')
     expect(el.style.getPropertyValue('--primary-color-suppl')).toBe('')
   })
 })
