@@ -1,0 +1,1 @@
+{"name":"个人博客 —— 开源项目深度二开","cover":"/covers/home.svg","url":"http://47.121.119.191","repo_url":"https://github.com/DKXaiLBY/gin-vue-blog","intro":"你正在看的这个网站：修复上游 MD5 弱哈希安全隐患、品牌色 CSS 变量化实现明暗双主题、自研项目展示模块（Go 模型 + API + 后台管理页 + 前台展示页）、新增简历与历程功能，Docker 全栈部署于阿里云 ECS。","tech_stack":"Vue3,TypeScript,Go,Gin,MySQL,Redis,Docker","sort":2}

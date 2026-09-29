@@ -27,3 +27,4 @@ node_modules
 # 本地联调脚本产物 (dev.sh)
 .dev/
 deploy/start/.env
+/.deploy-keys/

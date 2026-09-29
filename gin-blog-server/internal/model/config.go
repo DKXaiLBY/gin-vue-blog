@@ -10,7 +10,8 @@ import (
 type Config struct {
 	Model
 	Key   string `gorm:"unique;type:varchar(256)" json:"key"`
-	Value string `gorm:"type:varchar(256)" json:"value"`
+	// 关于我等长文本也走这张表, 256 装不下正经内容(上游缺陷), 扩到 5000
+	Value string `gorm:"type:varchar(5000)" json:"value"`
 	Desc  string `gorm:"type:varchar(256)" json:"desc"`
 }
 

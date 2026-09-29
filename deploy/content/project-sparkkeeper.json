@@ -1,0 +1,1 @@
+{"name":"SparkKeeper —— 定时任务自动化工具","cover":"/covers/talk.svg","url":"","repo_url":"","intro":"Node.js/TypeScript 编写的定时自动化工具：每日随机时间调度、干跑演练模式、Docker 容器化部署，并自带 Web 状态页随时查看执行情况。","tech_stack":"Node.js,TypeScript,Docker","sort":3}

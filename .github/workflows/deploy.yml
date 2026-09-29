@@ -1,0 +1,58 @@
+name: Deploy to Aliyun
+
+# push 到 main 自动构建并部署; 也可手动触发
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build & deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 构建不做在 1.6G 的服务器上, 在 runner 构建好整体搬过去
+      - name: Build images
+        run: |
+          docker build -t start-gvb-web:latest .
+          docker build -t start-gvb-server:latest ./gin-blog-server
+
+      - name: Pack artifacts
+        run: |
+          docker save start-gvb-web:latest start-gvb-server:latest | gzip > /tmp/images.tar.gz
+          git archive --format=tar.gz -o /tmp/source.tar.gz HEAD
+
+      - name: Transfer to server
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          HOST: ${{ secrets.SERVER_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new root@"$HOST" "mkdir -p /opt/blog"
+          scp -i ~/.ssh/deploy_key /tmp/images.tar.gz root@"$HOST":/opt/images.tar.gz
+          scp -i ~/.ssh/deploy_key /tmp/source.tar.gz root@"$HOST":/opt/source.tar.gz
+
+      - name: Roll out
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          HOST: ${{ secrets.SERVER_HOST }}
+        run: |
+          ssh -i ~/.ssh/deploy_key root@"$HOST" '
+            set -e
+            docker load -i /opt/images.tar.gz
+            tar -xzf /opt/source.tar.gz -C /opt/blog
+            cd /opt/blog/deploy/start
+            docker compose up -d
+            rm -f /opt/images.tar.gz /opt/source.tar.gz
+          '
