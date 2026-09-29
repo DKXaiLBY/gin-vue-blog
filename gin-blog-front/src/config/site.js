@@ -6,11 +6,16 @@ export default {
   githubUsername: 'DKXaiLBY',
 
   // giscus 评论: 基于 GitHub Discussions 的免费评论系统
-  // 到 https://giscus.app 生成这四个值后填进来, repo 留空则文章底部不渲染 giscus
+  // ⚠️ 启用步骤: 在 github.com 网页上给仓库安装 giscus App
+  //    (https://github.com/apps/giscus → Install → 选 gin-vue-blog)
+  //    然后把下面 repo / repoId 两行的值填上即可, 其余两值已备好:
+  //    repoId:    R_kgDOUxqCkw
+  //    category:  Announcements
+  //    categoryId: DIC_kwDOUxqCk84DGoK2
   giscus: {
     repo: '',
     repoId: '',
     category: 'Announcements',
-    categoryId: '',
+    categoryId: 'DIC_kwDOUxqCk84DGoK2',
   },
 }
