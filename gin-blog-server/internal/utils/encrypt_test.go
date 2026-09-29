@@ -18,6 +18,7 @@ func TestEncrypt(t *testing.T) {
 	assert.True(t, result)
 }
 
-func TestMD5(t *testing.T) {
-	assert.Equal(t, "e10adc3949ba59abbe56e057f20f883e", MD5("123456"))
+func TestShortHash(t *testing.T) {
+	// SHA-256("123456") 截断前 16 字节, 输出定长 32 字符
+	assert.Equal(t, "8d969eef6ecad3c29a3a629280e686cf", ShortHash("123456"))
 }

@@ -36,9 +36,10 @@ fi
 
 # 启动新容器
 cd start
+# 显式指定 compose 文件: 不自动加载 docker-compose.override.yml (那是服务器共存专用的端口覆写)
 # 新版 Docker 的 compose 是插件形式(docker compose), 老版本是独立命令(docker-compose)
 if docker compose version > /dev/null 2>&1; then
-  docker compose up -d --build
+  docker compose -f docker-compose.yml up -d --build
 else
-  docker-compose up -d --build
+  docker-compose -f docker-compose.yml up -d --build
 fi
