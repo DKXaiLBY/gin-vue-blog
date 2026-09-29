@@ -68,6 +68,27 @@ definitions:
     - address
     - name
     type: object
+  handle.AddOrEditProjectReq:
+    properties:
+      cover:
+        type: string
+      id:
+        type: integer
+      intro:
+        type: string
+      name:
+        type: string
+      repo_url:
+        type: string
+      sort:
+        type: integer
+      tech_stack:
+        type: string
+      url:
+        type: string
+    required:
+    - name
+    type: object
   handle.AddOrEditResourceReq:
     properties:
       id:
@@ -556,6 +577,23 @@ definitions:
         description: 总条数
         type: integer
     type: object
+  handle.PageResult-model_Project:
+    properties:
+      page_data:
+        description: 分页数据
+        items:
+          $ref: '#/definitions/model.Project'
+        type: array
+      page_num:
+        description: 每页条数
+        type: integer
+      page_size:
+        description: 上次页数
+        type: integer
+      total:
+        description: 总条数
+        type: integer
+    type: object
   handle.PageResult-model_RoleVO:
     properties:
       page_data:
@@ -843,6 +881,20 @@ definitions:
         description: 响应消息
         type: string
     type: object
+  handle.Response-array_model_Project:
+    properties:
+      code:
+        description: 业务状态码
+        type: integer
+      data:
+        description: 响应数据
+        items:
+          $ref: '#/definitions/model.Project'
+        type: array
+      message:
+        description: 响应消息
+        type: string
+    type: object
   handle.Response-array_model_TagVO:
     properties:
       code:
@@ -1053,6 +1105,19 @@ definitions:
         description: 响应消息
         type: string
     type: object
+  handle.Response-handle_PageResult-model_Project:
+    properties:
+      code:
+        description: 业务状态码
+        type: integer
+      data:
+        allOf:
+        - $ref: '#/definitions/handle.PageResult-model_Project'
+        description: 响应数据
+      message:
+        description: 响应消息
+        type: string
+    type: object
   handle.Response-handle_PageResult-model_RoleVO:
     properties:
       code:
@@ -1242,6 +1307,19 @@ definitions:
       data:
         allOf:
         - $ref: '#/definitions/model.Page'
+        description: 响应数据
+      message:
+        description: 响应消息
+        type: string
+    type: object
+  handle.Response-model_Project:
+    properties:
+      code:
+        description: 业务状态码
+        type: integer
+      data:
+        allOf:
+        - $ref: '#/definitions/model.Project'
         description: 响应数据
       message:
         description: 响应消息
@@ -1890,6 +1968,34 @@ definitions:
       name:
         type: string
       updated_at:
+        type: string
+    type: object
+  model.Project:
+    properties:
+      cover:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      intro:
+        description: 一句话介绍
+        type: string
+      name:
+        type: string
+      repo_url:
+        description: 源码地址
+        type: string
+      sort:
+        description: 展示顺序, 越小越靠前
+        type: integer
+      tech_stack:
+        description: 技术栈, 逗号分隔
+        type: string
+      updated_at:
+        type: string
+      url:
+        description: 在线地址
         type: string
     type: object
   model.RecommendArticleVO:
@@ -3059,6 +3165,19 @@ paths:
       summary: 获取页面列表
       tags:
       - Page
+  /front/project/list:
+    get:
+      description: 全量按排序返回, 供前台项目展示页使用
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: ""
+          schema:
+            $ref: '#/definitions/handle.Response-array_model_Project'
+      summary: 前台项目列表
+      tags:
+      - Project
   /front/tag/list:
     get:
       description: 获取全部标签
@@ -3648,6 +3767,83 @@ paths:
       summary: 获取页面列表
       tags:
       - Page
+  /project:
+    delete:
+      consumes:
+      - application/json
+      description: 根据 ID 数组删除项目
+      parameters:
+      - description: 项目 ID 数组
+        in: body
+        name: ids
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: ""
+          schema:
+            $ref: '#/definitions/handle.Response-int64'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除项目（批量）
+      tags:
+      - Project
+    post:
+      consumes:
+      - application/json
+      description: 新增或编辑项目
+      parameters:
+      - description: 新增或编辑项目
+        in: body
+        name: form
+        required: true
+        schema:
+          $ref: '#/definitions/handle.AddOrEditProjectReq'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: ""
+          schema:
+            $ref: '#/definitions/handle.Response-model_Project'
+      security:
+      - ApiKeyAuth: []
+      summary: 新增或编辑项目
+      tags:
+      - Project
+  /project/list:
+    get:
+      description: 关键字匹配名称/简介/技术栈
+      parameters:
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 页码
+        in: query
+        name: page_num
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: ""
+          schema:
+            $ref: '#/definitions/handle.Response-handle_PageResult-model_Project'
+      security:
+      - ApiKeyAuth: []
+      summary: 条件查询项目列表
+      tags:
+      - Project
   /register:
     post:
       consumes:

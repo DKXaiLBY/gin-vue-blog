@@ -1484,6 +1484,26 @@ const docTemplate = `{
                 }
             }
         },
+        "/front/project/list": {
+            "get": {
+                "description": "全量按排序返回, 供前台项目展示页使用",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "前台项目列表",
+                "responses": {
+                    "0": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handle.Response-array_model_Project"
+                        }
+                    }
+                }
+            }
+        },
         "/front/tag/list": {
             "get": {
                 "description": "获取全部标签",
@@ -2425,6 +2445,130 @@ const docTemplate = `{
                         "description": "",
                         "schema": {
                             "$ref": "#/definitions/handle.Response-array_model_Page"
+                        }
+                    }
+                }
+            }
+        },
+        "/project": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "新增或编辑项目",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "新增或编辑项目",
+                "parameters": [
+                    {
+                        "description": "新增或编辑项目",
+                        "name": "form",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handle.AddOrEditProjectReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "0": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handle.Response-model_Project"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "根据 ID 数组删除项目",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "删除项目（批量）",
+                "parameters": [
+                    {
+                        "description": "项目 ID 数组",
+                        "name": "ids",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "0": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handle.Response-int64"
+                        }
+                    }
+                }
+            }
+        },
+        "/project/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "关键字匹配名称/简介/技术栈",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "条件查询项目列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_num",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "0": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handle.Response-handle_PageResult-model_Project"
                         }
                     }
                 }
@@ -3610,6 +3754,38 @@ const docTemplate = `{
                 }
             }
         },
+        "handle.AddOrEditProjectReq": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "cover": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "intro": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "repo_url": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "integer"
+                },
+                "tech_stack": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
         "handle.AddOrEditResourceReq": {
             "type": "object",
             "properties": {
@@ -4316,6 +4492,30 @@ const docTemplate = `{
                 }
             }
         },
+        "handle.PageResult-model_Project": {
+            "type": "object",
+            "properties": {
+                "page_data": {
+                    "description": "分页数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Project"
+                    }
+                },
+                "page_num": {
+                    "description": "每页条数",
+                    "type": "integer"
+                },
+                "page_size": {
+                    "description": "上次页数",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "总条数",
+                    "type": "integer"
+                }
+            }
+        },
         "handle.PageResult-model_RoleVO": {
             "type": "object",
             "properties": {
@@ -4729,6 +4929,26 @@ const docTemplate = `{
                 }
             }
         },
+        "handle.Response-array_model_Project": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "响应数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Project"
+                    }
+                },
+                "message": {
+                    "description": "响应消息",
+                    "type": "string"
+                }
+            }
+        },
         "handle.Response-array_model_TagVO": {
             "type": "object",
             "properties": {
@@ -5063,6 +5283,27 @@ const docTemplate = `{
                 }
             }
         },
+        "handle.Response-handle_PageResult-model_Project": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "响应数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/handle.PageResult-model_Project"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "响应消息",
+                    "type": "string"
+                }
+            }
+        },
         "handle.Response-handle_PageResult-model_RoleVO": {
             "type": "object",
             "properties": {
@@ -5365,6 +5606,27 @@ const docTemplate = `{
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.Page"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "响应消息",
+                    "type": "string"
+                }
+            }
+        },
+        "handle.Response-model_Project": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "响应数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Project"
                         }
                     ]
                 },
@@ -6341,6 +6603,46 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Project": {
+            "type": "object",
+            "properties": {
+                "cover": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "intro": {
+                    "description": "一句话介绍",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "repo_url": {
+                    "description": "源码地址",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "展示顺序, 越小越靠前",
+                    "type": "integer"
+                },
+                "tech_stack": {
+                    "description": "技术栈, 逗号分隔",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "url": {
+                    "description": "在线地址",
                     "type": "string"
                 }
             }
