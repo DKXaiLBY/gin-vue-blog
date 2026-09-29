@@ -6,11 +6,11 @@
     </p>
     <!-- 添加友链格式 -->
     <blockquote class="border-l-3 border-primary rounded-l-5 bg-#ecf7fe px-4 py-3 leading-7 dark:bg-#1d2a33">
-      <p>名称：阵、雨的个人博客</p>
-      <p>简介：往事随风而去</p>
+      <p>名称：DKXaiLBY 的个人博客</p>
+      <p>简介：记录学习轨迹与项目作品</p>
       <!-- break-all: 这串 URL 已经快占满整行, 窄屏下不断行会撑破容器 -->
       <p class="break-all">
-        头像：https://raw.githubusercontent.com/szluyu99/gin-vue-blog/main/images/common/header.jpeg
+        头像：https://47.121.119.191/avatar.png
       </p>
     </blockquote>
     <p>

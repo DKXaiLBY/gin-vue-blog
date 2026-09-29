@@ -13,8 +13,8 @@ export default {
   //    category:  Announcements
   //    categoryId: DIC_kwDOUxqCk84DGoK2
   giscus: {
-    repo: '',
-    repoId: '',
+    repo: 'DKXaiLBY/gin-vue-blog',
+    repoId: 'R_kgDOUxqCkw',
     category: 'Announcements',
     categoryId: 'DIC_kwDOUxqCk84DGoK2',
   },

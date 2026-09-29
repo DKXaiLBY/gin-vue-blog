@@ -19,9 +19,9 @@ const isLoop = ref(false) // 循环播放
 
 // 弹幕列表
 const danmus = ref([{
-  avatar: 'https://raw.githubusercontent.com/szluyu99/gin-vue-blog/main/images/config/user_avatar.jpeg',
-  content: '大家好，我是作者，欢迎给我点一颗 Star!',
-  nickname: '阵、雨',
+  avatar: '/avatar.png',
+  content: '大家好，欢迎来到我的博客！',
+  nickname: 'DKXaiLBY',
 }])
 
 onMounted(async () => {

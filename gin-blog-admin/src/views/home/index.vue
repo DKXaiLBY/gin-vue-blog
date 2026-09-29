@@ -169,7 +169,7 @@ async function getOneSentence() {
           <div class="ml-auto flex items-center">
             <a
               class="flex items-center gap-1 text-sm transition-300 hover:text-primary"
-              href="https://github.com/szluyu99/gin-vue-blog"
+              href="https://github.com/DKXaiLBY/gin-vue-blog"
               target="_blank" rel="noopener noreferrer"
             >
               <span class="i-mdi:github text-xl" />

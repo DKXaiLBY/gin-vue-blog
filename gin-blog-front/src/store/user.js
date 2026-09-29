@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import api from '@/api'
 
-// 默认头像: 原来是 bing 的一张外链图, 换成本仓库 images/ 下的图片
-const DEFAULT_AVATAR = 'https://raw.githubusercontent.com/szluyu99/gin-vue-blog/main/images/config/user_avatar.jpeg'
+// 默认头像: 用本地文件, 不依赖任何外部图床
+const DEFAULT_AVATAR = '/avatar.png'
 
 export const useUserStore = defineStore('user', {
   persist: {

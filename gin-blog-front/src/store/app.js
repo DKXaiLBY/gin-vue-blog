@@ -33,10 +33,10 @@ export const useAppStore = defineStore('app', {
       user_count: 0,
     },
     blog_config: {
-      website_name: '阵、雨的个人博客',
-      website_author: '阵、雨',
-      website_intro: '往事随风而去',
-      website_avatar: '',
+      website_name: 'DKXaiLBY 的个人博客',
+      website_author: 'DKXaiLBY',
+      website_intro: '记录学习轨迹与项目作品',
+      website_avatar: '/avatar.png',
     },
   }),
   getters: {
