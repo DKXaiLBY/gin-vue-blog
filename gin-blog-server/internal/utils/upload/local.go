@@ -21,7 +21,7 @@ type Local struct{}
 func (*Local) UploadFile(file *multipart.FileHeader) (filePath, fileName string, err error) {
 	ext := path.Ext(file.Filename)                                     // 读取文件后缀
 	name := strings.TrimSuffix(file.Filename, ext)                     // 读取文件名
-	name = utils.ShortHash(name)                                        // 哈希文件名, 避免暴露原始文件名
+	name = utils.ShortHash(name)                                       // 哈希文件名, 避免暴露原始文件名
 	filename := name + "_" + time.Now().Format("20060102150405") + ext // 拼接新文件名
 
 	conf := g.Conf.Upload

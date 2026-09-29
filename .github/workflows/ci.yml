@@ -249,8 +249,21 @@ jobs:
 
       - name: Web is served
         run: |
-          curl -sf http://127.0.0.1/ > /dev/null
-          curl -sf http://127.0.0.1/admin/ > /dev/null
+          # gvb-web 容器启动与端口发布存在竞态, 重试 60s
+          ok=""
+          for i in $(seq 20); do
+            if curl -sf http://127.0.0.1/ > /dev/null && curl -sf http://127.0.0.1/admin/ > /dev/null; then
+              ok=1
+              break
+            fi
+            sleep 3
+          done
+          if [ -z "$ok" ]; then
+            docker compose -f deploy/start/docker-compose.yml ps
+            docker compose -f deploy/start/docker-compose.yml logs --tail 50 gvb-web
+            curl -v http://127.0.0.1/ 2>&1 | tail -5
+            exit 1
+          fi
 
       # generate-data 是权限数据的唯一来源, 这里锁住它的结果:
       # admin 能改配置, guest 不能, 未登录也不能
