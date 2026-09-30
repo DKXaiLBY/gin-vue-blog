@@ -2,7 +2,7 @@
 import EasyTyper from 'easy-typer-js'
 import { storeToRefs } from 'pinia'
 
-import { computed, onMounted, reactive } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive } from 'vue'
 import { useAppStore } from '@/store'
 import { getOneSentence } from '@/utils'
 
@@ -20,15 +20,29 @@ const typer = reactive({
   sentencePause: false, // 运行完毕后, 句子是否暂停显示
 })
 
+// 组件卸载时停掉打字器定时器, 否则离开首页后它仍在后台循环输出
+let typerInstance = null
+let disposed = false
+
 onMounted(() => {
   startTyper()
 })
 
+onBeforeUnmount(() => {
+  disposed = true
+  typerInstance?.closeTimer()
+  typerInstance = null
+})
+
 async function startTyper() {
-  // 一言 + 打字机特效, 接口不通时 getOneSentence 内部会随机取一句内置文案
+  // 一言 + 打字机特效, 接口不通时 getOneSentence 内部会随机取一句
   const one = await getOneSentence()
+  // 等待期间组件可能已被卸载(快速切换路由), 此时不再启动新的打字器
+  if (disposed) {
+    return
+  }
   // EasyTyper 靠构造函数直接开始打字, 返回实例只是为了不写成裸 new
-  return new EasyTyper(typer, one, () => {}, () => {})
+  typerInstance = new EasyTyper(typer, one, () => {}, () => {})
 }
 
 function scrollDown() {

@@ -78,6 +78,7 @@ type ArticleSearchVO struct {
 	ID      int    `json:"id"`
 	Title   string `json:"title"`
 	Content string `json:"content"`
+	Img     string `json:"img"`
 }
 
 // @Summary 前台首页信息
@@ -698,6 +699,7 @@ func (*Front) SearchArticle(c *gin.Context) {
 			ID:      article.ID,
 			Title:   highlightKeyword(article.Title, keyword),
 			Content: highlightKeyword(content, keyword),
+			Img:     article.Img,
 		})
 	}
 

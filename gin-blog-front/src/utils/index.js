@@ -77,7 +77,8 @@ export function getRandomSentence() {
 let sentencePromise = null
 export function getOneSentence() {
   if (!sentencePromise) {
-    sentencePromise = fetch('https://v1.hitokoto.cn?c=i')
+    // 2 秒超时兜底: 一言接口偶尔挂起, 不设超时会导致横幅长时间空白不打字
+    sentencePromise = fetch('https://v1.hitokoto.cn?c=i', { signal: AbortSignal.timeout(2000) })
       .then(res => res.json())
       .then(data => data?.hitokoto || getRandomSentence())
       .catch(() => getRandomSentence())

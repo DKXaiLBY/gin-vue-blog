@@ -3923,6 +3923,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "img": {
+                    "type": "string"
+                },
                 "title": {
                     "type": "string"
                 }

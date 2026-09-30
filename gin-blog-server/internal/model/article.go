@@ -233,7 +233,7 @@ func GetNewestList(db *gorm.DB, n int) (data []RecommendArticleVO, err error) {
 func SearchArticle(db *gorm.DB, keyword string, limit int) (list []Article, err error) {
 	like := "%" + keyword + "%"
 	result := db.Model(&Article{}).
-		Select("id", "title", "content").
+		Select("id", "title", "content", "img").
 		Where("is_delete = ? AND status = ? AND (title LIKE ? OR content LIKE ?)",
 			false, STATUS_PUBLIC, like, like).
 		Order("id DESC").
