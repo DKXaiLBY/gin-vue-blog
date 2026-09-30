@@ -1504,6 +1504,26 @@ const docTemplate = `{
                 }
             }
         },
+        "/front/rss": {
+            "get": {
+                "description": "输出最新 20 篇公开文章的 RSS 2.0 订阅源",
+                "produces": [
+                    "text/xml"
+                ],
+                "tags": [
+                    "Front"
+                ],
+                "summary": "前台 RSS 订阅",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/front/tag/list": {
             "get": {
                 "description": "获取全部标签",

@@ -247,6 +247,8 @@ func registerBlogHandler(r *gin.Engine) {
 	{
 		link.GET("/list", frontAPI.GetLinkList) // 前台友链列表
 	}
+	// RSS 订阅: 输出最新文章 XML, 阅读器直接拉取
+	base.GET("/rss", frontAPI.GetRSS)
 	project := base.Group("/project")
 	{
 		project.GET("/list", projectAPI.GetFrontList) // 前台项目列表
