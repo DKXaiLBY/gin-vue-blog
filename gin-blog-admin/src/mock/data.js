@@ -1,9 +1,8 @@
 // Mock 数据源: 无后端时供 mock 适配器使用
 // menus / resources / roles / pages / config 与后端初始化的默认数据保持一致, 保证动态路由和权限页面可用
 
-// 图片用本仓库 images/ 目录下的图片(GitHub 直接提供), 不依赖第三方示例图站点
-const IMG_BASE = 'https://raw.githubusercontent.com/szluyu99/gin-vue-blog/main/images'
-export const SAMPLE_IMG = `${IMG_BASE}/common/header.jpeg`
+// 图片全部用本地静态资源, 不依赖任何外部图床或他人仓库
+export const SAMPLE_IMG = '/avatar.png'
 
 // 菜单 (动态路由数据源, 字段与 /menu/list 一致)
 export const menus = [
@@ -119,19 +118,19 @@ export const roles = [
   { id: 2, name: 'guest', label: '游客', is_disable: false, created_at: '2024-01-01T10:00:00.000Z', resource_ids: [15, 16, 23, 26, 27, 30, 31, 34, 37, 40, 41, 42, 45, 46, 49, 51, 54, 58, 59, 62, 63, 64, 66, 71], menu_ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26] },
 ]
 
-// 页面封面
+// 页面封面: 本地渐变占位图
 export const pages = [
-  { id: 1, name: '首页', label: 'home', cover: `${IMG_BASE}/page/home.jpg` },
-  { id: 2, name: '归档', label: 'archive', cover: `${IMG_BASE}/page/archive.png` },
-  { id: 3, name: '分类', label: 'category', cover: `${IMG_BASE}/page/category.png` },
-  { id: 4, name: '标签', label: 'tag', cover: `${IMG_BASE}/page/tag.png` },
-  { id: 5, name: '友链', label: 'link', cover: `${IMG_BASE}/page/link.jpg` },
-  { id: 6, name: '关于', label: 'about', cover: `${IMG_BASE}/page/about.jpg` },
-  { id: 7, name: '留言', label: 'message', cover: `${IMG_BASE}/page/message.jpeg` },
-  { id: 8, name: '个人中心', label: 'user', cover: `${IMG_BASE}/page/user.jpg` },
-  { id: 9, name: '相册', label: 'album', cover: `${IMG_BASE}/page/album.png` },
-  { id: 10, name: '错误页面', label: '404', cover: `${IMG_BASE}/page/404.jpg` },
-  { id: 11, name: '文章列表', label: 'article_list', cover: `${IMG_BASE}/page/article_list.jpg` },
+  { id: 1, name: '首页', label: 'home', cover: '/covers/home.svg' },
+  { id: 2, name: '归档', label: 'archive', cover: '/covers/archive.svg' },
+  { id: 3, name: '分类', label: 'category', cover: '/covers/category.svg' },
+  { id: 4, name: '标签', label: 'tag', cover: '/covers/tag.svg' },
+  { id: 5, name: '友链', label: 'link', cover: '/covers/link.svg' },
+  { id: 6, name: '关于', label: 'about', cover: '/covers/about.svg' },
+  { id: 7, name: '留言', label: 'message', cover: '/covers/message.svg' },
+  { id: 8, name: '个人中心', label: 'user', cover: '/covers/user.svg' },
+  { id: 9, name: '相册', label: 'album', cover: '/covers/album.svg' },
+  { id: 10, name: '错误页面', label: '404', cover: '/covers/404.svg' },
+  { id: 11, name: '文章列表', label: 'article_list', cover: '/covers/article_list.svg' },
 ]
 
 // 网站配置
@@ -146,9 +145,9 @@ export const config = {
   qq: '',
   github: 'https://github.com/DKXaiLBY',
   gitee: '',
-  tourist_avatar: `${IMG_BASE}/config/tourist_avatar.jpeg`,
-  user_avatar: `${IMG_BASE}/config/user_avatar.jpeg`,
-  article_cover: `${IMG_BASE}/config/default_article_cover.png`,
+  tourist_avatar: '/avatar.png',
+  user_avatar: '/avatar.png',
+  article_cover: '/covers/article_list.svg',
   is_comment_review: 'true',
   is_message_review: 'true',
 }

@@ -62,18 +62,19 @@ onMounted(async () => {
         {{ appStore.blogConfig.website_intro }}
       </p>
 
-      <!-- 社交链接: 首页侧栏有, 这一页原来没有 -->
+      <!-- 社交链接: 没配置的不渲染 -->
       <div class="mt-4 flex items-center gap-5 text-2xl">
         <a
+          v-if="appStore.blogConfig.qq"
           :href="`http://wpa.qq.com/msgrd?v=3&uin=${appStore.blogConfig.qq}&site=qq&menu=yes`"
           target="_blank" rel="noopener noreferrer" title="QQ"
         >
           <span class="i-ant-design:qq-circle-filled block transition-300 hover:text-accent" />
         </a>
-        <a :href="appStore.blogConfig.github" target="_blank" rel="noopener noreferrer" title="GitHub">
+        <a v-if="appStore.blogConfig.github" :href="appStore.blogConfig.github" target="_blank" rel="noopener noreferrer" title="GitHub">
           <span class="i-mdi:github block transition-300 hover:text-accent" />
         </a>
-        <a :href="appStore.blogConfig.gitee" target="_blank" rel="noopener noreferrer" title="Gitee">
+        <a v-if="appStore.blogConfig.gitee" :href="appStore.blogConfig.gitee" target="_blank" rel="noopener noreferrer" title="Gitee">
           <span class="i-simple-icons:gitee block transition-300 hover:text-accent" />
         </a>
       </div>

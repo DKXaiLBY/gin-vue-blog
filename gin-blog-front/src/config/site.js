@@ -5,6 +5,13 @@ export default {
   // GitHub 用户名: 填了才会在首页显示提交热力图, 留空隐藏
   githubUsername: 'DKXaiLBY',
 
+  // 打赏按钮: 想启用时改为 true 并在下方放自己的收款码图片 (放到 public/reward/ 下)
+  showReward: false,
+  rewardQr: {
+    wechat: '/reward/wechat.png',
+    alipay: '/reward/alipay.png',
+  },
+
   // giscus 评论: 基于 GitHub Discussions 的免费评论系统
   // ⚠️ 启用步骤: 在 github.com 网页上给仓库安装 giscus App
   //    (https://github.com/apps/giscus → Install → 选 gin-vue-blog)

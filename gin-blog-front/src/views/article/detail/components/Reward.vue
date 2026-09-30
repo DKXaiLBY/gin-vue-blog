@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import api from '@/api'
+import siteConfig from '@/config/site'
 import { useAppStore, useUserStore } from '@/store'
 
 const { articleId, likeCount } = defineProps({
@@ -66,8 +67,9 @@ function rewardArticle() {
     >
       <span class="i-mdi:thumb-up mr-1" /> 点赞 {{ count }}
     </button>
-    <!-- 打赏是次要动作, 用描边区分主次 -->
+    <!-- 打赏按钮: site.js 的 showReward 开关控制; 开启后弹自己的收款码 -->
     <button
+      v-if="siteConfig.showReward"
       class="w-[110px] f-c-c border-1 border-primary rounded-md py-1.5 text-sm text-primary transition-300 hover:bg-primary hover:text-white"
       @click="rewardArticle"
     >

@@ -1,9 +1,6 @@
 // Mock 数据源: 无后端时供 mock 适配器使用
-// 图片用本仓库 images/ 目录下的图片(GitHub 直接提供), 不依赖后端静态资源服务,
-// 也不再依赖第三方示例图站点
-const IMG_BASE = 'https://raw.githubusercontent.com/szluyu99/gin-vue-blog/main/images'
-
-const COVER = `${IMG_BASE}/page/article_list.jpg`
+// 图片全部用本地静态资源 (public/ 下), 不依赖任何外部图床或他人仓库
+const COVER = '/covers/article_list.svg'
 const AVATAR = '/avatar.png'
 const TOURIST_AVATAR = '/avatar.png'
 
@@ -159,7 +156,7 @@ export const currentUser = {
   id: 1,
   nickname: 'Mock 用户',
   avatar: AVATAR,
-  website: 'https://github.com/szluyu99',
+  website: 'https://github.com/DKXaiLBY',
   intro: '这是 Mock 模式下的登录用户',
   email: 'mock@example.com',
   article_like_set: [],

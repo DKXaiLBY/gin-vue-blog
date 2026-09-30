@@ -58,15 +58,15 @@ const coverStyle = computed(() => {
         {{ typer.output }}
         <span class="animate-ping"> | </span>
       </div>
-      <!-- 社交信息（移动端专用） -->
+      <!-- 社交信息（移动端专用）: 未配置的不渲染 -->
       <div class="text-2xl lg:hidden space-x-5">
-        <a :href="`http://wpa.qq.com/msgrd?v=3&uin=${blogConfig.qq}&site=qq&menu=yes`" target="_blank">
+        <a v-if="blogConfig.qq" :href="`http://wpa.qq.com/msgrd?v=3&uin=${blogConfig.qq}&site=qq&menu=yes`" target="_blank">
           <span class="i-ant-design:qq-circle-filled inline-block" />
         </a>
-        <a :href="blogConfig.github" target="_blank">
+        <a v-if="blogConfig.github" :href="blogConfig.github" target="_blank">
           <span class="i-mdi:github inline-block" />
         </a>
-        <a :href="blogConfig.gitee" target="_blank">
+        <a v-if="blogConfig.gitee" :href="blogConfig.gitee" target="_blank">
           <span class="i-simple-icons:gitee inline-block" />
         </a>
       </div>

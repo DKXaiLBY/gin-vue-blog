@@ -1,16 +1,22 @@
 <script setup>
 import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
 import { useAppStore } from '@/store'
 
 const { blogInfo } = storeToRefs(useAppStore())
+// 备案号没配置(或还是占位符)时不渲染链接
+const record = computed(() => blogInfo.value?.blog_config?.website_record ?? '')
 </script>
 
 <template>
   <footer class="f-c-c">
     <div class="footer-wrap w-full px-5 py-10 text-center text-muted leading-8">
       <p> &copy;{{ 2026 }} - {{ new Date().getFullYear() }} By DKXaiLBY</p>
-      <a class="transition-300 hover:text-primary" href="https://beian.miit.gov.cn/" target="_blank">
-        {{ blogInfo.blog_config?.website_record }}
+      <a
+        v-if="record && !record.includes('XXXX')"
+        class="transition-300 hover:text-primary" href="https://beian.miit.gov.cn/" target="_blank"
+      >
+        {{ record }}
       </a>
     </div>
   </footer>
