@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>DKXaiLBY 博客改版 · 调研画廊 + 创新概念</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",system-ui,sans-serif;background:#0e0f13;color:#d8dce4;line-height:1.85;padding:48px 24px;max-width:1060px;margin:0 auto}
+h1{color:#fff;font-size:26px;margin-bottom:6px}
+h1 span{color:#7c8cff}
+.sub{color:#8a90a0;font-size:14px;margin-bottom:40px}
+h2{color:#aeb8ff;font-size:20px;margin:52px 0 18px;border-left:4px solid #5b6cff;padding-left:12px}
+h3{color:#e8ebf4;font-size:16px;margin:20px 0 10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.card{background:#16181f;border:1px solid #23262f;border-radius:14px;overflow:hidden}
+.card img{width:100%;display:block}
+.card .cap{padding:12px 16px;font-size:13px;color:#9aa0ae}
+.card .cap b{color:#e8ebf4;display:block;margin-bottom:4px;font-size:14px}
+.tag{display:inline-block;background:#22263a;color:#aeb8ff;border-radius:20px;padding:1px 12px;font-size:12px;margin:2px 4px 2px 0}
+.concept{background:linear-gradient(160deg,#161828,#12131c);border:1px solid #262a3d;border-radius:16px;padding:26px;margin:26px 0}
+.concept h3{font-size:19px;color:#fff;margin-top:0}
+.concept .why{color:#9aa0ae;font-size:13px;margin:8px 0 14px}
+.concept .why b{color:#ffd28a}
+.feats{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.feat{background:#1d2135;border:1px solid #2e3350;color:#c3c9ff;border-radius:8px;padding:5px 12px;font-size:12px}
+.work{color:#7c8cff;font-size:13px;margin-top:10px}
+.mock{border-radius:12px;overflow:hidden;margin:16px 0;border:1px solid #2b2f45}
+.note{background:#1a1d29;border-left:3px solid #ffd28a;padding:12px 16px;border-radius:0 10px 10px 0;font-size:13px;color:#c8cdd8;margin:18px 0}
+/* mockup: OS 桌面 */
+.os{background:#1a2233;min-height:230px;position:relative;padding:18px}
+.os .icons{display:flex;gap:26px}
+.os .ic{width:74px;text-align:center;font-size:11px;color:#cdd6f4}
+.os .ic .box{height:52px;border-radius:10px;background:linear-gradient(145deg,#3b4a7a,#5b6cff);margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.os .ic:nth-child(2) .box{background:linear-gradient(145deg,#2e6e5e,#34d399)}
+.os .ic:nth-child(3) .box{background:linear-gradient(145deg,#7a3b57,#ec4899)}
+.os .ic:nth-child(4) .box{background:linear-gradient(145deg,#6e5a2e,#f59e0b)}
+.os .win{position:absolute;right:18px;bottom:44px;width:330px;background:#111827ee;border:1px solid #3b4a7a;border-radius:10px;padding:10px 12px;font-family:Consolas,monospace;font-size:11px;color:#9ee6a0}
+.os .win .t{color:#7c8cff;margin-bottom:4px}
+.os .bar{position:absolute;left:0;right:0;bottom:0;height:26px;background:#0d1420;display:flex;align-items:center;padding:0 12px;gap:8px;font-size:10px;color:#64748b}
+.os .bar .dot{width:8px;height:8px;border-radius:50%;background:#5b6cff}
+/* mockup: 星图 */
+.map{background:#0d1020;padding:26px 18px;overflow-x:auto}
+.metro{display:flex;gap:0;min-width:640px;position:relative;padding-top:8px}
+.line{position:absolute;left:0;right:0;top:26px;height:4px;border-radius:2px;background:linear-gradient(90deg,#5b6cff,#ec4899,#34d399,#f59e0b)}
+.stop{position:relative;flex:1;text-align:center}
+.stop .dot{width:14px;height:14px;border-radius:50%;background:#0d1020;border:3px solid #5b6cff;margin:14px auto 10px;position:relative;z-index:2}
+.stop:nth-child(2) .dot{border-color:#ec4899}.stop:nth-child(3) .dot{border-color:#34d399}.stop:nth-child(4) .dot{border-color:#f59e0b}.stop:nth-child(5) .dot{border-color:#a78bfa}
+.stop .d{font-size:10px;color:#7c86a0}.stop .n{font-size:12px;color:#e8ebf4;font-weight:bold;margin-top:2px}
+.stop .c{font-size:10px;color:#8f96ff}
+/* mockup: 终端 */
+.term{background:#0c0e14;padding:0;font-family:Consolas,monospace;font-size:12px}
+.term .bar{background:#161a24;padding:8px 12px;display:flex;gap:6px}
+.term .bar i{width:10px;height:10px;border-radius:50%}
+.term .bar i:nth-child(1){background:#ff5f57}.term .bar i:nth-child(2){background:#febc2e}.term .bar i:nth-child(3){background:#28c840}
+.term .body{padding:14px 16px;color:#9ee6a0;min-height:170px}
+.term .p{color:#7c8cff}.term .cmd{color:#e8ebf4}.term .dim{color:#5b6478}.term .pink{color:#f472b6}.term .amber{color:#fbbf24}
+.pill{display:inline-block;background:#1d2135;color:#aeb8ff;border-radius:6px;padding:2px 8px;font-size:11px;margin:2px 3px 2px 0}
+</style>
+</head>
+<body>
+
+<h1>DKXaiLBY 博客改版 · <span>调研画廊 + 三个创新概念</span></h1>
+<div class="sub">实访 8 站 / 6 站截图成功 · 本页为方案讨论材料，未改任何线上代码 · 看完回复编号或描述你的感觉</div>
+
+<h2>一、实拍参考墙（6 站，点出每站值得偷师的一处）</h2>
+<div class="grid">
+  <div class="card"><img src="/img/ref-antfu.png"><div class="cap"><b>antfu.me — 极简排版流</b><span class="tag">无横幅</span><span class="tag">点阵背景</span><span class="tag">项目徽章嵌进句子</span>首屏全是"我是谁"：大字名字 + 一句话 + 徽章。没有一张装饰图，但过目不忘。</div></div>
+  <div class="card"><img src="/img/ref-diygod.png"><div class="cap"><b>diygod.cc — 个性主理人流</b><span class="tag">大字 Hero</span><span class="tag">生活照</span><span class="tag">分类文本化</span>左边大字自我介绍+社交图标行，右边一张真实生活照。分类/标签做成正文里的一行文字链。</div></div>
+  <div class="card"><img src="/img/ref-leerob.png"><div class="cap"><b>leerob.com — 杂志衬线风</b><span class="tag">衬线字体</span><span class="tag">Bio 可切换</span><span class="tag">大插画</span>衬线字体就是身份；Bio 可在"简版/长版"间切换的小巧思；右侧一幅插画定调。</div></div>
+  <div class="card"><img src="/img/ref-overreacted.png"><div class="cap"><b>overreacted.io — 内容霓虹风</b><span class="tag">零图片</span><span class="tag">大粉色标题</span><span class="tag">一句话摘要</span>React 作者的站：白底 + 巨大亮粉标题 + 一句话。全站只有一种颜色却是全网最好认的博客之一。</div></div>
+  <div class="card"><img src="/img/ref-butterfly.png"><div class="cap"><b>Butterfly 主题 — 中文经典卡片流</b><span class="tag">横幅+卡片</span><span class="tag">侧栏作者卡</span><span class="tag">公告栏</span>我们现在就是这一挂的（横幅+卡片+侧栏）。好看但同质化严重——全中国一半的博客长这样。</div></div>
+  <div class="card"><img src="/img/ref-zhheo.png"><div class="cap"><b>blog.zhheo.com — 设计主理人风</b><span class="tag">胶囊导航</span><span class="tag">轮播精选</span><span class="tag">悬浮助手</span>中文圈设计天花板：胶囊式悬浮导航、分类胶囊栏、渐变轮播精选位、右下角吉祥物。交互多、热闹、有生命感。</div></div>
+</div>
+
+<h2>二、三个创新概念（不是模板，是基于你自己的素材做的世界观设计）</h2>
+
+<div class="note">💡 你的独家素材：4 个月 10 个项目的开发编年史、192 个 commit 的 LoveGirl、一整套对抗式 AI 开发方法论、800MB 真实会话记录。下面的概念都从这份"只有你有"的素材出发——这才是"自己的灵感"。</div>
+
+<div class="concept">
+  <h3>概念一 ·「DKX OS」— 把博客做成你的工作电脑 🖥️</h3>
+  <div class="why">访客打开你的博客 = 看到你的电脑桌面。项目是<b>桌面图标</b>，说说像<b>聊天记录</b>，简历是<b>PDF 查看器</b>，编年史是<b>终端启动日志</b>。你的 AI 编程身份直接变成网站世界观——全网找不到第二个一样的。</div>
+  <div class="mock">
+    <div class="os">
+      <div class="icons">
+        <div class="ic"><div class="box">💕</div>LoveGirl.apk</div>
+        <div class="ic"><div class="box">🍅</div>番茄专注.exe</div>
+        <div class="ic"><div class="box">💬</div>说说.txt</div>
+        <div class="ic"><div class="box">📄</div>简历.pdf</div>
+      </div>
+      <div class="win"><div class="t">终端 — dkx@blog</div>$ ls projects<br>lovegirl/  tomato/  blog/  sparkkeeper/<br>$ cat blog.status<br><span style="color:#ffd28a">▶ 运行中 · 已连续更新 2 天</span></div>
+      <div class="bar"><span class="dot"></span> DKX OS · 已运行 192 天 · 5 个项目在后台</div>
+    </div>
+  </div>
+  <div class="feats"><span class="feat">双击图标进项目页</span><span class="feat">任务栏=实时状态</span><span class="feat">窗口可拖动</span><span class="feat">右键彩蛋菜单</span></div>
+  <div class="work">工作量：大（全新首页世界观，约 1~2 天）· 风险：需要接受"访客要花 2 秒理解玩法"</div>
+</div>
+
+<div class="concept">
+  <h3>概念二 ·「开发星图」— 首页就是你的编年史地铁图 🗺️</h3>
+  <div class="why">把 17 条编年史变成一张<b>横向地铁图</b>：每条彩线=一个项目，每个站=一个里程碑，站的大小=commit 数。访客像看地图一样"走"完你的 4 个月。数据全部现成（挖掘脚本已产出）。</div>
+  <div class="mock">
+    <div class="map">
+      <div class="metro">
+        <div class="line"></div>
+        <div class="stop"><div class="dot"></div><div class="d">2026.05</div><div class="n">LeetCode</div><div class="c">起点</div></div>
+        <div class="stop"><div class="dot"></div><div class="d">2026.06</div><div class="n">LoveGirl</div><div class="c">192 commits</div></div>
+        <div class="stop"><div class="dot"></div><div class="d">2026.07</div><div class="n">番茄专注</div><div class="c">v2.4.8 发版</div></div>
+        <div class="stop"><div class="dot"></div><div class="d">2026.08</div><div class="n">Claw</div><div class="c">自动化</div></div>
+        <div class="stop"><div class="dot"></div><div class="d">2026.09</div><div class="n">本博客</div><div class="c">你在这 ⬇</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="feats"><span class="feat">点击站点=看该里程碑说说</span><span class="feat">线路颜色=项目</span><span class="feat">可横向拖拽</span><span class="feat">移动端变纵向</span></div>
+  <div class="work">工作量：中（星图组件 + 数据对接，约 1 天）· 亮点：把"历程页"升级成全网独一份的首页</div>
+</div>
+
+<div class="concept">
+  <h3>概念三 ·「DKX 终端」— 程序员浪漫的入口 🖲️</h3>
+  <div class="why">保留现有卡片站，但首页 Hero 区放一个<b>会动的伪终端</b>：访客可以输入 <b>ls projects</b>、<b>cat resume</b>、<b>sudo hire-me</b> 这样的命令来"操作"你的博客。你的打字机元素、编年史、AI 身份全部能串进这个世界观。</div>
+  <div class="mock">
+    <div class="term">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <div class="body">
+        <span class="p">dkx@blog ~ %</span> <span class="cmd">ls projects</span><br>
+        <span class="pill">LoveGirl</span><span class="pill">番茄专注</span><span class="pill">博客</span><span class="pill">SparkKeeper</span><br><br>
+        <span class="p">dkx@blog ~ %</span> <span class="cmd">cat motto.txt</span><br>
+        <span class="dim">把开源项目吃透、改造成自己的——这个过程学到的东西，比看十篇教程都多。</span><br><br>
+        <span class="p">dkx@blog ~ %</span> <span class="cmd">sudo </span><span class="pink">hire-me</span><br>
+        <span class="amber">▸ 正在打开简历页… ✔</span>
+      </div>
+    </div>
+  </div>
+  <div class="feats"><span class="feat">真可输入的命令</span><span class="feat">hire-me 跳简历</span><span class="feat">命令补全提示</span><span class="feat">保留卡片站主体</span></div>
+  <div class="work">工作量：中小（Hero 区组件，约半天~1 天）· 兼容性最好：不推翻现有布局</div>
+</div>
+
+<h2>三、怎么选</h2>
+<p>· <b>要最大冲击力</b> → 概念一（DKX OS）或 概念二（星图）<br>
+· <b>要稳+快+有记忆点</b> → 概念三（终端 Hero），半天上线<br>
+· <b>概念之间可叠加</b>：比如「终端 Hero + 星图历程页」是最自然的组合<br>
+· 传统三方案（极简杂志/主理人/霓虹）仍保留在 <a style="color:#7c8cff" href="/design-research.md">design-research.md</a>，随时可切<br><br>
+回复示例：「概念三 + 星图」或「就要 DKX OS」或「概念三，但命令换成 xxx」——确认后我先出该页的静态示意图给你过目，再写进博客。</p>
+
+</body>
+</html>
