@@ -45,8 +45,11 @@ async function likeArticle() {
 // 判断当前用户是否点赞过该文章
 const isLike = computed(() => userStore.articleLikeSet.includes(articleId))
 
-function rewardArticle() {
-  window.$message?.info('暂时不支持打赏功能')
+// 打赏弹窗: 展示 site.js 配置的微信/支付宝收款码
+const showQr = ref(false)
+
+function closeQr() {
+  showQr.value = false
 }
 </script>
 
@@ -67,13 +70,72 @@ function rewardArticle() {
     >
       <span class="i-mdi:thumb-up mr-1" /> 点赞 {{ count }}
     </button>
-    <!-- 打赏按钮: site.js 的 showReward 开关控制; 开启后弹自己的收款码 -->
+    <!-- 打赏按钮: site.js 的 showReward 开关控制 -->
     <button
       v-if="siteConfig.showReward"
       class="w-[110px] f-c-c border-1 border-primary rounded-md py-1.5 text-sm text-primary transition-300 hover:bg-primary hover:text-white"
-      @click="rewardArticle"
+      @click="showQr = true"
     >
       <span class="i-mdi:qrcode mr-1" /> 打赏
     </button>
   </div>
+
+  <!-- 打赏弹窗 -->
+  <Teleport to="body">
+    <Transition name="fade">
+      <div
+        v-if="showQr"
+        class="fixed inset-0 z-999 f-c-c bg-black/60 p-4"
+        @click.self="closeQr"
+      >
+        <div class="relative w-full max-w-md rounded-xl bg-surface p-6 shadow-2xl">
+          <button
+            class="absolute right-3 top-3 f-c-c h-8 w-8 rounded-full text-muted transition-300 hover:bg-surface-soft hover:text-main"
+            aria-label="关闭"
+            @click="closeQr"
+          >
+            <span class="i-mdi:close" />
+          </button>
+          <h3 class="text-center text-lg font-bold">
+            请作者喝杯奶茶 ☕
+          </h3>
+          <p class="mt-1 text-center text-xs text-muted">
+            如果内容对你有帮助, 扫码请我一杯, 感谢每一份支持
+          </p>
+          <div class="mt-5 flex justify-center gap-6">
+            <figure class="text-center">
+              <img
+                src="/reward/wechat.png" alt="微信收款码" loading="lazy"
+                class="h-56 w-40 rounded-lg border border-divider object-contain"
+              >
+              <figcaption class="mt-2 flex items-center justify-center gap-1 text-sm text-muted">
+                <span class="i-mdi:wechat text-green-500" /> 微信支付
+              </figcaption>
+            </figure>
+            <figure class="text-center">
+              <img
+                src="/reward/alipay.jpg" alt="支付宝收款码" loading="lazy"
+                class="h-56 w-40 rounded-lg border border-divider object-contain"
+              >
+              <figcaption class="mt-2 flex items-center justify-center gap-1 text-sm text-muted">
+                <span class="i-mdi:alipay text-blue-500" /> 支付宝
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

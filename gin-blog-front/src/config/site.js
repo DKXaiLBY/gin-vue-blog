@@ -5,11 +5,11 @@ export default {
   // GitHub 用户名: 填了才会在首页显示提交热力图, 留空隐藏
   githubUsername: 'DKXaiLBY',
 
-  // 打赏按钮: 想启用时改为 true 并在下方放自己的收款码图片 (放到 public/reward/ 下)
-  showReward: false,
+  // 打赏: 已启用, 收款码在 public/reward/ 下 (wechat.png / alipay.jpg)
+  showReward: true,
   rewardQr: {
     wechat: '/reward/wechat.png',
-    alipay: '/reward/alipay.png',
+    alipay: '/reward/alipay.jpg',
   },
 
   // giscus 评论: 基于 GitHub Discussions 的免费评论系统
