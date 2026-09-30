@@ -5,6 +5,7 @@ import { computed, ref } from 'vue'
 import api from '@/api'
 import UModal from '@/components/ui/UModal.vue'
 import { useAppStore } from '@/store'
+import { convertImgUrl } from '@/utils'
 
 const appStore = useAppStore()
 
@@ -52,12 +53,22 @@ async function handleSearch() {
         <div class="h-[420px] overflow-y-auto">
           <ul v-if="articleList.length">
             <li v-for="item of articleList" :key="item.id" class="text-sm">
-              <RouterLink :to="`/article/${item.id}`">
-                <span class="border-b-1 border-#999 border-solid text-lg" @click="searchFlag = false" v-html="item.title" />
+              <RouterLink
+                :to="`/article/${item.id}`" class="flex items-start gap-3"
+                @click="searchFlag = false"
+              >
+                <!-- 封面缩略图: 后端搜索接口已返回 img 字段, 没图时用底色兜底 -->
+                <img
+                  :src="convertImgUrl(item.img)" alt="" loading="lazy"
+                  class="h-16 w-24 shrink-0 rounded-md bg-surface-soft object-cover"
+                >
+                <div class="min-w-0 flex-1">
+                  <span class="border-b-1 border-#999 border-solid text-lg" v-html="item.title" />
+                  <div class="ell-3 mt-1">
+                    <p class="cursor-pointer color-muted" v-html="item.content" />
+                  </div>
+                </div>
               </RouterLink>
-              <div class="ell-4 mt-1">
-                <p class="cursor-pointer color-muted" v-html="item.content" />
-              </div>
               <hr class="my-3 border-1 border-divider border-dashed">
             </li>
           </ul>
@@ -79,4 +90,13 @@ async function handleSearch() {
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
 }
+
+.ell-3 {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
 </style>
+
