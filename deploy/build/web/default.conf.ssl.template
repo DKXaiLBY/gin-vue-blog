@@ -60,5 +60,19 @@ server {
         gzip_types text/css application/javascript application/json;
         root /usr/share/nginx/html;
     }
+    # SPA 入口禁止缓存 + 哈希产物长缓存 (与 http 版保持一致)
+    location ~* \.html$ {
+        add_header Cache-Control "no-cache, must-revalidate";
+    }
+    location ^~ /assets/ {
+        gzip_static on;
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000, immutable";
+    }
+    location ^~ /admin/assets/ {
+        gzip_static on;
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000, immutable";
+    }
     ######### 静态资源 end ########
 }

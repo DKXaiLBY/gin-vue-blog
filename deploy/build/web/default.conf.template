@@ -34,12 +34,28 @@ server {
     }
     location ~ .*\.(js|json|css)$ {
         gzip on;
-        gzip_static on; 
+        gzip_static on;
         gzip_min_length 1k;
         gzip_http_version 1.1;
         gzip_comp_level 9;
         gzip_types text/css application/javascript application/json;
         root /usr/share/nginx/html;
+    }
+    # SPA 入口禁止缓存: 每次部署新版本, 访客下次请求立即拿到新页面,
+    # 不会出现"旧页面引用的脚本已被新部署替换 -> 点击无响应"的窗口期
+    location ~* \.html$ {
+        add_header Cache-Control "no-cache, must-revalidate";
+    }
+    # 带内容哈希的构建产物可以放心长期缓存 (文件名变了 URL 就变)
+    location ^~ /assets/ {
+        gzip_static on;
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000, immutable";
+    }
+    location ^~ /admin/assets/ {
+        gzip_static on;
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000, immutable";
     }
     ######### 静态资源 end ########
 }
