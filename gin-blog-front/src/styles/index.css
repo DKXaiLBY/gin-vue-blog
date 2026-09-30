@@ -31,28 +31,28 @@
   /* 主题色板: 深色模式在 html.dark 下整体覆盖 */
   color-scheme: light;
   /* 品牌色唯一出口: UnoCSS 主题与组件样式统一从这里取 */
-  --c-primary: #3b82f6;
-  --c-accent: #f97316;
+  --c-primary: #6366f1;
+  --c-accent: #ec4899;
   --c-surface: #ffffff;
-  --c-surface-soft: #f1f3f5;
-  --c-text: #191c1f;
-  --c-text-muted: #697180;
-  --c-border: #e4e7ec;
-  --c-divider: #e9edf2;
-  --c-body-bg: #f6f7f9;
+  --c-surface-soft: #f1f2f7;
+  --c-text: #1a1a2e;
+  --c-text-muted: #69697b;
+  --c-border: #e4e4f0;
+  --c-divider: #ebebf4;
+  --c-body-bg: #f6f6fa;
 }
 
 html.dark {
   color-scheme: dark;
-  --c-primary: #60a5fa;
-  --c-accent: #fb923c;
-  --c-surface: #1d2025;
-  --c-surface-soft: #262b32;
-  --c-text: #d5dae1;
-  --c-text-muted: #8b93a1;
-  --c-border: #333a44;
-  --c-divider: #2b323b;
-  --c-body-bg: #141619;
+  --c-primary: #818cf8;
+  --c-accent: #f472b6;
+  --c-surface: #1c1c2e;
+  --c-surface-soft: #26263c;
+  --c-text: #d8d8ea;
+  --c-text-muted: #9090a8;
+  --c-border: #35354e;
+  --c-divider: #2b2b42;
+  --c-body-bg: #131320;
 }
 
 html, body, #app {

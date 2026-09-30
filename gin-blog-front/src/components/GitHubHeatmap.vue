@@ -25,7 +25,7 @@ const failed = ref(false)
     </h3>
     <img
       v-if="!failed"
-      :src="`https://ghchart.rshah.org/3b82f6/${username}`"
+      :src="`https://ghchart.rshah.org/818cf8/${username}`"
       :alt="`${username} 的 GitHub 提交热力图`"
       loading="lazy"
       class="w-full"
