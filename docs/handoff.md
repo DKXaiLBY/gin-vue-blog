@@ -36,15 +36,24 @@
 
 ### 网站
 - 品牌化：DKXaiLBY + 小猫头像 + 靛紫 Indigo 配色（品牌色 CSS 变量单一出口，明暗双主题）
-- 前台：Hero 开场（大字+小猫头像+一言+社交图标）+ 分类胶囊栏 + 加载更多按钮 + 搜索弹窗封面缩略图
-- 后台：项目管理页（naive-ui CRUD+封面上传）、登录页重设计、仪表盘靛紫主题
-- RSS 2.0 订阅（/api/front/rss）、sitemap.xml、robots.txt
+- 前台：Hero 开场（大字+小猫头像+社交图标）+ 分类胶囊栏 + 加载更多按钮 + 搜索弹窗封面缩略图
+- **Hero 迷你终端（2026-10-01）**：可真实输入的命令行（help/ls projects/blog status/sudo hire-me 跳简历/fortune 一言/clear 等），开场自动表演，提示 pill 移动端可点
+- **星图历程页（2026-10-01）**：/timeline 渲染为可拖拽「开发地铁图」，大站高亮 +「你在这」，点击站点出详情卡，≤1023px 自动转纵向
+- **体验三件套（2026-10-02）**：文章图片灯箱、页脚实时状态徽章（呼吸绿点+运行天数/文章/访问）、Ctrl+K 命令面板（页面直达+切主题+搜文章）
+- **DKX OS 桌面彩蛋（2026-10-02）**：终端敲 `boot dkx-os` 唤起全屏"电脑桌面"（图标导航+可拖动关于本机窗口+任务栏关机）
+- **站点状态页（2026-10-02）**：/status + Go 后端 /api/front/status（只读：Go 版本/堆内存/协程/内容计数），入口在 Ctrl+K 和页脚
+- **SEO 分享层（2026-10-02）**：index.html OG/JSON-LD/description + router 动态覆写 + 文章页真实标题摘要覆写 + sitemap 生成脚本（scripts/gen-sitemap.mjs）
+- **图片灯箱/头像优化**：正文图片点击放大；头像 1080px/135KB→512px/16KB（原图备份在 docs/img/avatar-original/）
+- RSS 2.0 订阅（/api/front/rss）、robots.txt
 - 自动备份（每日 3 点 mysqldump+图片，7 天轮转，/opt/backups/）
-- 反代限流（/api/login 10r/m、全站 300r/m）
+- 反代限流（/api/login 10r/m、全站 300r/m）+ **安全响应头四件套（nosniff/XFO/Referrer-Policy/Permissions-Policy，2026-10-02）**
 - giscus 评论区启用（App 已装，配置已填）
-- 说说页 17 条编年史（真实事件日期）
-- 历程页 18 条里程碑
-- 打字机失灵根治（2s 超时+卸载清理）、搜索封面缩略图、页脚/加载屏品牌化
+- 说说页 20 条（17 条编年史 + 3 条 10 月迭代实录）
+- 历程页 19 站星图（数据源 config/timeline.js，major/now 标记）
+- 测试套件 **34 文件/213 用例全绿**（含终端命令分发 11 条、星图 5 条新单测）
+
+### 后台
+- 项目管理页（naive-ui CRUD+封面上传）、登录页重设计、仪表盘靛紫主题（2026-10-02 对齐剩余蓝色残留）
 
 ### 服务器
 - 阿里云 47.121.119.191，宝塔 nginx 反代（gvb-blog.conf，含限流）
@@ -74,14 +83,14 @@
 
 ### 需要用户做的
 1. **项目真实截图**：后台项目管理里把 4 张渐变占位图换成 LoveGirl/番茄专注的实际截图
-2. **新域名注册**：用户计划自行注册（不占用已备案的「蓝宝莹我爱你」主域）。拿到域名后：DNS A 记录 → 47.121.119.191，更新 sitemap/robots/RSS 绝对 URL，配 HTTPS（Caddy 或 BT 面板 SSL），搜索引擎提交
-3. 说说页可以继续添加新动态（后台直接发，或让 AI 走 SQL 文件通道）
+2. **新域名注册**：用户计划自行注册（不占用已备案的「蓝宝莹我爱你」主域）。拿到域名后：DNS A 记录 → 47.121.119.191，跑 `node scripts/gen-sitemap.mjs https://新域名` 重生成 sitemap，配 HTTPS（Caddy 或 BT 面板 SSL，web 镜像已内置 ssl template + USE_HTTPS 开关），搜索引擎提交（sitemap/OG/JSON-LD 已就绪）
+3. 说说页可以继续添加新动态（后台直接发，或让 AI 走 SQL 文件通道）；**隐藏彩蛋试玩**：首页终端敲 `boot dkx-os`
 
 ### 可选增强（用户点名才做）
-1. **自动部署流水线**：Deploy to Aliyun workflow 已写好（.github/workflows/deploy.yml，Secrets DEPLOY_SSH_KEY/SERVER_HOST 已配置），但 runner→服务器 SSH 在网络层被丢（auth.log 无记录）。备选：GHCR 镜像中转（服务器拉镜像，绕开 SSH）或服务器轮询部署代理
+1. **自动部署流水线**：Deploy to Aliyun workflow 已写好但 runner→服务器 SSH 被丢；**GHCR 中转已评估不可行（2026-10-02 实测 ghcr.io 本机与服务器均不可达）** → 维持「本地 build → save|gzip|scp|load → compose up」手动部署为标准流程
 2. **Umami 访客统计**：自部署数据分析（需先评估 1.6G 内存余量）
-3. **后台仪表盘深色模式打磨**
-4. **上游安全补丁定期同步**
+3. **上游安全补丁定期同步**：upstream remote 已配好（2026-10-02 修正：origin 曾误指上游仓库！现 origin=DKXaiLBY fork，upstream=szluyu99），fetch 时遇家宽阻断等 2 分钟重试
+4. **Lighthouse 进一步优化**：基线 64 分存档 docs/verification/2026-10-02-P3/，总载荷已降至 196KB，剩余瓶颈=服务器 TTFB（1 核小机）与外部资源（ghchart 热力图/一言 API）
 
 ### AI 会话考古（可选，素材已产出）
 - 用户在多工具（Codex/WorkBuddy/豆包/ZCode）有 ~800MB 会话存档
@@ -94,9 +103,14 @@
 1. **Deploy to Aliyun 流水线**：runner→服务器 SSH 被网络层丢弃（Transfer 步骤挂起 30+ 分钟），已取消该 run。旧 run 取消后新的 run 会在队列里排队执行
 2. **服务器 Docker Desktop 偶尔空闲退出**：本地 Windows Docker Desktop 偶尔 idle 退出，重新启动即可（Docker Desktop.exe → 等 engine → build）
 3. **宝塔面板有 SSH 频率防护**：频繁 SSH 连接会被断连，等 2 分钟再试
-4. **GitHub 家宽间歇阻断**：push 失败等 2 分钟重试即可恢复
+4. **GitHub 家宽间歇阻断**：push 失败等 2 分钟重试即可恢复（后台 for 循环重试很好用）
 5. **服务器上还有用户的另一个项目**：lovegirl-web/lovegirl-mysql（8080/3307 端口）和 MongoDB、/opt/tomat（3000）——**不要动这些**
 6. **conf 模板中 .env 已 untrack**：deploy/start/.env 从仓库移除（上游把示例密码提交进了仓库），服务器上真实密码在 /opt/blog/deploy/start/.env
+7. **【重大】mysqldump 恢复陷阱（2026-10-02 演练实测）**：备份 dump 自带 `CREATE DATABASE gvb` + `USE gvb`，直接 `gunzip | mysql 临时库` 数据会进**正式 gvb 库**（等于真实覆盖恢复）。恢复到临时库必须先剥掉 dump 头部这些行；恢复/验证时 mysql 客户端务必 `--default-character-set=utf8mb4`（alpine 容器默认 latin1，中文显示乱码是假象，HEX 检查才作数）
+8. **【陷阱】plugin-vue v6 静态资源**：模板里静态 `src="/xxx.png"`（public 绝对路径）会被编译成模块导入，vitest 里炸掉整个套件（file:///xxx.png 非法模块）。全站约定：**public 资源一律 `:src="'/xxx'"` 绑定写法**
+9. **【陷阱】flex 父级 + mx-auto**：页面根 div 用 `mx-auto max-w-*` 且父级是 flex 容器时，auto margin 放弃 stretch 改 fit-content，内容有 min-width:max-content（如星图）会把宽度顶到 max-width 上限造成小视口横向溢出 → 页面根加 `w-full`
+10. **IAB 自动化（ZCode 内置浏览器）**：被遮挡的后台标签页 rAF/setTimeout 被节流——Transition 永远停在 *-leave-from、打字动画要长轮询；Playwright fill/press 不触发页面 keydown，键盘交互走 evaluate 取坐标 → cua.click/type/keypress，或 DOM 合成事件；jsdom MouseEvent.pageX 恒 0（原型只读）
+11. **eslint Windows 段错误**：pnpm exec eslint 偶发 exit 139，用 `node node_modules/eslint/bin/eslint.js` 直跑绕过
 
 ## 七、用户偏好（协作时遵守）
 
