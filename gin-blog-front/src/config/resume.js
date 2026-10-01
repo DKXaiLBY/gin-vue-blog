@@ -29,7 +29,7 @@ export default {
     {
       name: 'LoveGirl —— 情侣互动 App（Flutter 全栈）',
       time: '2026.08 - 至今',
-      desc: '独立开发并长期维护的情侣关系管理 App：衣柜管理、数字形象、旅行地图、相册翻页、通知中心等模块，配套 Node/Express + MySQL 接口服务；以 170+ 次构建持续迭代至今，并在仓库中维护 AGENTS.md / BACKLOG 的工程化协作流程。',
+      desc: '独立开发并长期维护的情侣关系管理 App：美食手账、拍立得手账、愿望兑换券、时光轴、地图与通知中心等模块，配套 Node/Express + MySQL 接口服务；以 170+ 次构建持续迭代至今，并在仓库中维护 AGENTS.md / BACKLOG 的工程化协作流程。',
       tech: 'Flutter · Dart · Node.js · Express · MySQL',
     },
     {
