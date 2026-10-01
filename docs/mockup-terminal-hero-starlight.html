@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>改版示意图 · 终端 Hero + 星图历程页（静态讨论材料）</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#818cf8;          /* 深色主题下的 --c-primary */
+  --accent:#f472b6;           /* 深色主题下的 --c-accent */
+  --bg:#0e1017;--panel:#151824;--line:#262b3d;--text:#e6e9f2;--muted:#8b92a6;
+  --green:#34d399;--amber:#fbbf24;--pink:#ec4899;
+}
+body{font-family:"Microsoft YaHei",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;padding:44px 20px;max-width:1080px;margin:0 auto}
+h1{font-size:25px}
+h1 b{color:var(--primary)}
+.sub{color:var(--muted);font-size:13px;margin:6px 0 8px}
+.notice{background:#1a1e2c;border-left:3px solid var(--amber);padding:10px 16px;border-radius:0 10px 10px 0;font-size:13px;color:#c9cedb;margin:16px 0 8px}
+h2{color:#aeb8ff;font-size:19px;margin:56px 0 6px;border-left:4px solid var(--primary);padding-left:12px}
+h2 small{color:var(--muted);font-size:12px;font-weight:normal;margin-left:10px}
+.desc{color:var(--muted);font-size:13px;margin:10px 0 16px}
+.desc b{color:#ffd28a}
+
+/* ============ A. 首页 Hero 模拟（现有布局 + 终端嵌入） ============ */
+.hero{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:radial-gradient(600px 300px at 85% -10%,rgba(99,102,241,.16),transparent),radial-gradient(500px 260px at -5% 105%,rgba(99,102,241,.10),transparent),var(--bg)}
+.hero-in{display:flex;gap:44px;align-items:center;padding:56px 44px}
+.hero-l{flex:1.15}
+.badge{display:inline-block;background:rgba(99,102,241,.12);color:var(--primary);border-radius:999px;padding:4px 16px;font-size:13px}
+.hero-l h1{font-size:40px;margin:12px 0 10px}
+.hero-l .intro{color:var(--muted);font-size:14px}
+.socials{margin:16px 0 6px;font-size:20px;letter-spacing:14px}
+.btns{margin:16px 0}
+.btn{display:inline-block;border-radius:999px;padding:9px 24px;font-size:13px;text-decoration:none;margin-right:12px}
+.btn.solid{background:var(--primary);color:#fff}
+.btn.ghost{border:1px solid var(--line);color:var(--text)}
+.btn.ghost:hover{border-color:var(--primary);color:var(--primary)}
+.hero-r{flex:.85;text-align:center;position:relative}
+.hero-r .glow{position:absolute;inset:12% 18%;background:rgba(99,102,241,.14);border-radius:50%;filter:blur(38px)}
+.hero-r img{width:200px;height:200px;border-radius:2.4rem;object-fit:cover;position:relative;box-shadow:0 18px 50px rgba(0,0,0,.45)}
+
+/* 终端卡片（嵌入 Hero 的核心新元素） */
+.term{margin-top:26px;border:1px solid #313852;border-radius:14px;background:#0b0d14;box-shadow:0 14px 40px rgba(0,0,0,.5);overflow:hidden}
+.term .bar{display:flex;align-items:center;gap:6px;background:#131725;padding:9px 14px;border-bottom:1px solid #20263a}
+.term .bar i{width:10px;height:10px;border-radius:50%}
+.term .bar i:nth-child(1){background:#ff5f57}.term .bar i:nth-child(2){background:#febc2e}.term .bar i:nth-child(3){background:#28c840}
+.term .bar .t{margin-left:8px;font-size:11px;color:#5f6a85;font-family:Consolas,monospace}
+.term .body{padding:14px 18px;font-family:Consolas,"Courier New",monospace;font-size:13px;min-height:186px;color:#9ee6a0}
+.term .p{color:var(--primary)}
+.term .cmd{color:#e8ebf4}
+.term .dim{color:#5b6478}
+.term .pink{color:var(--pink)}
+.term .amber{color:var(--amber)}
+.term .pill{display:inline-block;background:#1a1f33;color:#aeb8ff;border:1px solid #2e3350;border-radius:6px;padding:1px 9px;font-size:12px;margin:2px 4px 2px 0}
+.term .cur{display:inline-block;width:8px;height:15px;background:var(--primary);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.term .inrow{display:flex;align-items:center;gap:8px}
+.term input{flex:1;background:transparent;border:none;outline:none;color:#e8ebf4;font:inherit;caret-color:var(--primary)}
+.hints{display:flex;flex-wrap:wrap;gap:6px;padding:10px 18px 14px;border-top:1px dashed #20263a}
+.hints span{background:#141828;color:#8f96c8;border:1px solid #262c44;border-radius:6px;padding:2px 10px;font-size:11px;cursor:pointer;font-family:Consolas,monospace}
+.hints span:hover{color:#aeb8ff;border-color:var(--primary)}
+
+/* ============ B. 星图历程页模拟 ============ */
+.starmap-wrap{border:1px solid var(--line);border-radius:18px;background:#0c0f1c;padding:8px 0 4px;overflow:hidden}
+.starmap{display:flex;gap:0;min-width:980px;position:relative;padding:26px 30px 18px;cursor:grab;user-select:none}
+.starmap:active{cursor:grabbing}
+.sline{position:absolute;left:30px;right:30px;top:64px;height:5px;border-radius:3px;background:linear-gradient(90deg,#6366f1 0%,#ec4899 34%,#34d399 62%,#fbbf24 84%,#818cf8 100%);opacity:.9}
+.stop{position:relative;flex:1;text-align:center;min-width:96px}
+.stop .dot{width:15px;height:15px;border-radius:50%;background:#0c0f1c;border:4px solid var(--primary);margin:26px auto 12px;position:relative;z-index:2;transition:transform .15s}
+.stop:hover .dot{transform:scale(1.5)}
+.stop .d{font-size:10px;color:#6d7690;font-family:Consolas,monospace}
+.stop .n{font-size:13px;font-weight:bold;color:#e8ebf4;margin-top:2px}
+.stop .c{font-size:10.5px;color:#8f96ff;line-height:1.5}
+.stop.major .dot{width:19px;height:19px;box-shadow:0 0 0 5px rgba(99,102,241,.18)}
+.stop.now .dot{border-color:#fbbf24;box-shadow:0 0 14px #fbbf24}
+.scrolltip{text-align:center;font-size:11px;color:#5f6a85;padding:6px 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;padding:4px 20px 16px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:18px;height:4px;border-radius:2px;margin-right:6px;vertical-align:3px}
+
+.foot{color:var(--muted);font-size:13px;margin:56px 0 20px;border-top:1px dashed var(--line);padding-top:18px}
+.foot b{color:#ffd28a}
+code{background:#1a1e2c;color:#aeb8ff;border-radius:5px;padding:1px 7px;font-family:Consolas,monospace;font-size:12px}
+@media (max-width:860px){.hero-in{flex-direction:column-reverse;padding:36px 22px}.hero-l{text-align:center}.hero-l h1{font-size:30px}}
+</style>
+</head>
+<body>
+
+<h1>改版示意图 · <b>终端 Hero + 星图历程页</b></h1>
+<div class="sub">对应 design-gallery.html 概念三 + 概念二 · 2026-10-01 · 静态演示页，未动任何线上代码</div>
+<div class="notice">💡 下面 A 区的终端是<b>真的可以敲命令</b>的（试试输入 help 或点下面的命令提示），B 区星图可以按住拖拽横向滑动。配色已按线上品牌变量（靛紫 #6366f1 / 玫粉 #ec4899，此处为深色主题值）模拟，实际实现会跟随明暗双主题。</div>
+
+<h2>A · 首页 Hero <small>现有「左文右像」布局不变，打字机一言升级为可交互终端</small></h2>
+<p class="desc">变化只有一处：左栏底部的一言打字机，升级成一个<b>会自己表演、也能真输入</b>的迷你终端。开场自动逐字敲出 3 条命令（约 6 秒演完），之后光标停在输入行等你——访客敲 <code>ls projects</code> 看项目、<code>sudo hire-me</code> 直达简历页。名字、头像、社交图标、两个按钮全部保留。</p>
+
+<div class="hero">
+  <div class="hero-in">
+    <div class="hero-l">
+      <span class="badge">👋 你好，我是</span>
+      <h1>DKXaiLBY</h1>
+      <p class="intro">民办二本大二 CS 在读 · 用 AI 对抗式开发做了 10 个项目 · 把开源项目吃透改成自己的</p>
+      <div class="socials">🐧 💬 📮</div>
+      <div class="btns">
+        <a class="btn solid" href="javascript:void(0)">开始阅读 ↓</a>
+        <a class="btn ghost" href="javascript:void(0)">我的简历</a>
+      </div>
+
+      <!-- ★ 新元素：迷你终端（原一言打字机位置） -->
+      <div class="term">
+        <div class="bar"><i></i><i></i><i></i><span class="t">dkx@blog — zsh</span></div>
+        <div class="body" id="termBody"></div>
+        <div class="hints">
+          <span onclick="exec('help')">help</span>
+          <span onclick="exec('ls projects')">ls projects</span>
+          <span onclick="exec('cat motto.txt')">cat motto.txt</span>
+          <span onclick="exec('blog status')">blog status</span>
+          <span onclick="exec('sudo hire-me')">sudo hire-me ⭐</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-r">
+      <div class="glow"></div>
+      <img src="../gin-blog-front/public/avatar.png" alt="头像">
+    </div>
+  </div>
+</div>
+
+<h2>B · 星图历程页 <small>18 条里程碑变成一张可拖拽的「开发地铁图」</small></h2>
+<p class="desc">线路颜色 = 项目主线（靛紫=博客/总进程，玫粉=LoveGirl，绿=番茄专注，琥珀=工具与自动化），每个站点 = 一条真实里程碑，<b>大站 = 大事件</b>。数据全部来自已上线的 18 条编年史，无新数据工作。点击站点即可展开该里程碑详情（示意图中悬停看放大效果）。</p>
+
+<div class="starmap-wrap">
+  <div class="starmap" id="starmap">
+    <div class="sline"></div>
+    <div class="stop"><div class="dot"></div><div class="d">2026.04</div><div class="n">LoveGirl 立项</div><div class="c">v3.2.0 成型</div></div>
+    <div class="stop"><div class="dot"></div><div class="d">2026.05</div><div class="n">LeetCode</div><div class="c">一切的起点</div></div>
+    <div class="stop"><div class="dot"></div><div class="d">2026.06.01</div><div class="n">连连看</div><div class="c">双版本·两天上线</div></div>
+    <div class="stop major"><div class="dot"></div><div class="d">2026.06.23</div><div class="n">LoveGirl 独立仓库</div><div class="c">192 commits 长跑开始</div></div>
+    <div class="stop major"><div class="dot"></div><div class="d">2026.06.29</div><div class="n">Codex 首日</div><div class="c">AI 工作流起飞</div></div>
+    <div class="stop"><div class="dot"></div><div class="d">2026.07.06</div><div class="n">ZCode 时代</div><div class="c">41 会话指挥中心</div></div>
+    <div class="stop major"><div class="dot"></div><div class="d">2026.07-08</div><div class="n">番茄专注发版期</div><div class="c">沉浸专注室重写</div></div>
+    <div class="stop"><div class="dot"></div><div class="d">2026.07.30</div><div class="n">灵阅采集员</div><div class="c">AI 内容工作流</div></div>
+    <div class="stop"><div class="dot"></div><div class="d">2026.08.22</div><div class="n">Claw 立项</div><div class="c">抖音保活自动化</div></div>
+    <div class="stop"><div class="dot"></div><div class="d">2026.08.29</div><div class="n">高德真地图</div><div class="c">LoveGirl 攻坚</div></div>
+    <div class="stop major"><div class="dot"></div><div class="d">07-09 贯穿</div><div class="n">对抗式开发流程</div><div class="c">自研方法论 ★</div></div>
+    <div class="stop"><div class="dot"></div><div class="d">2026.09.24</div><div class="n">高频迭代周</div><div class="c">v3.27→v3.38</div></div>
+    <div class="stop major now"><div class="dot"></div><div class="d">2026.09.28</div><div class="n">本博客上线</div><div class="c">你在这 ⬇</div></div>
+  </div>
+  <div class="scrolltip">⬅ 按住可拖拽滑动 ➡（移动端自动改纵向排列）</div>
+  <div class="legend">
+    <span><i style="background:#6366f1"></i>总进程/博客</span>
+    <span><i style="background:#ec4899"></i>LoveGirl（192 commits）</span>
+    <span><i style="background:#34d399"></i>番茄专注</span>
+    <span><i style="background:#fbbf24"></i>工具/自动化</span>
+    <span><i style="background:#818cf8"></i>方法论</span>
+  </div>
+</div>
+
+<div class="foot">
+  <b>看完怎么回复：</b>「可以，就按这个做」/「终端保留，星图命令/配色改成 xxx」/「只要终端 Hero」/「星图站点文案换成 xxx」。<br>
+  确认后的执行顺序：<b>① git tag + 服务器镜像 tag 备份</b> → ② 终端 Hero 实现并本地预览 → ③ 星图历程页实现并本地预览 → ④ 构建镜像部署上线 → ⑤ 线上验收。两步各自可独立回滚。
+</div>
+
+<script>
+/* ===== A 区终端：自动表演 + 可真输入（演示用，实现版会做成 Vue 组件并路由跳转） ===== */
+const body = document.getElementById('termBody')
+const SCRIPT = [
+  { cmd: 'ls projects', out: '<span class="pill">LoveGirl</span><span class="pill">番茄专注</span><span class="pill">博客</span><span class="pill">SparkKeeper</span><br><br>' },
+  { cmd: 'cat motto.txt', out: '<span class="dim">把开源项目吃透、改造成自己的——这个过程学到的东西，比看十篇教程都多。</span><br><br>' },
+  { cmd: 'sudo hire-me', out: '<span class="amber">▸ 正在打开简历页… ✔</span><br><br>' },
+]
+let li = 0, ci = 0, phase = 'boot', buf = ''
+const CMDS = {
+  'help': '<span class="dim">可用命令：</span><br><span class="pill">ls projects</span><span class="pill">cat motto.txt</span><span class="pill">blog status</span><span class="pill">whoami</span><span class="pill">sudo hire-me</span><span class="pill">clear</span><br><br>',
+  'ls projects': '<span class="pill">LoveGirl</span><span class="pill">番茄专注</span><span class="pill">博客</span><span class="pill">SparkKeeper</span><br><br>',
+  'cat motto.txt': '<span class="dim">把开源项目吃透、改造成自己的——这个过程学到的东西，比看十篇教程都多。</span><br><br>',
+  'blog status': '<span class="amber">▶ 运行中 · 文章 12 篇 · 项目 4 个 · 已连续更新</span><br><br>',
+  'whoami': '<span class="dim">DKXaiLBY · 二本大二 CS · AI 对抗式开发实践者</span><br><br>',
+  'sudo hire-me': '<span class="amber">▸ 正在打开简历页… ✔</span> <span class="dim">(实现版会真的跳 /resume)</span><br><br>',
+}
+function render(input){
+  const safe = input.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')
+  body.innerHTML = SCRIPT.map(s => '<div><span class="p">dkx@blog ~ %</span> <span class="cmd">'+s.cmd+'</span></div><div>'+s.out+'</div>').join('')
+    + '<div class="inrow"><span class="p">dkx@blog ~ %</span><input id="tin" value="'+safe+'" autocomplete="off" spellcheck="false" placeholder=""></div>'
+  const inp = document.getElementById('tin')
+  inp.addEventListener('keydown', e => {
+    if(e.key === 'Enter'){
+      const v = inp.value.trim()
+      if(!v) return
+      const out = CMDS[v.toLowerCase()] || '<span class="dim">command not found: '+v.replace(/</g,'&lt;')+' — 试试 help</span><br><br>'
+      SCRIPT.push({ cmd: v, out }); runCmd('')
+    }
+  })
+}
+function runCmd(v){ render(v || ''); const i = document.getElementById('tin'); if(i && v === '') i.focus() }
+function exec(cmd){
+  if(phase !== 'done'){ phase = 'done' }
+  const out = CMDS[cmd.toLowerCase()] || ''
+  SCRIPT.push({ cmd, out }); runCmd('')
+}
+function typeLoop(){
+  if(phase === 'done'){ render(''); return }
+  const s = SCRIPT[li]
+  if(ci <= s.cmd.length){
+    buf = s.cmd.slice(0, ci++)
+    body.innerHTML = SCRIPT.slice(0, li).map(x => '<div><span class="p">dkx@blog ~ %</span> <span class="cmd">'+x.cmd+'</span></div><div>'+x.out+'</div>').join('')
+      + '<div class="inrow"><span class="p">dkx@blog ~ %</span><span class="cmd">'+buf+'</span><span class="cur"></span></div>'
+    setTimeout(typeLoop, 85)
+  } else {
+    li++; ci = 0
+    if(li >= SCRIPT.length){ phase = 'done'; render(''); const i=document.getElementById('tin'); i && i.focus(); return }
+    setTimeout(typeLoop, 700)
+  }
+}
+setTimeout(typeLoop, 800)
+
+/* ===== B 区星图：按住拖拽滑动 ===== */
+const sm = document.getElementById('starmap')
+let down = false, sx = 0, sl = 0
+sm.addEventListener('mousedown', e => { down = true; sx = e.pageX; sl = sm.parentElement.scrollLeft })
+window.addEventListener('mouseup', () => down = false)
+window.addEventListener('mousemove', e => { if(down){ sm.parentElement.scrollLeft = sl - (e.pageX - sx) } })
+</script>
+</body>
+</html>

@@ -1,53 +1,16 @@
 <script setup>
-import EasyTyper from 'easy-typer-js'
 import { storeToRefs } from 'pinia'
 
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useAppStore } from '@/store'
-import { getOneSentence } from '@/utils'
+
+import TerminalHero from './TerminalHero.vue'
+
+const emit = defineEmits(['scrollDown'])
 
 const { blogConfig } = storeToRefs(useAppStore())
 
-const emit = defineEmits(['scroll-down'])
-
-// 打字机特效配置
-const typer = reactive({
-  output: '',
-  isEnd: false,
-  speed: 100,
-  singleBack: false,
-  sleep: 2000, // 完整输出后停留 2 秒
-  type: 'normal',
-  backSpeed: 80,
-  sentencePause: true,
-})
-
-// 组件卸载时停掉打字器定时器, 否则离开首页后它仍在后台循环输出
-let typerInstance = null
-let disposed = false
-
-onMounted(() => {
-  startTyper()
-})
-
-onBeforeUnmount(() => {
-  disposed = true
-  typerInstance?.closeTimer()
-  typerInstance = null
-})
-
-async function startTyper() {
-  // 一言 + 打字机特效, 接口不通时 getOneSentence 内部会随机取一句
-  const one = await getOneSentence()
-  // 等待期间组件可能已被卸载(快速切换路由), 此时不再启动新的打字器
-  if (disposed) {
-    return
-  }
-  typerInstance = new EasyTyper(typer, one, () => {}, () => {})
-}
-
 function scrollDown() {
-  emit('scroll-down')
+  emit('scrollDown')
 }
 </script>
 
@@ -56,11 +19,11 @@ function scrollDown() {
   <section class="relative overflow-hidden">
     <!-- 背景装饰: 右上/左下靛紫光斑 + 细网格 -->
     <div class="pointer-events-none absolute inset-0">
-      <div class="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-primary/15 blur-3xl" />
-      <div class="absolute -left-32 bottom-0 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
+      <div class="absolute h-96 w-96 rounded-full bg-primary/15 blur-3xl -right-24 -top-24" />
+      <div class="absolute bottom-0 h-80 w-80 rounded-full bg-primary/10 blur-3xl -left-32" />
     </div>
 
-    <div class="mx-auto flex max-w-[1100px] flex-col-reverse items-center gap-10 px-4 pt-32 pb-16 md:flex-row md:pt-36 md:pb-24">
+    <div class="mx-auto max-w-[1100px] flex flex-col-reverse items-center gap-10 px-4 pb-16 pt-32 md:flex-row md:pb-24 md:pt-36">
       <!-- 左: 自我介绍 -->
       <div class="flex-1 text-center md:text-left">
         <p class="mb-3 inline-block rounded-full bg-primary/10 px-4 py-1 text-sm text-primary">
@@ -97,20 +60,17 @@ function scrollDown() {
           </button>
           <RouterLink
             to="/resume"
-            class="rounded-full border border-line px-6 py-2.5 text-sm transition-300 hover:border-primary hover:text-primary"
+            class="border border-line rounded-full px-6 py-2.5 text-sm transition-300 hover:border-primary hover:text-primary"
           >
             我的简历
           </RouterLink>
         </div>
-        <!-- 一言打字机 -->
-        <p class="mt-8 text-sm text-muted md:mt-10">
-          <span class="i-mdi:format-quote-open text-primary align-middle" />
-          {{ typer.output }}<span class="animate-pulse text-primary">|</span>
-        </p>
+        <!-- 迷你终端: 原一言打字机位置, 开场自动表演 + 访客可真实输入 (fortune 命令保留了一言) -->
+        <TerminalHero class="mt-8 md:mt-10" />
       </div>
 
       <!-- 右: 小猫头像 -->
-      <div class="relative flex-1 flex justify-center">
+      <div class="relative flex flex-1 justify-center">
         <div class="absolute inset-0 m-auto h-64 w-64 rounded-full bg-primary/10 blur-2xl md:h-80 md:w-80" />
         <img
           src="/avatar.png" alt="DKXaiLBY 的头像"

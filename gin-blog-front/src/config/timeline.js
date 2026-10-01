@@ -1,6 +1,7 @@
 /**
  * 历程时间线: /timeline 页面从这里渲染, 改这个文件即可
  * type 只影响圆点颜色: study 蓝 / project 绿 / award 橙 / other 灰
+ * major: true → 星图"大站"(高亮); now: true → "你在这"当前站
  * 本文件 = DKXaiLBY 的 AI 辅助开发编年史 (2025.09 入学 → 至今)
  */
 export default [
@@ -39,6 +40,7 @@ export default [
     title: 'LoveGirl Flutter 仓库独立',
     desc: 'Flutter 仓库独立成库（v3.10.0 build110），从此开启 192 个 commit 的长跑——一直跑到现在。',
     type: 'project',
+    major: true,
   },
   {
     date: '2026.06.25',
@@ -51,6 +53,7 @@ export default [
     title: 'AI 工作流起飞日 🚀',
     desc: 'Codex 首日爆发：一天开出 25 个会话——情侣 App 与番茄专注的产品第一性原理推演、五维度 QA 自动化检测协议、灵动岛与博客项目同日开工。',
     type: 'project',
+    major: true,
   },
   {
     date: '2026.07.06',
@@ -63,12 +66,14 @@ export default [
     title: '自研「对抗式开发流程」',
     desc: '豆包/Codex/WorkBuddy 出方案 → 主力 AI 施工 → 独立会话扮演敌意代码审查员专门挑刺 → 攻不破才合并。这套流程贯穿了之后所有项目。',
     type: 'other',
+    major: true,
   },
   {
     date: '2026.07.12',
     title: '番茄专注正式发版期',
     desc: 'WorkBuddy/豆包工作台 12 个工作区：自习室重写为沉浸专注室、对抗式 QA 审查、每版配发版总览文档——工程化拉满的一段。',
     type: 'project',
+    major: true,
   },
   {
     date: '2026.07.20',
@@ -117,5 +122,7 @@ export default [
     title: '博客深度二开上线 ✨',
     desc: '基于 gin-vue-blog 深度二开：修复上游安全漏洞、主题系统重构、自研项目展示与简历模块、Docker 全栈部署上阿里云——你正在看的这个网站。',
     type: 'project',
+    major: true,
+    now: true,
   },
 ]
