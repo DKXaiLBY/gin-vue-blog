@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
   <meta charset="UTF-8">
@@ -7,6 +7,32 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
   <title>DKXaiLBY 的个人博客</title>
+  <!-- SEO: SPA 的静态兜底 meta, 文章页由 router afterEach 动态覆写 -->
+  <meta name="description" content="DKXaiLBY 的个人博客 — 民办二本大二 CS 在读, 用 AI 对抗式开发做了 10 个项目。记录学习轨迹、项目作品与开发编年史。">
+  <meta name="author" content="DKXaiLBY">
+  <!-- 分享卡片 (QQ/微信/Telegram 抓取): 站点级兜底, 单篇文章的 OG 由运行时覆写 -->
+  <meta property="og:site_name" content="DKXaiLBY 的个人博客">
+  <meta property="og:title" content="DKXaiLBY 的个人博客">
+  <meta property="og:description" content="用 AI 对抗式开发做了 10 个项目的二本 CS 学生 — 记录学习轨迹与项目作品">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/avatar.png">
+  <!-- 结构化数据: 帮搜索引擎理解"这是谁的个人站" -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "DKXaiLBY 的个人博客",
+      "author": {
+        "@type": "Person",
+        "name": "DKXaiLBY",
+        "jobTitle": "CS 本科在读",
+        "description": "用 AI 对抗式开发实践者"
+      }
+    }
+  </script>
+
+  <!-- LCP 预加载: 首页 Hero 头像是最大的首屏元素, 提前拉取并高优先级 -->
+  <link rel="preload" as="image" href="/avatar.png" fetchpriority="high">
 
   <!-- 允许加载 http 资源 -->
   <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->

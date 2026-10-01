@@ -38,6 +38,9 @@ const badge = computed(() => {
       <p v-if="badge" class="f-c-c gap-1.5 text-sm">
         <span class="inline-block h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
         已稳定运行 {{ badge.days }} 天 · 文章 {{ badge.articles }} 篇 · 总访问 {{ badge.views }}
+        <RouterLink to="/status" class="ml-1 text-xs text-muted transition-300 hover:text-primary">
+          状态页 →
+        </RouterLink>
       </p>
     </div>
   </footer>

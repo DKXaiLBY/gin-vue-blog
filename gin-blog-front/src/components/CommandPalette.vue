@@ -33,6 +33,7 @@ const PAGES = [
   { label: '我的历程', icon: 'i-ep:guide', to: '/timeline' },
   { label: '友情链接', icon: 'i-ep:link', to: '/links' },
   { label: '留言板', icon: 'i-ep:edit-pen', to: '/message' },
+  { label: '站点状态', icon: 'i-ep:odometer', to: '/status' },
   { label: '关于我', icon: 'i-ep:user', to: '/about' },
 ]
 

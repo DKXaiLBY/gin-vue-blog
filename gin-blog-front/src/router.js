@@ -104,6 +104,14 @@ const basicRoutes = [
     },
   },
   {
+    name: 'Status',
+    path: '/status',
+    component: () => import('@/views/status/index.vue'),
+    meta: {
+      title: '站点状态',
+    },
+  },
+  {
     name: 'Link',
     path: '/links',
     component: () => import('@/views/link/index.vue'),
@@ -168,8 +176,25 @@ export const router = createRouter({
   scrollBehavior: to => (to.query.comment ? false : { left: 0, top: 0 }),
 })
 
+function setMeta(name, content) {
+  let el = document.head.querySelector(`meta[${name}]`)
+  if (!el) {
+    el = document.createElement('meta')
+    const [attr, key] = name.includes(':') ? ['property', name] : ['name', name]
+    el.setAttribute(attr, key)
+    document.head.appendChild(el)
+  }
+  el.setAttribute('content', content)
+}
+
 router.afterEach((to) => {
+  // 文章标题路由里没有, 由文章页自己覆写; 这里兜底路由级标题
   document.title = `${to.meta?.title ?? import.meta.env.VITE_APP_TITLE}`
+  // 分享卡片与搜索摘要: 路由有 title 就覆写, 没有则保持 index.html 的站点级兜底
+  if (to.meta?.title) {
+    setMeta('description', `${to.meta.title} — DKXaiLBY 的个人博客`)
+    setMeta('og:title', `${to.meta.title} — DKXaiLBY 的个人博客`)
+  }
   NProgress.done()
 })
 

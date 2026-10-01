@@ -8,5 +8,5 @@
   <url><loc>http://47.121.119.191/links</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>http://47.121.119.191/about</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>http://47.121.119.191/message</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
-  <url><loc>http://47.121.119.191/article/4</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>http://47.121.119.191/article/4</loc><lastmod>2026-09-29</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>

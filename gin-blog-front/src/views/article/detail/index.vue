@@ -14,7 +14,7 @@ import Comment from '@/components/comment/Comment.vue'
 import GiscusComment from '@/components/GiscusComment.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import ULightbox from '@/components/ui/ULightbox.vue'
-import { convertImgUrl } from '@/utils'
+import { convertImgUrl, stripMarkdown } from '@/utils'
 import { addCopyButtons } from '@/utils/code-block'
 import { typesetMath } from '@/utils/mathjax'
 import BannerInfo from './components/BannerInfo.vue'
@@ -69,6 +69,24 @@ function onPreviewClick(e) {
   }
 }
 
+// 分享卡片 SEO: 用文章真实标题/摘要覆写站点级兜底
+function setMeta(attr, key, content) {
+  let el = document.head.querySelector(`meta[${attr}="${key}"]`)
+  if (!el) {
+    el = document.createElement('meta')
+    el.setAttribute(attr, key)
+    document.head.appendChild(el)
+  }
+  el.setAttribute('content', content)
+}
+
+function updateShareMeta(rawMd) {
+  const title = `${data.value.title} — DKXaiLBY 的个人博客`
+  document.title = title
+  setMeta('name', 'description', stripMarkdown(rawMd).slice(0, 120))
+  setMeta('property', 'og:title', title)
+}
+
 onMounted(async () => {
   try {
     const resp = await api.getArticleDetail(route.params.id)
@@ -89,6 +107,8 @@ onMounted(async () => {
       // marked 解析 markdown 文本, 正文为空时不能直接丢给 marked
       content: await marked.parse(resp.data.content ?? '', { async: true }),
     }
+    // 摘要取解析前的原始 markdown, stripMarkdown 才按 markdown 语义剥干净
+    updateShareMeta(resp.data.content ?? '')
     await nextTick()
     // highlight.js 代码高亮
     document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el))

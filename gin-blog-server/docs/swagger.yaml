@@ -1391,6 +1391,23 @@ definitions:
         description: 响应消息
         type: string
     type: object
+  handle.SiteStatus:
+    properties:
+      articles:
+        type: integer
+      go_version:
+        type: string
+      goroutines:
+        type: integer
+      heap_mb:
+        type: string
+      projects:
+        type: integer
+      talks:
+        type: integer
+      uptime_seconds:
+        type: integer
+    type: object
   handle.SoftDeleteReq:
     properties:
       ids:
@@ -3191,6 +3208,19 @@ paths:
           schema:
             type: string
       summary: 前台 RSS 订阅
+      tags:
+      - Front
+  /front/status:
+    get:
+      description: 输出站点运行状态(运行时长/内存/内容计数), 供状态页展示
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handle.SiteStatus'
+      summary: 前台站点状态
       tags:
       - Front
   /front/tag/list:

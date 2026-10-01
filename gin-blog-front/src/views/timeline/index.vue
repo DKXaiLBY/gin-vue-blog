@@ -59,7 +59,9 @@ function select(i) {
 </script>
 
 <template>
-  <div class="mx-auto max-w-[1100px] px-4 pb-10 pt-24">
+  <!-- w-full 必须显式: 父级是 flex 容器, mx-auto 会放弃 stretch 改用 fit-content,
+       星图的 min-width:max-content 会把宽度顶到 max-width 上限, 视口 <1100 就横向溢出 -->
+  <div class="mx-auto w-full max-w-[1100px] px-4 pb-10 pt-24">
     <header class="mb-8 text-center">
       <h1 class="text-3xl font-bold">
         我的历程
@@ -230,8 +232,9 @@ function select(i) {
   transform: translateY(6px);
 }
 
-/* 移动端: 地铁图转纵向, 线路立在左侧 */
-@media (max-width: 767px) {
+/* 平板以下(含 iPad 竖屏 768): 地铁图转纵向, 线路立在左侧。
+   断点取 1023 而非 767: 768~1023 区间横向布局会把容器撑出视口 */
+@media (max-width: 1023px) {
   .starmap {
     flex-direction: column;
     gap: 22px;

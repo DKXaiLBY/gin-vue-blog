@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia'
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+import DKXOS from '@/components/DKXOS.vue'
 import { useAppStore } from '@/store'
 import { getOneSentence } from '@/utils'
 
@@ -33,6 +34,7 @@ const HELP_ROWS = [
   ['whoami', '我是谁'],
   ['fortune', '随机一言'],
   ['sudo hire-me', '打开我的简历 ⭐'],
+  ['boot dkx-os', '启动 ???'],
   ['clear', '清屏'],
 ]
 
@@ -45,6 +47,8 @@ const inputEl = ref(null)
 const bodyEl = ref(null)
 const history = ref([])
 const histIdx = ref(0)
+// DKX OS 桌面彩蛋开关 (boot dkx-os 唤起)
+const osOpen = ref(false)
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')
 
@@ -96,6 +100,12 @@ async function dispatch(low) {
   }
   else if (low === 'sudo rm -rf /') {
     entries.value.push(outHtml(`<span class="t-amber">⚠ 想得美 —— 备份每天凌晨 3 点自动跑（数据库 + 图片，7 天轮转）</span>`))
+  }
+  else if (low === 'boot dkx-os' || low === 'dkx-os' || low === 'startx') {
+    entries.value.push(outHtml(`<span class="t-amber">▸ DKX OS 引导中… ✔</span>`))
+    setTimeout(() => {
+      osOpen.value = true
+    }, 700)
   }
   else if (low.startsWith('cat ')) {
     entries.value.push(outHtml(`cat: ${esc(low.slice(4))}: No such file or directory<br><span class="t-dim">试试 cat motto.txt</span>`))
@@ -256,6 +266,8 @@ onBeforeUnmount(() => {
       </button>
     </div>
   </div>
+  <!-- DKX OS 桌面彩蛋 -->
+  <DKXOS v-if="osOpen" @exit="osOpen = false" />
 </template>
 
 <style scoped>

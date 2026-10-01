@@ -249,6 +249,8 @@ func registerBlogHandler(r *gin.Engine) {
 	}
 	// RSS 订阅: 输出最新文章 XML, 阅读器直接拉取
 	base.GET("/rss", frontAPI.GetRSS)
+	// 站点状态: 运行时长/内存/内容计数, 只读非敏感数据
+	base.GET("/status", frontAPI.GetStatus)
 	project := base.Group("/project")
 	{
 		project.GET("/list", projectAPI.GetFrontList) // 前台项目列表

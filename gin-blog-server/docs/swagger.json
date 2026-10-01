@@ -1517,6 +1517,26 @@
                 }
             }
         },
+        "/front/status": {
+            "get": {
+                "description": "输出站点运行状态(运行时长/内存/内容计数), 供状态页展示",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Front"
+                ],
+                "summary": "前台站点状态",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handle.SiteStatus"
+                        }
+                    }
+                }
+            }
+        },
         "/front/tag/list": {
             "get": {
                 "description": "获取全部标签",
@@ -5750,6 +5770,32 @@
                 "message": {
                     "description": "响应消息",
                     "type": "string"
+                }
+            }
+        },
+        "handle.SiteStatus": {
+            "type": "object",
+            "properties": {
+                "articles": {
+                    "type": "integer"
+                },
+                "go_version": {
+                    "type": "string"
+                },
+                "goroutines": {
+                    "type": "integer"
+                },
+                "heap_mb": {
+                    "type": "string"
+                },
+                "projects": {
+                    "type": "integer"
+                },
+                "talks": {
+                    "type": "integer"
+                },
+                "uptime_seconds": {
+                    "type": "integer"
                 }
             }
         },

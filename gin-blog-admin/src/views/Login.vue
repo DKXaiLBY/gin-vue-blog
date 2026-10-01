@@ -96,7 +96,7 @@ async function handleLogin() {
     <div class="min-h-[80vh] flex items-center justify-center">
       <div class="w-[380px] rounded-2xl bg-white/95 p-9 shadow-2xl backdrop-blur dark:bg-[#1d2025]/95">
         <div class="mb-8 text-center">
-          <span class="i-mdi:rocket-launch-outline mx-auto mb-3 block h-14 w-14 text-[#3b82f6]" />
+          <span class="i-mdi:rocket-launch-outline mx-auto mb-3 block h-14 w-14 text-primary" />
           <h1 class="text-2xl font-bold">
             {{ title }}
           </h1>

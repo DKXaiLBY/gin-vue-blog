@@ -34,6 +34,10 @@ export default {
   getLinks: () => request.get('/link/list'),
   /** 项目展示列表 */
   getProjects: () => request.get('/project/list'),
+  /** RSS 2.0 订阅源 (浏览器不直接用, 阅读器拉取) */
+  getRSS: () => request.get('/rss'),
+  /** 站点运行状态 (只读非敏感) */
+  getStatus: () => request.get('/status'),
   /** 说说列表 */
   getTalks: (params = {}) => request.get('/talk/list', { params }),
   /** 说说详情 */
