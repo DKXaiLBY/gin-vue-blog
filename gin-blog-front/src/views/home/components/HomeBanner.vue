@@ -57,7 +57,7 @@ function scrollDown() {
     <!-- 背景装饰: 右上/左下靛紫光斑 + 细网格 -->
     <div class="pointer-events-none absolute inset-0">
       <div class="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-primary/15 blur-3xl" />
-      <div class="absolute -left-32 bottom-0 h-80 w-80 rounded-full bg-accent/10 blur-3xl" />
+      <div class="absolute -left-32 bottom-0 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
     </div>
 
     <div class="mx-auto flex max-w-[1100px] flex-col-reverse items-center gap-10 px-4 pt-32 pb-16 md:flex-row md:pt-36 md:pb-24">
