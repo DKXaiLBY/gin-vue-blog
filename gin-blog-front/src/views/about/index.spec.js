@@ -99,13 +99,22 @@ describe('关于我', () => {
     expect(wrapper.text()).toContain('42')
   })
 
-  // 外链一律要带 noopener, 否则新窗口能通过 window.opener 操作原页面
+  // 外链一律要带 noopener, 否则新窗口能通过 window.opener 操作原页面。
+  // 品牌清洗后 mock 的 about 正文没有外链了, 外链来自页头社交图标(QQ/GitHub/Gitee), 由 store 配置驱动
   it('社交外链带 noopener', async () => {
+    const appStore = useAppStore()
+    appStore.blog_config = {
+      ...appStore.blog_config,
+      qq: '3047902923',
+      github: 'https://github.com/DKXaiLBY',
+      gitee: '',
+    }
+
     const wrapper = mountPage()
     await vi.waitFor(() => expect(wrapper.vm.html).toContain('<h1'))
 
     const external = wrapper.findAll('a').filter(a => a.attributes('target') === '_blank')
-    expect(external.length).toBe(3)
+    expect(external.length).toBe(2)
     for (const a of external) {
       expect(a.attributes('rel')).toContain('noopener')
     }

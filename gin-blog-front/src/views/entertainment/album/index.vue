@@ -9,7 +9,8 @@ import BannerPage from '@/components/BannerPage.vue'
         禁止访问
       </span>
       <div class="flex justify-center">
-        <img class="w-50" src="/images/404.svg" alt="404">
+        <!-- :src 绑定: 静态 public src 会被 plugin-vue v6 编译成模块导入, vitest 里炸套件 -->
+        <img class="w-50" :src="'/images/404.svg'" alt="404">
       </div>
       <button @click="$router.push('/')">
         回到首页

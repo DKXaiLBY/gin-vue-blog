@@ -104,8 +104,9 @@ function closeQr() {
           </p>
           <div class="mt-5 flex justify-center gap-6">
             <figure class="text-center">
+              <!-- :src 绑定而非静态 src: plugin-vue v6 会把静态 public 路径编译成模块导入, 在 vitest 里直接炸套件 -->
               <img
-                src="/reward/wechat.png" alt="微信收款码" loading="lazy"
+                :src="'/reward/wechat.png'" alt="微信收款码" loading="lazy"
                 class="h-56 w-40 rounded-lg border border-divider object-contain"
               >
               <figcaption class="mt-2 flex items-center justify-center gap-1 text-sm text-muted">
@@ -114,7 +115,7 @@ function closeQr() {
             </figure>
             <figure class="text-center">
               <img
-                src="/reward/alipay.jpg" alt="支付宝收款码" loading="lazy"
+                :src="'/reward/alipay.jpg'" alt="支付宝收款码" loading="lazy"
                 class="h-56 w-40 rounded-lg border border-divider object-contain"
               >
               <figcaption class="mt-2 flex items-center justify-center gap-1 text-sm text-muted">

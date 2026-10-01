@@ -73,7 +73,7 @@ function scrollDown() {
       <div class="relative flex flex-1 justify-center">
         <div class="absolute inset-0 m-auto h-64 w-64 rounded-full bg-primary/10 blur-2xl md:h-80 md:w-80" />
         <img
-          src="/avatar.png" alt="DKXaiLBY 的头像"
+          :src="'/avatar.png'" alt="DKXaiLBY 的头像"
           class="relative h-56 w-56 rounded-[2.5rem] object-cover shadow-2xl md:h-72 md:w-72"
         >
       </div>

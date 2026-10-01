@@ -49,7 +49,8 @@ defineProps({
 
     <!-- 友链数量为 0 -->
     <div v-else class="text-center">
-      <img class="inline h-[260px]" src="/images/empty_friend_link.svg" alt="暂无友情链接" loading="lazy">
+      <!-- :src 绑定: 静态 public src 会被 plugin-vue v6 编译成模块导入, vitest 里炸套件 -->
+      <img class="inline h-[260px]" :src="'/images/empty_friend_link.svg'" alt="暂无友情链接" loading="lazy">
       <div class="mt-1 space-y-1">
         <p class="text-3xl">
           暂无友情链接

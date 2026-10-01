@@ -82,7 +82,8 @@ describe('useUserStore', () => {
     store.setToken('fake-token')
     await store.getUserInfo()
 
-    expect(store.avatar).toContain('/images/config/user_avatar.jpeg')
+    // 品牌化后默认头像改为站点的猫头像 /avatar.png
+    expect(store.avatar).toBe('/avatar.png')
   })
 
   it('getUserInfo 遇到业务错误码时 reject', async () => {
@@ -102,7 +103,8 @@ describe('useUserStore', () => {
     const store = useUserStore()
     store.setToken('fake-token')
     await store.getUserInfo()
-    expect(store.avatar).toContain('/images/config/user_avatar.jpeg')
+    // 品牌化后默认头像改为站点的猫头像 /avatar.png
+    expect(store.avatar).toBe('/avatar.png')
   })
 
   it('articleLike / commentLike 是切换语义, 重复调用会取消', () => {

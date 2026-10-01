@@ -49,7 +49,7 @@ describe('留言板', () => {
     const wrapper = mountPage()
     await vi.waitFor(() => expect(wrapper.vm.danmus).toHaveLength(2))
 
-    expect(wrapper.vm.danmus[0].nickname).toBe('阵、雨')
+    expect(wrapper.vm.danmus[0].nickname).toBe('DKXaiLBY')
     expect(wrapper.vm.danmus[1].nickname).toBe('路人甲')
   })
 
@@ -102,7 +102,7 @@ describe('留言板', () => {
     const wrapper = mountPage()
     await vi.waitFor(() => expect(wrapper.vm.danmus).toHaveLength(2))
 
-    expect(wrapper.vm.coverStyle).toContain('/images/page/message.jpeg')
+    expect(wrapper.vm.coverStyle).toContain('/covers/message.svg')
 
     const appStore = useAppStore()
     appStore.page_list = [{ id: 1, label: 'message', cover: '/images/page/custom.jpg' }]
