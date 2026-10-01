@@ -13,6 +13,7 @@ import api from '@/api'
 import Comment from '@/components/comment/Comment.vue'
 import GiscusComment from '@/components/GiscusComment.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
+import ULightbox from '@/components/ui/ULightbox.vue'
 import { convertImgUrl } from '@/utils'
 import { addCopyButtons } from '@/utils/code-block'
 import { typesetMath } from '@/utils/mathjax'
@@ -56,6 +57,17 @@ const data = ref({
 // 文章内容
 const previewRef = ref(null)
 const loading = ref(true)
+
+// 灯箱: 当前放大显示的图片地址, 空串 = 关闭
+const lightboxSrc = ref('')
+
+// 正文图片点击放大 (事件委托, v-html 渲染出来的 img 也能接住)
+function onPreviewClick(e) {
+  const img = e.target.closest('img')
+  if (img?.src) {
+    lightboxSrc.value = img.src
+  }
+}
 
 onMounted(async () => {
   try {
@@ -150,8 +162,11 @@ const styleVal = computed(() =>
         <article
           ref="previewRef"
           class="max-w-none prose prose-truegray lg:mx-10 dark:prose-invert"
+          @click="onPreviewClick"
           v-html="data.content"
         />
+        <!-- 图片灯箱 -->
+        <ULightbox :src="lightboxSrc" @close="lightboxSrc = ''" />
         <!-- 版权声明 -->
         <Copyright class="my-5 lg:mx-5" />
         <!-- 标签、转发 -->
@@ -197,3 +212,10 @@ const styleVal = computed(() =>
     <AppFooter />
   </footer>
 </template>
+
+<style scoped>
+/* v-html 里的正文图片可点击放大, 给个可点击的暗示 */
+article.prose :deep(img) {
+  cursor: zoom-in;
+}
+</style>

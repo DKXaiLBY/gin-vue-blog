@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 
+import CommandPalette from '@/components/CommandPalette.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import GlobalModal from '@/components/modal/index.vue'
 import SideTools from '@/components/SideTools.vue'
@@ -48,6 +49,8 @@ onMounted(() => {
   </div>
   <!-- 右下角悬浮工具条: 主题切换 / 回到顶部 -->
   <SideTools />
+  <!-- Ctrl+K 命令面板 -->
+  <CommandPalette />
   <!-- 全局弹窗 -->
   <GlobalModal />
 </template>

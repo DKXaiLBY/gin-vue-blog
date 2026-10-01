@@ -3,9 +3,25 @@ import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 import { useAppStore } from '@/store'
 
-const { blogInfo } = storeToRefs(useAppStore())
+const { blogConfig, articleCount, viewCount } = storeToRefs(useAppStore())
+
 // 备案号没配置(或还是占位符)时不渲染链接
-const record = computed(() => blogInfo.value?.blog_config?.website_record ?? '')
+const record = computed(() => blogConfig.value?.website_record ?? '')
+
+// 实时状态徽章: 建站天数 + 文章数 + 总访问, 数据没就绪时整行不渲染。
+// 只算个天数差, 不为此引入 dayjs(曾把页脚 chunk 撑到 13KB), 原生 Date 足够
+const badge = computed(() => {
+  const raw = String(blogConfig.value?.website_createtime ?? '')
+  const ct = new Date(raw.replace(' ', 'T'))
+  if (!raw || Number.isNaN(ct.getTime())) {
+    return null
+  }
+  return {
+    days: Math.max(Math.floor((Date.now() - ct.getTime()) / 86400000), 0),
+    articles: articleCount.value,
+    views: viewCount.value,
+  }
+})
 </script>
 
 <template>
@@ -18,6 +34,11 @@ const record = computed(() => blogInfo.value?.blog_config?.website_record ?? '')
       >
         {{ record }}
       </a>
+      <!-- 实时状态徽章: 呼吸绿点 + 站点数据, 与后台数据同源 -->
+      <p v-if="badge" class="f-c-c gap-1.5 text-sm">
+        <span class="inline-block h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+        已稳定运行 {{ badge.days }} 天 · 文章 {{ badge.articles }} 篇 · 总访问 {{ badge.views }}
+      </p>
     </div>
   </footer>
 </template>
