@@ -1,10 +1,10 @@
 <script setup>
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import api from '@/api'
-
 import { storeToRefs } from 'pinia'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+
+import api from '@/api'
 
 import { useAppStore } from '@/store'
 
@@ -15,7 +15,6 @@ import { useAppStore } from '@/store'
 
 dayjs.extend(duration)
 
-const appStore = useAppStore()
 const { blogConfig, articleCount, viewCount } = storeToRefs(useAppStore())
 
 const status = ref(null)
@@ -58,6 +57,20 @@ const rows = computed(() => {
   ]
 })
 
+// 宿主机每分钟自检 (monitor.sh 写入 Redis): 有标记才显示, 没装监控就整行隐藏
+const monitorText = computed(() => {
+  const m = status.value
+  if (!m || !m.monitor_ts) {
+    return null
+  }
+  const age = Math.max(0, Math.floor((now.value.valueOf() - m.monitor_ts * 1000) / 1000))
+  const ago = age < 90 ? `${age} 秒前` : `${Math.floor(age / 60)} 分钟前`
+  return {
+    ok: m.monitor_ok,
+    text: m.monitor_ok ? `自检通过 · ${ago}` : `自检异常 · ${ago} · ${m.monitor_note}`,
+  }
+})
+
 onMounted(async () => {
   load()
   timer = setInterval(() => {
@@ -69,7 +82,7 @@ onBeforeUnmount(() => clearInterval(timer))
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-[1100px] px-4 pb-10 pt-24">
+  <div class="mx-auto max-w-[1100px] w-full px-4 pb-10 pt-24">
     <header class="mb-8 text-center">
       <h1 class="text-3xl font-bold">
         站点状态
@@ -86,16 +99,20 @@ onBeforeUnmount(() => clearInterval(timer))
           持续运行中
           <span class="ml-1.5 inline-block h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
         </p>
-        <p class="mt-2 font-mono text-3xl font-bold text-primary">
+        <p class="mt-2 text-3xl text-primary font-bold font-mono">
           {{ uptimeText }}
         </p>
         <p class="mt-2 text-sm text-muted">
           建站于 {{ blogConfig?.website_createtime?.slice(0, 10) }} · 总访问 {{ viewCount }} · 文章 {{ articleCount }} 篇
         </p>
+        <!-- 宿主机每分钟自检结果 (monitor.sh → Redis → status 接口) -->
+        <p v-if="monitorText" class="mt-1 text-xs" :class="monitorText.ok ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'">
+          {{ monitorText.ok ? '✓' : '✗' }} {{ monitorText.text }}
+        </p>
       </div>
 
       <!-- 服务指标 -->
-      <div v-if="status" class="card-view space-y-2 p-6">
+      <div v-if="status" class="card-view p-6 space-y-2">
         <p v-for="[k, v] in rows" :key="k" class="flex justify-between text-sm">
           <span class="text-muted">{{ k }}</span>
           <span class="font-mono">{{ v }}</span>
