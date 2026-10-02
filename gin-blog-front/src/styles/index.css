@@ -106,3 +106,19 @@ body {
   color: #fff;
   background-color: var(--c-primary);
 }
+
+/* 主题切换圆形扩散 (View Transitions API): 关掉默认的交叉淡入淡出,
+   让 SideTools 里的 clip-path 动画接管; 旧画面置顶遮住新画面, 扩散时才露出 */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 2;
+}

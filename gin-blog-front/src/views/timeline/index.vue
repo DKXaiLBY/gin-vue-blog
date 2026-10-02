@@ -61,7 +61,7 @@ function select(i) {
 <template>
   <!-- w-full 必须显式: 父级是 flex 容器, mx-auto 会放弃 stretch 改用 fit-content,
        星图的 min-width:max-content 会把宽度顶到 max-width 上限, 视口 <1100 就横向溢出 -->
-  <div class="mx-auto w-full max-w-[1100px] px-4 pb-10 pt-24">
+  <div class="mx-auto max-w-[1100px] w-full px-4 pb-10 pt-24">
     <header class="mb-8 text-center">
       <h1 class="text-3xl font-bold">
         我的历程
@@ -81,8 +81,8 @@ function select(i) {
         <div class="sline" />
         <button
           v-for="(s, i) in stations" :key="s.date + s.title"
-          class="stop" :class="{ major: s.major, now: s.now, active: i === activeIdx }"
-          :style="{ '--dot': typeColors[s.type] ?? typeColors.other }"
+          class="stop card-enter" :class="{ major: s.major, now: s.now, active: i === activeIdx }"
+          :style="{ '--dot': typeColors[s.type] ?? typeColors.other, '--i': i }"
           type="button" @click="select(i)"
         >
           <span class="dot" />

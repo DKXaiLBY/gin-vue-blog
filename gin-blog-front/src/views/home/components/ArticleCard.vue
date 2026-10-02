@@ -2,12 +2,16 @@
 import dayjs from 'dayjs'
 import { computed } from 'vue'
 
+import { useTiltSpotlight } from '@/composables/useTiltSpotlight'
 import { convertImgUrl } from '@/utils'
 
 const props = defineProps({
   idx: Number,
   article: {},
 })
+
+// 卡片聚光 + 3D 倾斜 (桌面端微交互)
+const { bindTilt } = useTiltSpotlight({ maxTilt: 3 })
 
 // 与首页 params.page_size 保持一致
 const PAGE_SIZE = 8
@@ -24,8 +28,9 @@ const enterIndex = computed(() => props.idx % PAGE_SIZE)
 
 <template>
   <div
-    class="card-enter group h-[430px] w-full flex flex-col items-center rounded-xl bg-surface shadow-md transition-600 md:h-[280px] md:flex-row hover:shadow-2xl"
+    class="card-enter tilt-card group relative h-[430px] w-full flex flex-col items-center overflow-hidden rounded-xl bg-surface shadow-md transition-shadow duration-300 md:h-[280px] md:flex-row hover:shadow-2xl"
     :style="{ '--i': enterIndex }"
+    v-bind="bindTilt"
   >
     <!-- 封面图 -->
     <!-- 图区给个底色: 封面没加载出来时(图床挂了/懒加载还没到)这里是一块白洞 -->
@@ -84,5 +89,20 @@ const enterIndex = computed(() => props.idx % PAGE_SIZE)
   text-overflow: ellipsis;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
+}
+
+/* 聚光层: 光斑跟随 --mx/--my (useTiltSpotlight 写入), 触屏/减少动态时不可见 */
+.tilt-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgb(129 140 248 / 12%), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.25s;
+  pointer-events: none;
+}
+
+.tilt-card:hover::after {
+  opacity: 1;
 }
 </style>

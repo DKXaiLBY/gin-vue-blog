@@ -31,7 +31,7 @@ async function runCmd(wrapper, cmd) {
   await flushPromises()
 }
 
-describe('TerminalHero 命令分发', () => {
+describe('terminalHero 命令分发', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.unstubAllGlobals()

@@ -354,7 +354,37 @@ func (*BlogInfo) Report(c *gin.Context) {
 		slog.Warn("按天访问量记录失败", "err", err)
 	}
 
+	// 在线名单: 5 分钟内上报过 = 正在浏览 (供 /front/online 统计)
+	markVisitorOnline(ctx, rdb, uuid)
+
 	ReturnSuccess(c, nil)
+}
+
+// 在线判定窗口: 5 分钟内上报过访客指纹即算"正在浏览"
+const onlineVisitorWindow = 5 * time.Minute
+
+// 在线名单的 Redis ZSet: member = 访客指纹, score = 最近上报时间戳
+const onlineVisitorKey = "blog:online_visitors"
+
+// markVisitorOnline 把访客指纹记入在线名单, 并顺手清掉过期的旧记录
+func markVisitorOnline(ctx context.Context, rdb *redis.Client, fingerprint string) {
+	now := float64(time.Now().Unix())
+	rdb.ZAdd(ctx, onlineVisitorKey, redis.Z{Score: now, Member: fingerprint})
+	rdb.ZRemRangeByScore(ctx, onlineVisitorKey, "0", strconv.FormatFloat(now-float64(onlineVisitorWindow.Seconds()), 'f', 0, 64))
+}
+
+// @Summary 当前在线访客数
+// @Description 5 分钟内有过访问上报的访客数量
+// @Tags BlogInfo
+// @Produce json
+// @Success 0 {object} Response[map[string]int]
+// @Router /front/online [get]
+func (*BlogInfo) GetOnline(c *gin.Context) {
+	rdb := GetRDB(c)
+	ctx := context.Background()
+	cutoff := strconv.FormatFloat(float64(time.Now().Unix())-onlineVisitorWindow.Seconds(), 'f', 0, 64)
+	online := rdb.ZCount(ctx, onlineVisitorKey, cutoff, "+inf").Val()
+	ReturnSuccess(c, gin.H{"online": online})
 }
 
 /*

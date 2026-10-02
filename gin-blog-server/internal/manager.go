@@ -227,6 +227,7 @@ func registerBlogHandler(r *gin.Engine) {
 	base.GET("/about", blogInfoAPI.GetAbout) // 获取关于我
 	base.GET("/home", frontAPI.GetHomeInfo)  // 前台首页
 	base.GET("/page", pageAPI.GetList)       // 前台页面
+	base.GET("/online", blogInfoAPI.GetOnline) // 当前在线访客数
 
 	article := base.Group("/article")
 	{

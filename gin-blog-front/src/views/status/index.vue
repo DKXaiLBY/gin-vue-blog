@@ -20,6 +20,7 @@ const { blogConfig, articleCount, viewCount } = storeToRefs(useAppStore())
 const status = ref(null)
 const failed = ref(false)
 const now = ref(dayjs())
+const online = ref(null)
 let timer = null
 
 async function load() {
@@ -34,6 +35,18 @@ async function load() {
     // fallthrough
   }
   failed.value = true
+}
+
+async function loadOnline() {
+  try {
+    const resp = await api.getOnline()
+    if (resp.code === 0) {
+      online.value = resp.data?.online ?? 0
+    }
+  }
+  catch {
+    online.value = null
+  }
 }
 
 // 运行时长每秒跳动, 有"活着"的感觉
@@ -54,6 +67,7 @@ const rows = computed(() => {
     ['堆内存', `${status.value.heap_mb} MB`],
     ['协程数', status.value.goroutines],
     ['文章 / 说说 / 项目', `${status.value.articles} / ${status.value.talks} / ${status.value.projects}`],
+    ['当前在线', online.value === null ? '-' : `${online.value} 人`],
   ]
 })
 
@@ -71,10 +85,18 @@ const monitorText = computed(() => {
   }
 })
 
+let tick = 0
+
 onMounted(async () => {
   load()
+  loadOnline()
+  // 时钟每秒走; 每 30 个 tick 顺手刷新一次在线人数
   timer = setInterval(() => {
     now.value = dayjs()
+    tick++
+    if (tick % 30 === 0) {
+      loadOnline()
+    }
   }, 1000)
 })
 

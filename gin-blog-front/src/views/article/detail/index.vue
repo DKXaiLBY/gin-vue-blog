@@ -6,8 +6,8 @@ import go from 'highlight.js/lib/languages/go'
 import javascript from 'highlight.js/lib/languages/javascript'
 import json from 'highlight.js/lib/languages/json'
 import { marked } from 'marked'
-import { computed, nextTick, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import api from '@/api'
 
 import Comment from '@/components/comment/Comment.vue'
@@ -35,6 +35,11 @@ hljs.registerLanguage('json', json)
 hljs.registerLanguage('javascript', javascript)
 
 const route = useRoute()
+const router = useRouter()
+
+// 键盘翻页监听: 组件挂载即注册, 卸载时移除 (同时兼容 keep-alive 场景靠路由 key 重建)
+onMounted(() => window.addEventListener('keydown', onKeyNav))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKeyNav))
 
 const data = ref({
   id: 0,
@@ -66,6 +71,24 @@ function onPreviewClick(e) {
   const img = e.target.closest('img')
   if (img?.src) {
     lightboxSrc.value = img.src
+  }
+}
+
+// 键盘 ← → 翻上一篇/下一篇; 灯箱/登录框开着时不抢按键
+function onKeyNav(e) {
+  if (lightboxSrc.value || e.ctrlKey || e.metaKey || e.altKey) {
+    return
+  }
+  const tag = e.target?.tagName
+  if (tag === 'INPUT' || tag === 'TEXTAREA') {
+    return
+  }
+  const go = a => a?.id && router.push(`/article/${a.id}`)
+  if (e.key === 'ArrowLeft') {
+    go(data.value.last_article)
+  }
+  else if (e.key === 'ArrowRight') {
+    go(data.value.next_article)
   }
 }
 

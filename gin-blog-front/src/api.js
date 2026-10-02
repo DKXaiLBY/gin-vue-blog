@@ -38,6 +38,8 @@ export default {
   getRSS: () => request.get('/rss'),
   /** 站点运行状态 (只读非敏感) */
   getStatus: () => request.get('/status'),
+  /** 当前在线访客数 */
+  getOnline: () => request.get('/online'),
   /** 说说列表 */
   getTalks: (params = {}) => request.get('/talk/list', { params }),
   /** 说说详情 */

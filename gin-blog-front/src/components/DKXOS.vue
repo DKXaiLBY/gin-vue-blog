@@ -1,12 +1,17 @@
 <script setup>
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-
-import { storeToRefs } from 'pinia'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 
+import { storeToRefs } from 'pinia'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
 import { useAppStore } from '@/store'
+
+const emit = defineEmits(['exit'])
+
+// public 资源必须常量绑定: 模板静态 src 会被 plugin-vue v6 编译成模块导入, vitest 里炸套件
+const AVATAR_SRC = '/avatar.png'
 
 /**
  * DKX OS 彩蛋: 全屏"电脑桌面"世界观 (design-gallery 概念一的轻量版)。
@@ -16,7 +21,6 @@ import { useAppStore } from '@/store'
 
 dayjs.extend(duration)
 
-const emit = defineEmits(['exit'])
 const router = useRouter()
 const { blogConfig, articleCount, viewCount, isMobile } = storeToRefs(useAppStore())
 
@@ -130,10 +134,12 @@ onBeforeUnmount(() => {
           <div class="os-window-bar" @mousedown="onWinDown" @mousemove="onWinMove" @mouseup="onWinUp" @mouseleave="onWinUp">
             <i /><i /><i />
             <span>关于本机 — dkx@blog</span>
-            <button class="os-window-close" type="button" aria-label="关闭窗口" @click.stop="winVisible = false">×</button>
+            <button class="os-window-close" type="button" aria-label="关闭窗口" @click.stop="winVisible = false">
+              ×
+            </button>
           </div>
           <div class="os-window-body">
-            <img :src="'/avatar.png'" alt="头像" class="os-avatar">
+            <img :src="AVATAR_SRC" alt="头像" class="os-avatar">
             <div class="os-spec">
               <p><span class="os-k">host</span>DKXaiLBY 的博客</p>
               <p><span class="os-k">os</span>DKX OS v3.40</p>
@@ -141,7 +147,9 @@ onBeforeUnmount(() => {
               <p><span class="os-k">articles</span>{{ articleCount }} 篇</p>
               <p><span class="os-k">visits</span>{{ viewCount }}</p>
               <p><span class="os-k">stack</span>Vue3 + Gin + Docker</p>
-              <p class="os-motto">把开源项目吃透、改造成自己的。</p>
+              <p class="os-motto">
+                把开源项目吃透、改造成自己的。
+              </p>
             </div>
           </div>
         </div>

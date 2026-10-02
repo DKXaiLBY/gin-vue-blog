@@ -8,6 +8,9 @@ import HomePage from './index.vue'
 vi.mock('@/api', () => ({
   default: {
     getArticles: vi.fn(),
+    // 首页还拉分类胶囊和在线人数, mock 里给安全返回
+    getCategorys: vi.fn().mockResolvedValue({ code: 0, data: [] }),
+    getOnline: vi.fn().mockResolvedValue({ code: 0, data: { online: 0 } }),
   },
 }))
 
@@ -32,6 +35,7 @@ function mountPage() {
         TalkingCarousel: true,
         ArticleCard: true,
         AppFooter: true,
+        TerminalHero: true,
         RouterLink: { template: '<a><slot /></a>' },
       },
     },

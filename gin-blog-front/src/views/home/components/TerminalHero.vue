@@ -2,7 +2,7 @@
 import dayjs from 'dayjs'
 import { storeToRefs } from 'pinia'
 
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import DKXOS from '@/components/DKXOS.vue'
@@ -34,6 +34,7 @@ const HELP_ROWS = [
   ['whoami', '我是谁'],
   ['fortune', '随机一言'],
   ['sudo hire-me', '打开我的简历 ⭐'],
+  ['play type', '打字测速 🎮'],
   ['boot dkx-os', '启动 ???'],
   ['clear', '清屏'],
 ]
@@ -49,6 +50,50 @@ const history = ref([])
 const histIdx = ref(0)
 // DKX OS 桌面彩蛋开关 (boot dkx-os 唤起)
 const osOpen = ref(false)
+// 打字测速模式: 非空时输入行变成测速专用 (play type 唤起, exit 退出)
+const typeTest = ref(null) // { target, startTime }
+const TYPE_PHRASES = [
+  'the quick brown fox jumps over the lazy dog',
+  'code is read more often than it is written',
+  'talk is cheap show me the code',
+  'premature optimization is the root of all evil',
+  'there are two hard things in computer science',
+]
+const bestWpm = Number(localStorage.getItem('dkx-best-wpm') || 0)
+
+// 测速时输入行实时变色: 前缀全对=绿, 打错=粉
+const inputOk = computed(() => {
+  if (!typeTest.value) {
+    return null
+  }
+  return input.value === typeTest.value.target.slice(0, input.value.length)
+})
+
+function scrollToBottom() {
+  bodyEl.value.scrollTop = bodyEl.value.scrollHeight
+}
+
+// 测速输入处理: 第一个字符起表; 打对整句结算 WPM; exit 退出
+function onTestInput() {
+  if (typeTest.value && input.value && !typeTest.value.startTime) {
+    typeTest.value.startTime = Date.now()
+  }
+}
+
+function handleTypeInput(v) {
+  if (v === 'exit') {
+    entries.value.push(outHtml('<span class="t-dim">已退出打字测速</span>'))
+    typeTest.value = null
+    return
+  }
+  const tt = typeTest.value
+  if (!tt.startTime && v) {
+    tt.startTime = Date.now()
+  }
+  if (v === tt.target) {
+    settleTypeTest(v)
+  }
+}
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')
 
@@ -107,6 +152,13 @@ async function dispatch(low) {
       osOpen.value = true
     }, 700)
   }
+  else if (low === 'play type' || low === 'play') {
+    startTypeTest()
+  }
+  else if (low === 'annual' || low === 'cat annual.report') {
+    entries.value.push(outHtml(`<span class="t-amber">▸ 正在生成你的年度编程报告… ✔</span>`))
+    setTimeout(navTo, 600, '/annual')
+  }
   else if (low.startsWith('cat ')) {
     entries.value.push(outHtml(`cat: ${esc(low.slice(4))}: No such file or directory<br><span class="t-dim">试试 cat motto.txt</span>`))
   }
@@ -114,6 +166,36 @@ async function dispatch(low) {
     entries.value.push(outHtml(`<span class="t-dim">command not found: ${esc(low)} — 试试 help</span>`))
   }
   return true
+}
+
+// ---- 打字测速 (play type): 输入行变成测速通道, 打对整句即出 WPM, exit 退出 ----
+function startTypeTest() {
+  const target = TYPE_PHRASES[Math.floor(Math.random() * TYPE_PHRASES.length)]
+  typeTest.value = { target, startTime: 0 }
+  entries.value.push(outHtml(`<span class="t-dim">打字测速开始 —— 照着下面这句打, 打对自动结算 (WPM), 输入 exit 退出:</span>`))
+  entries.value.push(outHtml(`<span class="t-cmd">${target}</span>`))
+  input.value = ''
+}
+
+function settleTypeTest(typed) {
+  const tt = typeTest.value
+  const seconds = Math.max((Date.now() - tt.startTime) / 1000, 1)
+  // WPM 标准算法: 每5个字符折算1个词
+  const wpm = Math.round(typed.length / 5 / (seconds / 60))
+  const acc = Math.round((typed.length / tt.target.length) * 100)
+  let line = `<span class="t-amber">▸ ${wpm} WPM</span> · 用时 ${seconds.toFixed(1)}s · 准确率 ${acc}%`
+  if (wpm > bestWpm) {
+    line += ` <span class="t-cmd">🏆 新纪录!</span>`
+    try {
+      localStorage.setItem('dkx-best-wpm', String(wpm))
+    }
+    catch { /* 隐私模式随缘 */ }
+  }
+  else if (bestWpm > 0) {
+    line += ` <span class="t-dim">(个人最佳 ${bestWpm} WPM)</span>`
+  }
+  entries.value.push(outHtml(line))
+  typeTest.value = null
 }
 
 async function exec(raw) {
@@ -141,6 +223,11 @@ async function exec(raw) {
 function onEnter() {
   const v = input.value
   input.value = ''
+  if (typeTest.value) {
+    handleTypeInput(v)
+    nextTick(scrollToBottom)
+    return
+  }
   exec(v)
 }
 
@@ -253,9 +340,10 @@ onBeforeUnmount(() => {
       <div v-if="booted" class="t-line t-inrow">
         <span class="t-prompt">dkx@blog ~ %</span>
         <input
-          ref="inputEl" v-model="input" class="t-input" type="text"
+          ref="inputEl" v-model="input" class="t-input" :class="typeTest ? (inputOk ? 't-ok' : 't-bad') : ''" type="text"
           autocomplete="off" autocapitalize="off" spellcheck="false"
           aria-label="输入命令, help 查看可用命令"
+          @input="onTestInput"
           @keydown.enter="onEnter" @keydown.up.prevent="onKeydown" @keydown.down.prevent="onKeydown"
         >
       </div>
@@ -374,7 +462,12 @@ onBeforeUnmount(() => {
   font: inherit;
   caret-color: #818cf8;
   padding: 0;
+  transition: color 0.12s;
 }
+
+/* 打字测速: 前缀全对=绿, 打错=粉 */
+.t-input.t-ok { color: #9ee6a0; }
+.t-input.t-bad { color: #f472b6; }
 
 .term-hints {
   display: flex;

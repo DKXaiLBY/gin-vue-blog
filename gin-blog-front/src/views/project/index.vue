@@ -2,10 +2,14 @@
 import { onMounted, ref } from 'vue'
 
 import api from '@/api'
+import { useTiltSpotlight } from '@/composables/useTiltSpotlight'
 import { convertImgUrl } from '@/utils'
 
 const projects = ref([])
 const loading = ref(true)
+
+// 项目卡聚光 + 3D 倾斜
+const { bindTilt } = useTiltSpotlight({ maxTilt: 4 })
 
 onMounted(async () => {
   try {
@@ -48,8 +52,10 @@ onMounted(async () => {
     <!-- 项目卡片网格 -->
     <div v-else class="grid gap-6 md:grid-cols-2">
       <article
-        v-for="p in projects" :key="p.id"
-        class="group overflow-hidden rounded-xl bg-surface shadow-md transition-500 hover:shadow-xl"
+        v-for="(p, i) in projects" :key="p.id"
+        class="tilt-card project-card card-enter group relative overflow-hidden rounded-xl bg-surface shadow-md transition-shadow duration-300 hover:shadow-xl"
+        :style="{ '--i': i }"
+        v-bind="bindTilt"
       >
         <div class="h-44 overflow-hidden bg-surface-soft">
           <img
@@ -96,3 +102,20 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* 聚光层: 光斑跟随 --mx/--my (useTiltSpotlight 写入) */
+.project-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgb(129 140 248 / 12%), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.25s;
+  pointer-events: none;
+}
+
+.project-card:hover::after {
+  opacity: 1;
+}
+</style>

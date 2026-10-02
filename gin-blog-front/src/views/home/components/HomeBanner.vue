@@ -1,8 +1,10 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 
-import { useAppStore } from '@/store'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import api from '@/api'
 
+import { useAppStore } from '@/store'
 import TerminalHero from './TerminalHero.vue'
 
 const emit = defineEmits(['scrollDown'])
@@ -12,6 +14,55 @@ const { blogConfig } = storeToRefs(useAppStore())
 function scrollDown() {
   emit('scrollDown')
 }
+
+// 按时段问候: 凌晨也问候夜猫子, 不留空档
+const greeting = computed(() => {
+  const h = new Date().getHours()
+  if (h >= 5 && h < 9) {
+    return '早上好'
+  }
+  if (h >= 9 && h < 12) {
+    return '上午好'
+  }
+  if (h >= 12 && h < 14) {
+    return '中午好'
+  }
+  if (h >= 14 && h < 18) {
+    return '下午好'
+  }
+  if (h >= 18 && h < 23) {
+    return '晚上好'
+  }
+  return '夜深了'
+})
+
+// public 资源走常量绑定而非模板静态 src: plugin-vue v6 会把静态路径编译成
+// 模块导入, 在 vitest 里变成非法模块炸掉整个套件 (vue/no-useless-v-bind 的
+// --fix 又会把 :src 转回静态, 所以必须放 script 里)
+const AVATAR_SRC = '/avatar.png'
+
+// 实时在线人数: 30s 轮询一次, 拿不到就不显示
+const onlineCount = ref(0)
+let onlineTimer = null
+
+async function loadOnline() {
+  try {
+    const resp = await api.getOnline()
+    if (resp.code === 0) {
+      onlineCount.value = resp.data?.online ?? 0
+    }
+  }
+  catch {
+    // 静默: 在线人数拿不到就不显示
+  }
+}
+
+onMounted(() => {
+  loadOnline()
+  onlineTimer = setInterval(loadOnline, 30000)
+})
+
+onBeforeUnmount(() => clearInterval(onlineTimer))
 </script>
 
 <template>
@@ -27,7 +78,7 @@ function scrollDown() {
       <!-- 左: 自我介绍 -->
       <div class="flex-1 text-center md:text-left">
         <p class="mb-3 inline-block rounded-full bg-primary/10 px-4 py-1 text-sm text-primary">
-          👋 你好，我是
+          👋 {{ greeting }}，我是
         </p>
         <h1 class="text-4xl font-bold md:text-5xl">
           {{ blogConfig.website_author }}
@@ -51,6 +102,11 @@ function scrollDown() {
             <span class="i-mdi:github block transition-300 hover:text-primary" />
           </a>
         </div>
+        <!-- 实时在线人数: 拿不到就不显示 -->
+        <p v-if="onlineCount > 0" class="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted md:justify-start">
+          <span class="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+          {{ onlineCount }} 人正在浏览
+        </p>
         <div class="mt-8 flex items-center justify-center gap-4 md:justify-start">
           <button
             class="rounded-full bg-primary px-6 py-2.5 text-sm text-white transition-300 hover:opacity-85"
@@ -73,7 +129,7 @@ function scrollDown() {
       <div class="relative flex flex-1 justify-center">
         <div class="absolute inset-0 m-auto h-64 w-64 rounded-full bg-primary/10 blur-2xl md:h-80 md:w-80" />
         <img
-          :src="'/avatar.png'" alt="DKXaiLBY 的头像"
+          :src="AVATAR_SRC" alt="DKXaiLBY 的头像"
           class="relative h-56 w-56 rounded-[2.5rem] object-cover shadow-2xl md:h-72 md:w-72"
         >
       </div>

@@ -7,6 +7,9 @@ defineProps({
     default: () => [],
   },
 })
+
+// public 资源必须常量绑定: 模板静态 src 会被 plugin-vue v6 编译成模块导入, vitest 里炸套件
+const EMPTY_LINK_IMG = '/images/empty_friend_link.svg'
 </script>
 
 <template>
@@ -50,7 +53,7 @@ defineProps({
     <!-- 友链数量为 0 -->
     <div v-else class="text-center">
       <!-- :src 绑定: 静态 public src 会被 plugin-vue v6 编译成模块导入, vitest 里炸套件 -->
-      <img class="inline h-[260px]" :src="'/images/empty_friend_link.svg'" alt="暂无友情链接" loading="lazy">
+      <img class="inline h-[260px]" :src="EMPTY_LINK_IMG" alt="暂无友情链接" loading="lazy">
       <div class="mt-1 space-y-1">
         <p class="text-3xl">
           暂无友情链接

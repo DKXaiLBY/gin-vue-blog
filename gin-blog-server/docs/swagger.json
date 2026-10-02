@@ -1457,6 +1457,26 @@
                 }
             }
         },
+        "/front/online": {
+            "get": {
+                "description": "5 分钟内有过访问上报的访客数量",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BlogInfo"
+                ],
+                "summary": "当前在线访客数",
+                "responses": {
+                    "0": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handle.Response-map_string_int"
+                        }
+                    }
+                }
+            }
+        },
         "/front/page": {
             "get": {
                 "description": "获取页面列表, 优先读 Redis 缓存",
@@ -5462,6 +5482,27 @@
                 }
             }
         },
+        "handle.Response-map_string_int": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "响应数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/map_string_int"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "响应消息",
+                    "type": "string"
+                }
+            }
+        },
         "handle.Response-map_string_string": {
             "type": "object",
             "properties": {
@@ -5788,6 +5829,15 @@
                 "heap_mb": {
                     "type": "string"
                 },
+                "monitor_note": {
+                    "type": "string"
+                },
+                "monitor_ok": {
+                    "type": "boolean"
+                },
+                "monitor_ts": {
+                    "type": "integer"
+                },
                 "projects": {
                     "type": "integer"
                 },
@@ -5952,6 +6002,12 @@
                     "description": "独立访客数",
                     "type": "integer"
                 }
+            }
+        },
+        "map_string_int": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "integer"
             }
         },
         "map_string_string": {

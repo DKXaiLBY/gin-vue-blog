@@ -99,4 +99,3 @@ async function handleSearch() {
   -webkit-box-orient: vertical;
 }
 </style>
-

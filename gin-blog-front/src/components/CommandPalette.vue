@@ -34,6 +34,7 @@ const PAGES = [
   { label: '友情链接', icon: 'i-ep:link', to: '/links' },
   { label: '留言板', icon: 'i-ep:edit-pen', to: '/message' },
   { label: '站点状态', icon: 'i-ep:odometer', to: '/status' },
+  { label: '我的年度报告', icon: 'i-ep:data-analysis', to: '/annual' },
   { label: '关于我', icon: 'i-ep:user', to: '/about' },
 ]
 
@@ -41,8 +42,36 @@ const ACTIONS = [
   { label: '切换深色 / 浅色主题', icon: 'i-mdi:theme-light-dark', fn: () => appStore.toggleTheme() },
 ]
 
-// 关键词过滤页面与动作; 文章走接口异步搜
+// 内置计算器: 输入 "=12*3+5" 直接出结果, 极客彩蛋
+// 白名单只放数字与四则/括号, Function 求值前先把非法字符整个拒掉
+const calcResult = computed(() => {
+  const q = query.value.trim()
+  if (!q.startsWith('=')) {
+    return null
+  }
+  const expr = q.slice(1).replace(/\s/g, '')
+  if (!expr || !/^[0-9+\-*/().]+$/.test(expr)) {
+    return { expr, value: null, error: '只支持数字和 + - * / ( )' }
+  }
+  try {
+    // 白名单正则已确保只有数字与四则括号, Function 求值在此场景可控
+    // eslint-disable-next-line no-new-func
+    const val = Function(`"use strict";return (${expr})`)()
+    if (typeof val !== 'number' || !Number.isFinite(val)) {
+      return { expr, value: null, error: '结果不是一个有限的数' }
+    }
+    return { expr, value: Math.round(val * 1e10) / 1e10, error: null }
+  }
+  catch {
+    return { expr, value: null, error: '表达式不完整…' }
+  }
+})
+
+// 关键词过滤页面与动作; 文章走接口异步搜; 计算器模式(=开头)时列表让位
 const filteredItems = computed(() => {
+  if (calcResult.value) {
+    return []
+  }
   const q = query.value.trim().toLowerCase()
   const hit = item => !q || item.label.toLowerCase().includes(q)
   return [
@@ -108,6 +137,12 @@ function onInputKey(e) {
     move(-1)
   }
   else if (e.key === 'Enter') {
+    // 计算器模式: 回车复制结果
+    if (calcResult.value && calcResult.value.value !== null) {
+      navigator.clipboard?.writeText(String(calcResult.value.value)).catch(() => {})
+      open.value = false
+      return
+    }
     const item = filteredItems.value[activeIdx.value]
     if (item) {
       run(item)
@@ -154,7 +189,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
         >
         <kbd class="rounded bg-surface-soft px-1.5 py-0.5 text-xs text-muted">Esc</kbd>
       </div>
-      <ul class="max-h-[46vh] overflow-y-auto px-2 py-2">
+      <!-- 内置计算器: = 开头时列表让位, 回车复制结果 -->
+      <div v-if="calcResult" class="m-2 rounded-lg bg-primary/10 px-4 py-3 text-sm font-mono">
+        <span class="text-muted">{{ calcResult.expr }} =</span>
+        <span v-if="calcResult.value !== null" class="ml-2 text-lg text-primary font-bold">{{ calcResult.value }}</span>
+        <span v-else class="ml-2 text-xs text-amber-500">{{ calcResult.error }}</span>
+        <span v-if="calcResult.value !== null" class="float-right mt-1 text-xs text-muted">↵ 复制</span>
+      </div>
+      <ul v-else class="max-h-[46vh] overflow-y-auto px-2 py-2">
         <li v-for="(item, i) in filteredItems" :key="item.label + i">
           <button
             class="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-100"

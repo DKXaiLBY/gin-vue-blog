@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>动效交互提案 · 让博客活起来（调研画廊）</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",system-ui,sans-serif;background:#0e1017;color:#dfe3f0;line-height:1.85;padding:44px 20px;max-width:1100px;margin:0 auto}
+h1{font-size:25px}
+h1 b{color:#818cf8}
+.sub{color:#8b92a6;font-size:13px;margin:6px 0 10px}
+.notice{background:#1a1e2c;border-left:3px solid #fbbf24;padding:10px 16px;border-radius:0 10px 10px 0;font-size:13px;color:#c9cedb;margin:14px 0}
+h2{color:#aeb8ff;font-size:19px;margin:50px 0 8px;border-left:4px solid #6366f1;padding-left:12px}
+h2 small{color:#8b92a6;font-size:12px;font-weight:normal;margin-left:8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:#151824;border:1px solid #262b3d;border-radius:14px;overflow:hidden}
+.card .demo{height:190px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.card .cap{padding:12px 16px;font-size:13px;color:#9aa0ae}
+.card .cap b{color:#e8ebf4;display:block;margin-bottom:2px;font-size:14px}
+.card .cap .meta{margin-top:6px}
+.tag{display:inline-block;background:#22263a;color:#aeb8ff;border-radius:20px;padding:1px 10px;font-size:11px;margin:2px 4px 2px 0}
+.tag.cost{color:#86efac;border:1px solid #14532d}
+.tag.mid{color:#fcd34d;border:1px solid #713f12}
+.tag.high{color:#fca5a5;border:1px solid #7f1d1d}
+.wide{grid-column:1/-1}
+.full{grid-column:1/-1}
+p.desc{color:#9aa0ae;font-size:13px;margin:8px 0 16px}
+.foot{color:#8b92a6;font-size:13px;margin:46px 0 10px;border-top:1px dashed #262b3d;padding-top:16px}
+.foot b{color:#fcd34d}
+code{background:#1a1e2c;color:#aeb8ff;border-radius:5px;padding:1px 7px;font-family:Consolas,monospace;font-size:12px}
+/* ---- 演示 1: 主题圆形扩散 ---- */
+#themeDemo{width:100%;height:100%;background:#eef0f8;position:relative;transition:background .3s;display:flex;align-items:center;justify-content:center}
+#themeDemo.dark{background:#12141f}
+#themeBtn{border:none;border-radius:999px;padding:9px 22px;font-size:13px;cursor:pointer;background:#6366f1;color:#fff;position:relative;z-index:3}
+/* ---- 演示 2: 卡片聚光 + 3D ---- */
+.spot-card{width:230px;border-radius:12px;background:#1b1f33;border:1px solid #2e3350;padding:16px;transition:transform .15s ease-out;transform-style:preserve-3d}
+.spot-card h4{color:#e8ebf4;font-size:14px;margin-bottom:4px}
+.spot-card p{color:#8b92a6;font-size:12px;line-height:1.7}
+.spot-glow{position:absolute;inset:0;border-radius:12px;background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%),rgba(129,140,248,.22),transparent 45%);opacity:0;transition:opacity .25s;pointer-events:none}
+.spot-card:hover .spot-glow{opacity:1}
+/* ---- 演示 3: 点赞爆裂 ---- */
+.like-wrap{text-align:center}
+.like-btn{border:none;background:#1d2135;border:1px solid #2e3350;color:#aeb8ff;border-radius:999px;padding:10px 26px;font-size:16px;cursor:pointer;position:relative}
+.like-btn.pop{animation:pop .3s}
+@keyframes pop{40%{transform:scale(1.25)}}
+.boom{position:absolute;pointer-events:none;font-size:14px;animation:fly .8s ease-out forwards}
+@keyframes fly{to{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}
+/* ---- 演示 4: 交错入场 ---- */
+.stag{display:flex;flex-direction:column;gap:8px;width:260px}
+.stag .row{background:#1b1f33;border:1px solid #2e3350;border-radius:8px;padding:8px 12px;font-size:12px;color:#aeb8ff;opacity:0;transform:translateX(-24px)}
+.demo-in .stag .row{animation:slidein .5s ease-out forwards}
+.demo-in .stag .row:nth-child(2){animation-delay:.12s}
+.demo-in .stag .row:nth-child(3){animation-delay:.24s}
+.demo-in .stag .row:nth-child(4){animation-delay:.36s}
+@keyframes slidein{to{opacity:1;transform:none}}
+.stag-hint{font-size:11px;color:#5f6a85;margin-top:10px}
+/* ---- 演示 5: 页面转场 ---- */
+.pt-stage{width:300px;height:170px;position:relative}
+.pt-page{position:absolute;inset:0;border-radius:12px;background:#1b1f33;border:1px solid #2e3350;display:flex;flex-direction:column;gap:8px;padding:14px;transition:opacity .3s,transform .3s}
+.pt-page.to{opacity:0;transform:translateX(36px) scale(.97)}
+.pt-bar{height:10px;border-radius:5px;background:#2e3350}
+.pt-hero{height:52px;border-radius:8px;background:linear-gradient(120deg,#6366f1,#ec4899)}
+.pt-btns{display:flex;gap:8px;margin-top:auto}
+.pt-btns span{flex:1;height:26px;border-radius:6px;background:#262c4a;cursor:pointer}
+.pt-btns span:hover{background:#3b4470}
+.pt-label{font-size:11px;color:#5f6a85;text-align:center;margin-top:8px}
+/* ---- 演示 6: 樱花飘落 ---- */
+#sakura{width:100%;height:100%;background:linear-gradient(160deg,#14162b,#0d0e1a);position:relative;overflow:hidden}
+.petal{position:absolute;top:-14px;font-size:12px;animation:fall linear infinite;opacity:.85}
+@keyframes fall{to{transform:translateY(210px) rotate(300deg);opacity:.1}}
+/* ---- 演示 7: 粒子连线 ---- */
+#particles{width:100%;height:100%;background:#0c0e17}
+/* ---- 演示 8: AI 助手 ---- */
+.ai-fab{position:absolute;right:14px;bottom:14px;width:46px;height:46px;border-radius:50%;border:none;background:linear-gradient(135deg,#6366f1,#ec4899);color:#fff;font-size:20px;cursor:pointer;box-shadow:0 8px 24px rgba(99,102,241,.4)}
+.ai-panel{position:absolute;right:14px;bottom:70px;width:250px;border-radius:12px;background:#101223f2;border:1px solid #313852;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+.ai-head{padding:8px 12px;font-size:12px;color:#aeb8ff;background:#1a1e36}
+.ai-body{padding:10px 12px;font-size:12px;color:#c9cedb;min-height:70px}
+.ai-body .q{color:#818cf8}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<h1>动效交互提案 · <b>让博客活起来</b></h1>
+<div class="sub">调研画廊第二轮 · 全部为可视化演示（能动），未动线上任何代码 · 2026-10-02</div>
+<div class="notice">💡 原则：<b>你已满意的骨架一根手指都不动</b>——以下全部是「叠加式」增强，每项独立开关、独立回滚，随时可整体撤掉。备份已就位（git v3.41-stable + 服务器双镜像 rollback-v341）。</div>
+
+<h2>第一档 · 微交互打磨 <small>成本低感知强，单项 0.5~1.5h</small></h2>
+<p class="desc">这一档是 2025 年博客圈公认的「精致感」来源——克制、小而准。推荐全部拿下的就是下面前三个。</p>
+
+<div class="grid">
+  <div class="card">
+    <div class="demo"><div id="themeDemo"><button id="themeBtn" onclick="toggleTheme(event)">🌗 点我切换主题</button></div></div>
+    <div class="cap"><b>① 主题切换圆形扩散动画</b>2025 年最火的博客动效（UnoCSS 官网同款）。点主题按钮时，明暗从点击位置以圆形波纹扩散开。<div class="meta"><span class="tag cost">约 1h</span><span class="tag">View Transitions API</span><span class="tag">不支持的浏览器自动降级为直接切换</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo" style="background:radial-gradient(500px at 50% 40%,#171a2b,#0e1017)"><div class="spot-card" id="tiltCard"><div class="spot-glow"></div><h4>LoveGirl 情侣 App</h4><p>192 commits 的 Flutter 长跑项目…</p></div></div>
+    <div class="cap"><b>② 卡片聚光 + 3D 倾斜</b>鼠标移到卡片上：光斑跟随鼠标 + 卡片轻微 3D 倾斜。用在首页项目卡/文章卡，"贵感"立涨。<div class="meta"><span class="tag cost">约 1h</span><span class="tag">纯 CSS+几行 JS</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo"><div class="like-wrap"><button class="like-btn" id="likeBtn" onclick="boom(event)">❤ 点赞 <span id="likeN">128</span></button><div class="stag-hint">点几次试试 → 粒子爆裂</div></div></div>
+    <div class="cap"><b>③ 点赞/收藏粒子爆裂</b>点赞时爱心粒子四射（文章点赞、留言板都可用）。多巴胺反馈，访客更愿意互动。<div class="meta"><span class="tag cost">约 1h</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo" id="stagDemo"><div class="stag"><div class="row">第一行内容进场</div><div class="row">第二行内容进场</div><div class="row">第三行内容进场</div><div class="row">第四行内容进场</div></div></div>
+    <div class="cap"><b>④ 滚动交错入场</b>卡片随滚动依次滑入（鼠标移上去会重播）。首页/归档/项目页统一节奏，全站"活"起来。<div class="meta"><span class="tag cost">约 1h</span><span class="tag">部分已有，补齐全站</span></div></div>
+  </div>
+</div>
+
+<h2>第二档 · 页面与氛围 <small>让"切页"和"环境"有生命感</small></h2>
+
+<div class="grid">
+  <div class="card">
+    <div class="demo"><div class="pt-stage"><div class="pt-page" id="ptA"><div class="pt-hero"></div><div class="pt-bar" style="width:70%"></div><div class="pt-bar" style="width:90%"></div><div class="pt-bar" style="width:55%"></div><div class="pt-btns"><span onclick="ptGo()" title="点我模拟跳文章页">点我模拟 →</span></div></div><div class="pt-page to" id="ptB"><div class="pt-bar" style="width:40%"></div><div class="pt-hero" style="height:70px"></div><div class="pt-bar"></div><div class="pt-bar" style="width:80%"></div></div></div><div class="pt-label">点上面的按钮模拟「列表 → 文章」转场</div></div>
+    <div class="cap"><b>⑤ 页面转场动画</b>路由切换不再是"闪变"，而是滑动+淡入的连贯过渡；进阶版可做「文章卡片 → 详情页头图」的共享元素飞行（同款转场 API）。<div class="meta"><span class="tag mid">约 2h</span><span class="tag">vue-router transition</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo"><div id="sakura"><span class="petal" style="left:6%;animation-duration:5s">🌸</span><span class="petal" style="left:22%;animation-duration:7s;animation-delay:1s">🌸</span><span class="petal" style="left:44%;animation-duration:6s;animation-delay:2.2s">🌸</span><span class="petal" style="left:63%;animation-duration:5.5s;animation-delay:.6s">🌸</span><span class="petal" style="left:82%;animation-duration:6.8s;animation-delay:1.7s">🌸</span><span class="petal" style="left:93%;animation-duration:5.2s;animation-delay:2.8s">🌸</span></div></div>
+    <div class="cap"><b>⑥ 季节氛围特效</b>三月樱花、十二月雪花、平时可开粒子连线（下个演示）——canvas 轻量实现，右上角一键开关、尊重「减少动态」偏好。<div class="meta"><span class="tag cost">约 1.5h</span><span class="tag">按月份自动切换</span><span class="tag">可一键关闭</span></div></div>
+  </div>
+  <div class="card wide">
+    <div class="demo"><canvas id="particles" height="190"></canvas></div>
+    <div class="cap"><b>⑦ 粒子连线动态背景</b>经典但耐看的"科技感"背景（粒子游走、靠近时连线）。建议只在首页 Hero 区低透明度启用，与终端世界观搭。<div class="meta"><span class="tag mid">约 1.5h</span><span class="tag">可开关</span><span class="tag">手机自动减量保性能</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo" style="flex-direction:column;gap:8px"><div style="text-align:center"><span style="font-size:26px">🌤️</span><div style="font-size:15px;color:#e8ebf4">下午好，访客</div><div style="font-size:12px;color:#8b92a6">现在是 15:24 · 今天已发布 1 篇</div></div></div>
+    <div class="cap"><b>⑧ 时间问候语</b>Hero 区问候语按时段变化（早上好/下午好/夜深了），配合你已有的动态一言。<div class="meta"><span class="tag cost">约 0.5h</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo" style="flex-direction:column;gap:6px"><div style="font-size:13px;color:#86efac">● 当前有 3 人正在浏览</div><div style="font-size:12px;color:#8b92a6">数据来自后端已有的在线用户统计</div></div>
+    <div class="cap"><b>⑨ 实时在线人数</b>后端接口现成（后台仪表盘在用），首页/状态页显示"此刻有 N 人在线"——零后端改动。<div class="meta"><span class="tag cost">约 1h</span></div></div>
+  </div>
+</div>
+
+<h2>第三档 · 创新记忆点 <small>呼应你的 AI 开发者人设，选 1~2 个就够</small></h2>
+
+<div class="grid">
+  <div class="card full">
+    <div class="demo" style="height:230px"><div class="ai-panel"><div class="ai-head">🤖 Ask DKX · 本站 AI 助手</div><div class="ai-body"><span class="q">你：这个博客用了什么技术栈？</span><br>我：前台 Vue3+Vite，后端 Gin+GORM，Docker 全栈部署在阿里云——你可以敲终端里的 <b>blog status</b> 亲眼看~</div></div><div class="ai-fab">🤖</div></div>
+    <div class="cap"><b>⑩ 「Ask DKX」AI 助手挂件</b>右下角悬浮机器人：基于你站内文章的本地检索问答（关键词匹配版先上线，零成本；以后接 LLM API 升级成真 AI）。求职者博客挂一个"AI 版自己"，面试话题直接拉满。<div class="meta"><span class="tag mid">规则版约 2h / 接真 LLM 另计</span><span class="tag">呼应终端+AI 人设</span></div></div>
+  </div>
+  <div class="card">
+    <div class="cap"><b>⑪ 文章阅读信息徽章</b>文章卡标题旁加「📊 1200 字 · 约 3 分钟」——零风险纯增益。<div class="meta"><span class="tag cost">约 0.5h</span></div></div>
+  </div>
+  <div class="card">
+    <div class="cap"><b>⑫ PWA 离线访问</b>访客可"添加到主屏幕"，断网也能读缓存文章。对个人博客是加分项，量力。<div class="meta"><span class="tag mid">约 2h</span></div></div>
+  </div>
+</div>
+
+<h2>明确不推荐 <small>调研到但建议避开</small></h2>
+<p class="desc">🔴 <b>Live2D 看板娘</b>——与你的终端/AI 极客风冲突，且资源重（1MB+ 模型）；🔴 <b>音乐播放器</b>——自动播放体验差，手动播放使用率极低；🔴 <b>鼠标点击文字冒泡</b>——2016 年风格且干扰阅读；🔴 <b>满屏 3D 大场景</b>——1 核服务器 + 移动端性能撑不住。它们的共同问题：动效抢内容，而你的博客是作品集，内容才是主角。</p>
+
+<h2>补充池 · 第二批创意 <small>同样全部可上手试（2026-10-02 增补）</small></h2>
+<p class="desc">第一批之外的候选——更"细"但同样出彩的微交互，适合在主批次落地后追加。</p>
+
+<div class="grid">
+  <div class="card">
+    <div class="demo"><div class="magnet-zone"><button class="magnet" id="magnetBtn">🧲 磁吸按钮</button><div class="stag-hint">鼠标靠近试试, 按钮会被"吸"过来</div></div></div>
+    <div class="cap"><b>⑬ 磁吸按钮</b>鼠标靠近时按钮像被磁铁吸住一样微微跟随——高级产品官网的标配微交互，用在「开始阅读/我的简历」按钮上。<div class="meta"><span class="tag cost">约 0.5h</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo"><div class="count-wrap"><div class="count-num" id="countNum">0</div><div class="stag-hint">数字滚动增长 · 每 3 秒重播</div></div></div>
+    <div class="cap"><b>⑭ 数字滚动增长</b>状态页/页脚的访问量、文章数在滚入视野时从 0 滚到目标值——数据"活"了。<div class="meta"><span class="tag cost">约 0.5h</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo"><div class="cursor-zone" id="cursorZone"><div class="cursor-dot" id="cursorDot"></div><span style="font-size:12px;color:#5f6a85">在这个区域移动鼠标</span></div></div>
+    <div class="cap"><b>⑮ 鼠标跟随光点</b>品牌色光点+拖尾跟随鼠标（仅桌面端），全站"幽灵感"细节。<div class="meta"><span class="tag cost">约 0.5h</span><span class="tag">移动端自动禁用</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo"><div class="flow-title" id="flowTitle">DKXaiLBY</div><div class="stag-hint">渐变在名字上缓缓流动 (纯 CSS, 零 JS)</div></div>
+    <div class="cap"><b>⑯ 流动渐变大标题</b>Hero 大名字上的靛紫渐变缓缓流动——静态名字变"活"，性能开销为零。<div class="meta"><span class="tag cost">约 0.5h</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo"><div class="swatch-zone"><div class="mini-card" id="miniCard"><h4>主题色自由</h4><p>选一个你喜欢的强调色</p><span class="mini-btn">按钮</span></div><div class="swatches"><span class="sw" style="background:#6366f1" data-c="#6366f1"></span><span class="sw" style="background:#ec4899" data-c="#ec4899"></span><span class="sw" style="background:#34d399" data-c="#34d399"></span><span class="sw" style="background:#fbbf24" data-c="#fbbf24"></span><span class="sw" style="background:#f97316" data-c="#f97316"></span></div></div></div>
+    <div class="cap"><b>⑰ 访客自选主题色</b>右上角加个调色盘，访客点色块全站强调色跟着变（localStorage 记住选择）。"我的博客我做主"，极客感强。<div class="meta"><span class="tag mid">约 1.5h</span><span class="tag">默认靛紫不变</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo"><div class="star-zone"><span class="meteor" style="animation-delay:0s"></span><span class="meteor" style="animation-delay:2.4s;left:60%"></span><span class="meteor" style="animation-delay:4.1s;left:30%"></span><span style="font-size:12px;color:#5f6a85">深色模式下偶有流星划过</span></div></div>
+    <div class="cap"><b>⑱ 深色模式流星雨</b>夜间主题下每十几秒一颗流星划过 Hero 区——纯 CSS，安静不吵。<div class="meta"><span class="tag cost">约 0.5h</span><span class="tag">仅深色主题</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo"><div class="sound-zone"><button class="key-btn" onclick="keySound(this)">A</button><button class="key-btn" onclick="keySound(this)">S</button><button class="key-btn" onclick="keySound(this)">D</button><button class="key-btn" onclick="keySound(this)">F</button><div class="stag-hint">点按键听机械键盘音 (终端将同步支持开关)</div></div></div>
+    <div class="cap"><b>⑲ 终端机械键盘音效</b>打字机终端配真实键轴音（默认关，音量小，开关记住偏好）——沉浸感拉满。<div class="meta"><span class="tag mid">约 1h</span><span class="tag">默认关闭</span></div></div>
+  </div>
+  <div class="card">
+    <div class="cap"><b>⑳ 标签页离开彩蛋</b>切去别的标签页时，网页标题变成「(´･_･`) 去哪了」，回来变「欢迎回来」——成本低，被截屏传播概率高。<div class="meta"><span class="tag cost">约 0.5h</span></div></div>
+  </div>
+</div>
+
+<h2>第三批 · 终端世界观深水区 <small>更"你"的创意（2026-10-02 增补）</small></h2>
+<p class="desc">这一批全部围绕你独有的「DKX 终端 / AI 开发者」世界观做深——别处抄不到。</p>
+
+<div class="grid">
+  <div class="card wide">
+    <div class="demo" style="display:block"><canvas id="matrixCv" height="190" style="width:100%;height:190px;background:#050705"></canvas><div class="stag-hint" style="text-align:center;background:#050705;color:#4a7a4a">↑ 终端敲 <b style="color:#9ee6a0">matrix</b> 触发全屏字符雨（10 秒自动消散）· 黑客帝国梗，程序员看到会心一笑</div></div>
+    <div class="cap"><b>㉑ 终端彩蛋包：matrix 字符雨 + play type 打字测速</b>终端里敲 <code>matrix</code> 播黑客帝国字符雨；敲 <code>play type</code> 进入打字速度测试（WPM 排行存本地）——程序员人设的终极彩蛋，面试演示杀手锏。<div class="meta"><span class="tag mid">约 2h</span><span class="tag">纯前端</span></div></div>
+  </div>
+  <div class="card full">
+    <div class="demo" style="display:block;background:linear-gradient(160deg,#14162b,#0d0e1a)"><div style="max-width:520px;margin:14px auto;background:#101223f2;border:1px solid #3b4470;border-radius:14px;padding:18px">
+      <div style="font-size:12px;color:#8b94ad">📊 你的 2026 编程年报 · 已生成</div>
+      <div style="display:flex;gap:18px;margin-top:10px;flex-wrap:wrap">
+        <div><div style="font-size:26px;font-weight:bold;color:#818cf8">10</div><div style="font-size:11px;color:#8b94ad">个项目</div></div>
+        <div><div style="font-size:26px;font-weight:bold;color:#ec4899">192</div><div style="font-size:11px;color:#8b94ad">个 commit</div></div>
+        <div><div style="font-size:26px;font-weight:bold;color:#34d399">20</div><div style="font-size:11px;color:#8b94ad">条说说</div></div>
+        <div><div style="font-size:26px;font-weight:bold;color:#fbbf24">41</div><div style="font-size:11px;color:#8b94ad">场 AI 会话</div></div>
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:#c9cedb">你是那种<b style="color:#aeb8ff">「让 AI 互相对抗」</b>的开发者 —— 这一年你最常用的工作流是：出方案 → 施工 → 敌意审查。</div>
+      <div style="margin-top:8px;font-size:11px;color:#5f6a85">[ 生成分享卡片 ] 按钮 → 保存为图片发朋友圈/简历附件</div>
+    </div></div>
+    <div class="cap"><b>㉒ 年度编程报告页（网易云年度歌单式）</b>基于你已有数据（项目数/commit 数/说说数/AI 会话数）自动生成一张可分享的「年度开发者报告」卡片——求职展示新姿势，访问者也能生成自己的"访客报告"。<div class="meta"><span class="tag mid">约 3h</span><span class="tag">数据全现成</span><span class="tag">html2canvas 生成图</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo"><div style="text-align:center"><div style="font-size:13px;color:#86efac">📖 上次读到这里</div><div style="margin-top:8px;width:200px;height:6px;border-radius:3px;background:#262c4a;overflow:hidden"><div style="width:68%;height:100%;background:#6366f1"></div></div><div style="font-size:11px;color:#8b92a6;margin-top:6px">《深度二开 gin-vue-blog》· 68%</div><div style="font-size:11px;color:#818cf8;margin-top:4px">→ 点按继续阅读</div></div></div>
+    <div class="cap"><b>㉓ 上次读到哪里</b>文章阅读进度存本地，再次打开弹出"继续阅读"提醒——长文读者体验直接起飞。<div class="meta"><span class="tag cost">约 1h</span><span class="tag">localStorage 实现</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo" style="flex-direction:column;gap:8px"><div style="display:flex;gap:10px"><span style="background:#1d2135;border:1px solid #2e3350;border-radius:8px;padding:6px 14px;font-size:12px;color:#aeb8ff">← 上一篇</span><span style="background:#1d2135;border:1px solid #2e3350;border-radius:8px;padding:6px 14px;font-size:12px;color:#aeb8ff">下一篇 →</span></div><div style="font-size:11px;color:#5f6a85">键盘左右键直接翻篇</div></div>
+    <div class="cap"><b>㉔ 键盘翻页</b>文章页按 ← → 直接切上一篇/下一篇，键盘党狂喜。<div class="meta"><span class="tag cost">约 0.5h</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo" style="flex-direction:column;gap:10px"><img src="../gin-blog-front/public/avatar.png" style="width:90px;height:90px;border-radius:28px;object-fit:cover;transition:transform .3s" onmouseover="this.style.transform='scale(1.08) rotate(-3deg)'" onmouseout="this.style.transform=''" alt=""><div class="stag-hint">鼠标悬停 → 头像放大+歪头看你</div></div>
+    <div class="cap"><b>㉕ 头像互动彩蛋</b>悬停头像会"歪头看你"，连点三次触发终端提示（可在终端里埋一句回复）——小而暖的细节。<div class="meta"><span class="tag cost">约 0.5h</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo"><div style="text-align:center"><div style="font-size:13px;color:#aeb8ff" id="loadText">正在唤醒 DKX OS…</div><div class="stag-hint">每 1.5s 换一句（文案池可自定义）</div></div></div>
+    <div class="cap"><b>㉖ 加载屏趣味文案</b>首屏加载的随机文案池：「正在唤醒 DKX OS…」「正在对抗式审查代码…」「AI 正在互相挑刺…」——等加载都变得有趣。<div class="meta"><span class="tag cost">约 0.5h</span></div></div>
+  </div>
+  <div class="card">
+    <div class="demo"><div style="text-align:center"><input id="calcIn" placeholder='试试输入 =12*3+5' style="background:#12141f;border:1px solid #2e3350;border-radius:8px;padding:8px 12px;color:#e8ebf4;font-family:Consolas,monospace;font-size:13px;outline:none;width:180px;text-align:center"><div id="calcOut" style="margin-top:8px;font-family:Consolas,monospace;color:#86efac;font-size:15px;min-height:22px"></div></div></div>
+    <div class="cap"><b>㉗ Ctrl+K 内置计算器</b>命令面板里输入 <code>=表达式</code> 直接算结果——极客彩蛋，Ctrl+K 的存在感再+1。<div class="meta"><span class="tag cost">约 0.5h</span></div></div>
+  </div>
+  <div class="card">
+    <div class="cap"><b>㉘ 快速滚动惯性倾斜</b>快速滚动列表时卡片轻微倾斜（momentum 风格），停下回正——很潮的手感细节。<div class="meta"><span class="tag mid">约 1.5h</span></div></div>
+  </div>
+  <div class="card">
+    <div class="cap"><b>㉙ 网站生日彩蛋</b>建站纪念日（9.28）全站自动换庆祝装 + 状态页弹出贺卡——一年一次的仪式感。<div class="meta"><span class="tag cost">约 1h</span></div></div>
+  </div>
+</div>
+
+<div class="foot">
+  <b>怎么选（我的推荐）：</b>第一档 ①②③④ 全拿（约 4h，感知提升最大）+ 第二档 ⑤⑧⑨（约 3.5h）+ 第三档 ⑩ 规则版（约 2h）≈ <b>10h 内全部落地</b>；氛围类 ⑥⑦ 看你喜欢（有人爱有人嫌闹）。<br><br>
+  <b>回复示例：</b>「第一档全要，⑤⑧⑨⑩ 也要，⑥ 先来樱花」/「只要第一档」/「⑩ 用真 LLM 接入」。<br>
+  选定后流程照旧：<b>静态示意图（如需）→ 你确认 → 施工 → 本地预览 → 部署验收</b>，每一项独立开关可单独撤。
+</div>
+
+<style>
+/* ---- 补充池演示样式 ---- */
+.magnet-zone{display:flex;flex-direction:column;align-items:center;gap:10px}
+.magnet{border:none;border-radius:999px;padding:10px 24px;font-size:14px;cursor:pointer;background:#6366f1;color:#fff;transition:transform .12s ease-out;will-change:transform}
+.count-wrap{text-align:center}
+.count-num{font-family:Consolas,monospace;font-size:38px;font-weight:bold;color:#818cf8}
+.cursor-zone{width:100%;height:100%;background:#12141f;position:relative;overflow:hidden}
+.cursor-dot{position:absolute;width:14px;height:14px;border-radius:50%;background:#818cf8;box-shadow:0 0 12px #818cf8;transform:translate(-50%,-50%);pointer-events:none;transition:left .08s ease-out,top .08s ease-out}
+.flow-title{font-size:34px;font-weight:bold;font-family:Consolas,monospace;background:linear-gradient(90deg,#6366f1,#ec4899,#34d399,#6366f1);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 4s linear infinite}
+@keyframes flow{to{background-position:300% 0}}
+.swatch-zone{display:flex;flex-direction:column;gap:12px;align-items:center}
+.mini-card{width:210px;border-radius:10px;background:#1b1f33;border:1px solid var(--mc,#6366f1);padding:12px;transition:border-color .3s}
+.mini-card h4{color:#e8ebf4;font-size:13px}
+.mini-card p{color:#8b92a6;font-size:11px;margin:2px 0 8px}
+.mini-btn{display:inline-block;background:var(--mc,#6366f1);color:#fff;border-radius:6px;padding:3px 14px;font-size:11px;transition:background .3s}
+.swatches{display:flex;gap:8px}
+.sw{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .15s}
+.sw:hover{transform:scale(1.25)}
+.star-zone{width:100%;height:100%;background:linear-gradient(160deg,#10121f,#0a0b14);position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+.meteor{position:absolute;top:-8px;left:75%;width:2.5px;height:2.5px;border-radius:50%;background:#c7d2fe;box-shadow:0 0 6px 2px rgba(199,210,254,.6);animation:meteor 6s ease-in infinite;opacity:0}
+@keyframes meteor{0%{opacity:0;transform:translate(0,0)}4%{opacity:1}12%{opacity:0;transform:translate(-140px,170px)}100%{opacity:0}}
+.sound-zone{display:flex;flex-direction:column;align-items:center;gap:10px}
+.key-btn{width:52px;height:44px;margin:0 4px;border-radius:8px;border:1px solid #2e3350;background:#1b1f33;color:#aeb8ff;font-size:17px;cursor:pointer;transition:transform .06s}
+.key-btn:active{transform:translateY(3px);background:#262c4a}
+</style>
+<script>
+/* 演示 1: 主题圆形扩散 */
+function toggleTheme(e){
+  const d = document.getElementById('themeDemo');
+  const x = e.clientX, y = e.clientY;
+  const r = d.getBoundingClientRect();
+  const cx = x - r.left, cy = y - r.top;
+  const circ = d.cloneNode(false);
+  circ.style.cssText = `position:absolute;left:0;top:0;width:100%;height:100%;margin:0;background:${d.classList.contains('dark')?'#eef0f8':'#12141f'};clip-path:circle(0 at ${cx}px ${cy}px);transition:clip-path .7s ease-out;z-index:1;border-radius:0;display:block`;
+  d.appendChild(circ);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ circ.style.clipPath = `circle(${Math.hypot(r.width,r.height)}px at ${cx}px ${cy}px)`; }));
+  setTimeout(()=>{ d.classList.toggle('dark'); d.querySelectorAll('div').forEach(c=>c.remove()); }, 720);
+}
+/* 演示 2: 聚光+倾斜 */
+const tc = document.getElementById('tiltCard');
+tc.addEventListener('mousemove', e => {
+  const r = tc.getBoundingClientRect();
+  const mx = e.clientX - r.left, my = e.clientY - r.top;
+  tc.style.setProperty('--mx', mx + 'px'); tc.style.setProperty('--my', my + 'px');
+  const rx = ((my / r.height) - .5) * -8, ry = ((mx / r.width) - .5) * 8;
+  tc.style.transform = `perspective(600px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+});
+tc.addEventListener('mouseleave', () => { tc.style.transform = ''; });
+/* 演示 3: 爆裂 */
+function boom(e){
+  const btn = e.currentTarget;
+  btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('pop');
+  const n = document.getElementById('likeN');
+  n.textContent = parseInt(n.textContent) + 1;
+  for (let i = 0; i < 10; i++) {
+    const s = document.createElement('span');
+    s.className = 'boom'; s.textContent = ['❤','✨','💫'][i % 3];
+    const ang = Math.random() * Math.PI * 2, dist = 40 + Math.random() * 50;
+    s.style.left = '50%'; s.style.top = '50%';
+    s.style.setProperty('--dx', Math.cos(ang) * dist + 'px');
+    s.style.setProperty('--dy', Math.sin(ang) * dist + 'px');
+    btn.appendChild(s);
+    setTimeout(() => s.remove(), 800);
+  }
+}
+/* 演示 4: 交错入场重播 */
+const stagDemo = document.getElementById('stagDemo');
+setInterval(() => { stagDemo.classList.remove('demo-in'); void stagDemo.offsetWidth; stagDemo.classList.add('demo-in'); }, 3500);
+setTimeout(() => stagDemo.classList.add('demo-in'), 500);
+/* 演示 5: 页面转场 */
+function ptGo(){
+  const a = document.getElementById('ptA'), b = document.getElementById('ptB');
+  a.classList.add('to'); b.classList.remove('to');
+  setTimeout(() => { b.classList.add('to'); a.classList.remove('to'); }, 1400);
+}
+/* 演示 7: 粒子连线 */
+const cv = document.getElementById('particles'), ctx = cv.getContext('2d');
+cv.width = cv.parentElement.clientWidth;
+const ps = Array.from({length: 34}, () => ({ x: Math.random()*cv.width, y: Math.random()*190, vx: (Math.random()-.5)*.6, vy: (Math.random()-.5)*.6 }));
+(function loop(){
+  ctx.clearRect(0, 0, cv.width, 190);
+  for (const p of ps) {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0 || p.x > cv.width) p.vx *= -1;
+    if (p.y < 0 || p.y > 190) p.vy *= -1;
+    ctx.fillStyle = 'rgba(129,140,248,.8)';
+    ctx.beginPath(); ctx.arc(p.x, p.y, 1.6, 0, 7); ctx.fill();
+  }
+  for (let i = 0; i < ps.length; i++) for (let j = i+1; j < ps.length; j++) {
+    const dx = ps[i].x-ps[j].x, dy = ps[i].y-ps[j].y, d = Math.hypot(dx, dy);
+    if (d < 90) { ctx.strokeStyle = `rgba(129,140,248,${(1-d/90)*.35})`; ctx.beginPath(); ctx.moveTo(ps[i].x, ps[i].y); ctx.lineTo(ps[j].x, ps[j].y); ctx.stroke(); }
+  }
+  requestAnimationFrame(loop);
+})();
+/* 第三批: matrix 字符雨 */
+const mc = document.getElementById('matrixCv');
+if (mc) {
+  mc.width = mc.parentElement.clientWidth;
+  const mctx = mc.getContext('2d');
+  const chars = '01アイウエオカキクケコ<>{}[]();'.split('');
+  const cols = Math.floor(mc.width / 14);
+  const drops = Array.from({length: cols}, () => Math.random() * -20);
+  setInterval(() => {
+    mctx.fillStyle = 'rgba(5,7,5,.08)';
+    mctx.fillRect(0, 0, mc.width, 190);
+    mctx.fillStyle = '#9ee6a0';
+    mctx.font = '12px Consolas';
+    drops.forEach((y, i) => {
+      mctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * 14, y * 14);
+      if (y * 14 > 190 && Math.random() > .96) drops[i] = 0;
+      drops[i]++;
+    });
+  }, 55);
+}
+/* 第三批: 计算器 */
+const ci = document.getElementById('calcIn');
+if (ci) ci.addEventListener('input', () => {
+  const v = ci.value.trim();
+  const out = document.getElementById('calcOut');
+  if (!v.startsWith('=')) { out.textContent = ''; return; }
+  try {
+    const expr = v.slice(1);
+    if (!/^[\d+\-*/(). ]+$/.test(expr)) { out.textContent = '只支持数字和 +-*/'; return; }
+    out.textContent = '= ' + Function('"use strict";return (' + expr + ')')();
+  } catch { out.textContent = '表达式不完整…'; }
+});
+/* 第三批: 加载文案轮播 */
+const loadTexts = ['正在唤醒 DKX OS…', '正在对抗式审查代码…', 'AI 正在互相挑刺…', '正在给 192 个 commit 排队…', '正在部署到阿里云…'];
+let lti = 0;
+setInterval(() => {
+  const el = document.getElementById('loadText');
+  if (el) { lti = (lti + 1) % loadTexts.length; el.textContent = loadTexts[lti]; }
+}, 1500);
+window.addEventListener('resize', () => { cv.width = cv.parentElement.clientWidth; });
+/* 补充池: 磁吸按钮 */
+const mz = document.querySelector('.magnet-zone'), mb = document.getElementById('magnetBtn');
+mz.addEventListener('mousemove', e => {
+  const r = mb.getBoundingClientRect(), mc = mz.getBoundingClientRect();
+  const bx = r.left + r.width/2 - mc.left, by = r.top + r.height/2 - mc.top;
+  const dx = e.clientX - mc.left - bx, dy = e.clientY - mc.top - by, d = Math.hypot(dx, dy);
+  mb.style.transform = d < 90 ? `translate(${dx*.35}px,${dy*.35}px)` : 'translate(0,0)';
+});
+mz.addEventListener('mouseleave', () => { mb.style.transform = 'translate(0,0)'; });
+/* 补充池: 数字滚动 */
+const cn = document.getElementById('countNum');
+setInterval(() => {
+  const target = 1024, t0 = performance.now();
+  const tick = t => {
+    const p = Math.min((t - t0) / 1400, 1);
+    cn.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}, 3000);
+/* 补充池: 鼠标跟随光点 */
+const cz = document.getElementById('cursorZone'), cd = document.getElementById('cursorDot');
+cz.addEventListener('mousemove', e => {
+  const r = cz.getBoundingClientRect();
+  cd.style.left = (e.clientX - r.left) + 'px';
+  cd.style.top = (e.clientY - r.top) + 'px';
+});
+/* 补充池: 主题色切换 */
+document.querySelectorAll('.sw').forEach(sw => sw.addEventListener('click', () => {
+  document.getElementById('miniCard').style.setProperty('--mc', sw.dataset.c);
+}));
+/* 补充池: 机械键盘音 */
+let audioCtx;
+function keySound(btn){
+  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+  o.type = 'square'; o.frequency.value = 180 + Math.random() * 120;
+  g.gain.setValueAtTime(.06, audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime + .07);
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(); o.stop(audioCtx.currentTime + .08);
+  btn.style.transform = 'translateY(3px)';
+  setTimeout(() => btn.style.transform = '', 80);
+}
+</script>
+</body>
+</html>

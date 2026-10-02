@@ -65,7 +65,7 @@ const coverStyle = computed(() => {
   const page = pageList.value.find(e => e.label === 'message')
   return page
     ? `background: url('${page?.cover}') center center / cover no-repeat;`
-      : 'background: url("/covers/message.svg") center center / cover no-repeat;'
+    : 'background: url("/covers/message.svg") center center / cover no-repeat;'
 })
 </script>
 

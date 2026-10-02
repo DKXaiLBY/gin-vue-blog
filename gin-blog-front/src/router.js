@@ -112,6 +112,14 @@ const basicRoutes = [
     },
   },
   {
+    name: 'Annual',
+    path: '/annual',
+    component: () => import('@/views/annual/index.vue'),
+    meta: {
+      title: '年度报告',
+    },
+  },
+  {
     name: 'Link',
     path: '/links',
     component: () => import('@/views/link/index.vue'),

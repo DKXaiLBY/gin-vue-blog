@@ -106,7 +106,7 @@ function scrollToArticles() {
   <!-- 内容区 -->
   <div id="articles" class="mx-auto mb-8 max-w-[1230px] px-3">
     <!-- 分类胶囊栏 -->
-    <div class="mb-8 flex items-center gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div class="[scrollbar-width:none] mb-8 flex items-center gap-2.5 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
       <button
         class="shrink-0 rounded-full px-4 py-1.5 text-sm transition-300"
         :class="activeCategoryId === 0
@@ -130,7 +130,7 @@ function scrollToArticles() {
 
     <div class="grid grid-cols-12 gap-4">
       <!-- 左半部分 -->
-      <div class="col-span-12 space-y-5 lg:col-span-9">
+      <div class="col-span-12 lg:col-span-9 space-y-5">
         <!-- 说说轮播 -->
         <TalkingCarousel :style="{ '--i': 0 }" />
         <!-- 文章列表 -->
@@ -142,15 +142,15 @@ function scrollToArticles() {
         <div v-if="loading" class="min-h-10 f-c-c">
           <span class="animate-pulse text-xl text-muted">loading...</span>
         </div>
-        <div v-else-if="!finished" class="min-h-10 f-c-c mt-2 lg:mt-5">
+        <div v-else-if="!finished" class="mt-2 min-h-10 f-c-c lg:mt-5">
           <button
-            class="rounded-full border border-line px-8 py-2.5 text-sm transition-300 hover:border-primary hover:text-primary"
+            class="border border-line rounded-full px-8 py-2.5 text-sm transition-300 hover:border-primary hover:text-primary"
             @click="loadMore"
           >
             加载更多
           </button>
         </div>
-        <div v-else-if="articleList.length" class="min-h-10 f-c-c mt-2 lg:mt-5 text-gray">
+        <div v-else-if="articleList.length" class="mt-2 min-h-10 f-c-c text-gray lg:mt-5">
           没有更多文章啦!
           <button class="ml-2 flex items-center text-primary" @click="selectCategory(activeCategoryId)">
             回到顶部 <span class="i-mdi:arrow-up-bold-box ml-1 inline-block text-xl" />
