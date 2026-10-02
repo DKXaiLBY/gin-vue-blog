@@ -1,6 +1,6 @@
 <script setup>
 import html2canvas from 'html2canvas'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 import api from '@/api'
 
@@ -96,7 +96,7 @@ async function saveCard() {
       <div
         id="annualCard"
         class="rounded-2xl p-8 text-white shadow-2xl"
-        style="background: radial-gradient(600px 300px at 85% -10%, rgb(99 102 241 / 30%), transparent), radial-gradient(500px 280px at 0% 110%, rgb(236 72 153 / 16%), transparent), #0d0e1a"
+        style="background: radial-gradient(600px 300px at 85% -10%, rgba(99,102,241,0.3), transparent), radial-gradient(500px 280px at 0% 110%, rgba(236,72,153,0.16), transparent), #0d0e1a"
       >
         <p class="text-sm text-white/60">
           📊 DKXaiLBY 的 2026 编程年报 · 已生成

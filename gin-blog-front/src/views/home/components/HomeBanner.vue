@@ -15,9 +15,11 @@ function scrollDown() {
   emit('scrollDown')
 }
 
-// 按时段问候: 凌晨也问候夜猫子, 不留空档
+// 按时段问候: 依赖 nowTick 响应式刷新 (30s 一次), 跨过时段问候语会跟着变
+const nowTick = ref(Date.now())
+
 const greeting = computed(() => {
-  const h = new Date().getHours()
+  const h = new Date(nowTick.value).getHours()
   if (h >= 5 && h < 9) {
     return '早上好'
   }
@@ -41,11 +43,14 @@ const greeting = computed(() => {
 // --fix 又会把 :src 转回静态, 所以必须放 script 里)
 const AVATAR_SRC = '/avatar.png'
 
-// 实时在线人数: 30s 轮询一次, 拿不到就不显示
+// 实时在线人数: 30s 轮询一次, 拿不到就不显示;
+// 顺手把 report 心跳重发一次, 让"在线名单"反映的是活跃访客而不是新开标签页
 const onlineCount = ref(0)
 let onlineTimer = null
 
 async function loadOnline() {
+  nowTick.value = Date.now()
+  api.report().catch(() => {})
   try {
     const resp = await api.getOnline()
     if (resp.code === 0) {

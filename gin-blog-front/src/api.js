@@ -6,8 +6,8 @@ export default {
   logout: () => baseRequest.get('/logout'),
   /** 发送验证码 */
   sendCode: params => baseRequest.get('/code', { params }),
-  /** 上报访客信息: 统计访问量与访客地域, 匿名接口 */
-  report: () => baseRequest.post('/report'),
+  /** 上报访客信息: 统计访问量与访客地域, 匿名接口; 也兼作在线心跳 (静默失败) */
+  report: (config = {}) => baseRequest.post('/report', null, { ...config, silent: true }),
 
   /** 关于我 */
   about: () => request.get('/about'),
@@ -36,10 +36,10 @@ export default {
   getProjects: () => request.get('/project/list'),
   /** RSS 2.0 订阅源 (浏览器不直接用, 阅读器拉取) */
   getRSS: () => request.get('/rss'),
-  /** 站点运行状态 (只读非敏感) */
-  getStatus: () => request.get('/status'),
-  /** 当前在线访客数 */
-  getOnline: () => request.get('/online'),
+  /** 站点运行状态 (只读非敏感; 轮询类请求静默失败, 由调用方降级) */
+  getStatus: (config = {}) => request.get('/status', { ...config, silent: true }),
+  /** 当前在线访客数 (静默失败) */
+  getOnline: (config = {}) => request.get('/online', { ...config, silent: true }),
   /** 说说列表 */
   getTalks: (params = {}) => request.get('/talk/list', { params }),
   /** 说说详情 */

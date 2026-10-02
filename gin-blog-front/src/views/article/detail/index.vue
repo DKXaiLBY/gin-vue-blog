@@ -15,6 +15,7 @@ import GiscusComment from '@/components/GiscusComment.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import ULightbox from '@/components/ui/ULightbox.vue'
 import { convertImgUrl, stripMarkdown } from '@/utils'
+import { useAppStore } from '@/store'
 import { addCopyButtons } from '@/utils/code-block'
 import { typesetMath } from '@/utils/mathjax'
 import BannerInfo from './components/BannerInfo.vue'
@@ -36,10 +37,7 @@ hljs.registerLanguage('javascript', javascript)
 
 const route = useRoute()
 const router = useRouter()
-
-// 键盘翻页监听: 组件挂载即注册, 卸载时移除 (同时兼容 keep-alive 场景靠路由 key 重建)
-onMounted(() => window.addEventListener('keydown', onKeyNav))
-onBeforeUnmount(() => window.removeEventListener('keydown', onKeyNav))
+const appStore = useAppStore()
 
 const data = ref({
   id: 0,
@@ -59,6 +57,10 @@ const data = ref({
   recommend_articles: [],
 })
 
+// 键盘翻页监听: 组件挂载即注册, 卸载时移除 (同时兼容 keep-alive 场景靠路由 key 重建)
+onMounted(() => window.addEventListener('keydown', onKeyNav))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKeyNav))
+
 // 文章内容
 const previewRef = ref(null)
 const loading = ref(true)
@@ -74,13 +76,21 @@ function onPreviewClick(e) {
   }
 }
 
-// 键盘 ← → 翻上一篇/下一篇; 灯箱/登录框开着时不抢按键
+// 键盘 ← → 翻上一篇/下一篇; 浮层(灯箱/收款码/登录/搜索)开着时、输入控件聚焦时、
+// IME 组合中都不抢按键
 function onKeyNav(e) {
-  if (lightboxSrc.value || e.ctrlKey || e.metaKey || e.altKey) {
+  if (lightboxSrc.value || e.ctrlKey || e.metaKey || e.altKey || e.isComposing) {
     return
   }
   const tag = e.target?.tagName
-  if (tag === 'INPUT' || tag === 'TEXTAREA') {
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target?.isContentEditable) {
+    return
+  }
+  if (appStore.searchFlag || appStore.loginFlag || appStore.registerFlag) {
+    return
+  }
+  // 任意全屏浮层开着 (收款码/灯箱) 时不翻页
+  if (document.querySelector('[data-overlay-open="true"]')) {
     return
   }
   const go = a => a?.id && router.push(`/article/${a.id}`)
@@ -180,6 +190,7 @@ const styleVal = computed(() =>
 </script>
 
 <template>
+  <div>
   <!-- 阅读进度 -->
   <div
     class="fixed inset-x-0 top-0 z-999 h-0.5 bg-primary"
@@ -254,6 +265,7 @@ const styleVal = computed(() =>
   <footer>
     <AppFooter />
   </footer>
+  </div>
 </template>
 
 <style scoped>

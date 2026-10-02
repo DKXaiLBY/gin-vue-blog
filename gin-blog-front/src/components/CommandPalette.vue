@@ -137,6 +137,10 @@ function onInputKey(e) {
     move(-1)
   }
   else if (e.key === 'Enter') {
+    // IME 组合中的回车 (选字) 不当作执行
+    if (e.isComposing || e.keyCode === 229) {
+      return
+    }
     // 计算器模式: 回车复制结果
     if (calcResult.value && calcResult.value.value !== null) {
       navigator.clipboard?.writeText(String(calcResult.value.value)).catch(() => {})

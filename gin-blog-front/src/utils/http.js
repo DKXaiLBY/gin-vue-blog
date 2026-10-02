@@ -74,8 +74,10 @@ function responseSuccess(response) {
       const userStore = useUserStore()
       userStore.resetLoginState()
     }
-    // $message 在 App.vue 的 onMounted 里才挂上, 早期失败的请求可能取不到
-    window.$message?.error(message)
+    // 调用方声明 silent (轮询/兜底类请求) 时不弹全局提示, 由调用方自行降级
+    if (!response.config?.silent) {
+      window.$message?.error(message)
+    }
     return Promise.reject(responseData)
   }
   return Promise.resolve(responseData)
@@ -97,8 +99,8 @@ function responseFail(error) {
     const appStore = useAppStore()
     appStore.setLoginFlag(true)
   }
-  else {
-    // 超时(ECONNABORTED)、断网(ERR_NETWORK)、5xx 等以前只进 console, 用户看不到任何反馈
+  else if (!error.config?.silent) {
+    // 超时(ECONNABORTED)、断网(ERR_NETWORK)、5xx 等; silent 请求由调用方自行降级
     window.$message?.error(networkErrorText(error))
   }
   return Promise.reject(error)

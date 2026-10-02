@@ -100,78 +100,80 @@ function scrollToArticles() {
 </script>
 
 <template>
-  <!-- Hero: 大字自我介绍 + 小猫头像 + 一言 (diygod 式开场) -->
-  <Hero @scroll-down="scrollToArticles" />
+  <div>
+    <!-- Hero: 大字自我介绍 + 小猫头像 + 一言 (diygod 式开场) -->
+    <Hero @scroll-down="scrollToArticles" />
 
-  <!-- 内容区 -->
-  <div id="articles" class="mx-auto mb-8 max-w-[1230px] px-3">
-    <!-- 分类胶囊栏 -->
-    <div class="[scrollbar-width:none] mb-8 flex items-center gap-2.5 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
-      <button
-        class="shrink-0 rounded-full px-4 py-1.5 text-sm transition-300"
-        :class="activeCategoryId === 0
-          ? 'bg-primary text-white'
-          : 'bg-surface text-muted hover:text-primary'"
-        @click="selectCategory(0)"
-      >
-        最新
-      </button>
-      <button
-        v-for="cat of categories" :key="cat.id"
-        class="shrink-0 rounded-full px-4 py-1.5 text-sm transition-300"
-        :class="activeCategoryId === cat.id
-          ? 'bg-primary text-white'
-          : 'bg-surface text-muted hover:text-primary'"
-        @click="selectCategory(cat.id)"
-      >
-        {{ cat.name }}
-      </button>
-    </div>
-
-    <div class="grid grid-cols-12 gap-4">
-      <!-- 左半部分 -->
-      <div class="col-span-12 lg:col-span-9 space-y-5">
-        <!-- 说说轮播 -->
-        <TalkingCarousel :style="{ '--i': 0 }" />
-        <!-- 文章列表 -->
-        <div class="space-y-5">
-          <ArticleCard v-for="(item, idx) in articleList" :key="item.id" :article="item" :idx="idx" />
-        </div>
-
-        <!-- 加载状态 -->
-        <div v-if="loading" class="min-h-10 f-c-c">
-          <span class="animate-pulse text-xl text-muted">loading...</span>
-        </div>
-        <div v-else-if="!finished" class="mt-2 min-h-10 f-c-c lg:mt-5">
-          <button
-            class="border border-line rounded-full px-8 py-2.5 text-sm transition-300 hover:border-primary hover:text-primary"
-            @click="loadMore"
-          >
-            加载更多
-          </button>
-        </div>
-        <div v-else-if="articleList.length" class="mt-2 min-h-10 f-c-c text-gray lg:mt-5">
-          没有更多文章啦!
-          <button class="ml-2 flex items-center text-primary" @click="selectCategory(activeCategoryId)">
-            回到顶部 <span class="i-mdi:arrow-up-bold-box ml-1 inline-block text-xl" />
-          </button>
-        </div>
+    <!-- 内容区 -->
+    <div id="articles" class="mx-auto mb-8 max-w-[1230px] px-3">
+      <!-- 分类胶囊栏 -->
+      <div class="[scrollbar-width:none] mb-8 flex items-center gap-2.5 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
+        <button
+          class="shrink-0 rounded-full px-4 py-1.5 text-sm transition-300"
+          :class="activeCategoryId === 0
+            ? 'bg-primary text-white'
+            : 'bg-surface text-muted hover:text-primary'"
+          @click="selectCategory(0)"
+        >
+          最新
+        </button>
+        <button
+          v-for="cat of categories" :key="cat.id"
+          class="shrink-0 rounded-full px-4 py-1.5 text-sm transition-300"
+          :class="activeCategoryId === cat.id
+            ? 'bg-primary text-white'
+            : 'bg-surface text-muted hover:text-primary'"
+          @click="selectCategory(cat.id)"
+        >
+          {{ cat.name }}
+        </button>
       </div>
 
-      <!-- 右半部分 -->
-      <div class="col-span-0 lg:col-span-3">
-        <!-- sticky 实现悬浮固定效果 -->
-        <div class="sticky top-24 space-y-5">
-          <!-- GitHub 提交热力图 (site.js 未配置用户名时自动隐藏) -->
-          <GitHubHeatmap :style="{ '--i': 0 }" />
-          <!-- 公告 -->
-          <Announcement :style="{ '--i': 1 }" />
-          <!-- 网站资讯 -->
-          <WebsiteInfo :style="{ '--i': 2 }" />
+      <div class="grid grid-cols-12 gap-4">
+        <!-- 左半部分 -->
+        <div class="col-span-12 lg:col-span-9 space-y-5">
+          <!-- 说说轮播 -->
+          <TalkingCarousel :style="{ '--i': 0 }" />
+          <!-- 文章列表 -->
+          <div class="space-y-5">
+            <ArticleCard v-for="(item, idx) in articleList" :key="item.id" :article="item" :idx="idx" />
+          </div>
+
+          <!-- 加载状态 -->
+          <div v-if="loading" class="min-h-10 f-c-c">
+            <span class="animate-pulse text-xl text-muted">loading...</span>
+          </div>
+          <div v-else-if="!finished" class="mt-2 min-h-10 f-c-c lg:mt-5">
+            <button
+              class="border border-line rounded-full px-8 py-2.5 text-sm transition-300 hover:border-primary hover:text-primary"
+              @click="loadMore"
+            >
+              加载更多
+            </button>
+          </div>
+          <div v-else-if="articleList.length" class="mt-2 min-h-10 f-c-c text-gray lg:mt-5">
+            没有更多文章啦!
+            <button class="ml-2 flex items-center text-primary" @click="selectCategory(activeCategoryId)">
+              回到顶部 <span class="i-mdi:arrow-up-bold-box ml-1 inline-block text-xl" />
+            </button>
+          </div>
+        </div>
+
+        <!-- 右半部分 -->
+        <div class="col-span-0 lg:col-span-3">
+          <!-- sticky 实现悬浮固定效果 -->
+          <div class="sticky top-24 space-y-5">
+            <!-- GitHub 提交热力图 (site.js 未配置用户名时自动隐藏) -->
+            <GitHubHeatmap :style="{ '--i': 0 }" />
+            <!-- 公告 -->
+            <Announcement :style="{ '--i': 1 }" />
+            <!-- 网站资讯 -->
+            <WebsiteInfo :style="{ '--i': 2 }" />
+          </div>
         </div>
       </div>
     </div>
+    <!-- 底部 -->
+    <AppFooter />
   </div>
-  <!-- 底部 -->
-  <AppFooter />
 </template>

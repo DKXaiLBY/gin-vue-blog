@@ -4,9 +4,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import TerminalHero from './TerminalHero.vue'
 
-// 跳转只记不用
+// 跳转只记不用; useRoute 供导航 guard 判断当前路径
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push: vi.fn().mockResolvedValue(undefined) }),
+  useRoute: () => ({ path: '/' }),
 }))
 
 // 一言接口返回固定句子, fortune 命令的断言才稳定
@@ -31,7 +32,7 @@ async function runCmd(wrapper, cmd) {
   await flushPromises()
 }
 
-describe('terminalHero 命令分发', () => {
+describe('TerminalHero 命令分发', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.unstubAllGlobals()

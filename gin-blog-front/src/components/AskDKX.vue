@@ -80,10 +80,11 @@ async function fallback(query) {
 }
 
 function matchKB(q) {
+  const ql = q.toLowerCase()
   let best = null
   let bestScore = 0
   for (const item of KB) {
-    const score = item.keys.filter(k => q.includes(k)).length
+    const score = item.keys.filter(k => ql.includes(k.toLowerCase())).length
     if (score > bestScore) {
       bestScore = score
       best = item
@@ -106,7 +107,11 @@ async function ask(q) {
   }, 450)
 }
 
-function send() {
+function send(e) {
+  // IME 组合中的回车 (选字) 不当作发送
+  if (e?.isComposing || e?.keyCode === 229) {
+    return
+  }
   const q = input.value.trim()
   if (!q || thinking.value) {
     return
@@ -178,7 +183,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
             ref="inputEl" v-model="input" type="text"
             placeholder="问我任何关于本站的问题…"
             autocomplete="off" spellcheck="false"
-            @keydown.enter="send"
+            @keydown.enter="send($event)"
           >
           <button class="ai-send" type="button" aria-label="发送" @click="send">
             <span class="i-mdi:send block" />
@@ -197,7 +202,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
 .ai-fab {
   position: fixed;
   right: 18px;
-  bottom: 118px;
+  bottom: 190px;
   z-index: 30;
   display: flex;
   align-items: center;

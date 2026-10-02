@@ -26,6 +26,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     <Transition name="lb">
       <div
         v-if="src"
+        data-overlay-open="true"
         class="fixed inset-0 z-999 f-c-c bg-black/80 backdrop-blur-sm"
         @click.self="emit('close')"
       >

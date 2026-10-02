@@ -115,6 +115,7 @@ function closeQr() {
     <Transition name="fade">
       <div
         v-if="showQr"
+        data-overlay-open="true"
         class="fixed inset-0 z-999 f-c-c bg-black/60 p-4"
         @click.self="closeQr"
       >

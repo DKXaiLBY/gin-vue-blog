@@ -366,11 +366,20 @@ const onlineVisitorWindow = 5 * time.Minute
 // 在线名单的 Redis ZSet: member = 访客指纹, score = 最近上报时间戳
 const onlineVisitorKey = "blog:online_visitors"
 
-// markVisitorOnline 把访客指纹记入在线名单, 并顺手清掉过期的旧记录
+// markVisitorOnline 把访客指纹记入在线名单, 并顺手清掉过期的旧记录。
+// 三条命令 TxPipelined 原子提交; 失败打告警不静默 (与 incrViewCountOfDay 风格一致)。
 func markVisitorOnline(ctx context.Context, rdb *redis.Client, fingerprint string) {
 	now := float64(time.Now().Unix())
-	rdb.ZAdd(ctx, onlineVisitorKey, redis.Z{Score: now, Member: fingerprint})
-	rdb.ZRemRangeByScore(ctx, onlineVisitorKey, "0", strconv.FormatFloat(now-float64(onlineVisitorWindow.Seconds()), 'f', 0, 64))
+	cutoff := strconv.FormatFloat(now-float64(onlineVisitorWindow.Seconds()), 'f', 0, 64)
+	if _, err := rdb.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
+		pipe.ZAdd(ctx, onlineVisitorKey, redis.Z{Score: now, Member: fingerprint})
+		pipe.ZRemRangeByScore(ctx, onlineVisitorKey, "0", cutoff)
+		// 兜底 TTL: 即使没有真实流量来触发清理, 名单也不会永久膨胀
+		pipe.Expire(ctx, onlineVisitorKey, 24*time.Hour)
+		return nil
+	}); err != nil {
+		slog.Warn("在线名单更新失败", "err", err)
+	}
 }
 
 // @Summary 当前在线访客数

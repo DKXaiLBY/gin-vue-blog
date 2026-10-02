@@ -159,6 +159,21 @@ const handlers = [
     blog_config: blogConfig,
   })],
 
+  // 站点状态 + 在线人数 + 年度报告页的数据源 (与后端 /front/status、/front/online 同构)
+  ['GET', /^\/front\/status$/, () => ok({
+    go_version: 'go1.26.8 (mock)',
+    goroutines: 10,
+    heap_mb: '12.8',
+    uptime_seconds: 86400 * 3,
+    articles: state.articles.length,
+    talks: state.talks.length,
+    projects: 4,
+    monitor_ok: true,
+    monitor_ts: Math.floor(Date.now() / 1000),
+    monitor_note: '',
+  })],
+  ['GET', /^\/front\/online$/, () => ok({ online: 3 })],
+
   ['GET', /^\/front\/article\/list$/, (params) => {
     let list = state.articles
     if (params.category_id) {

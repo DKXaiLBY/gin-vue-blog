@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 import { storeToRefs } from 'pinia'
 
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import DKXOS from '@/components/DKXOS.vue'
 import { useAppStore } from '@/store'
@@ -16,6 +16,7 @@ import { getOneSentence } from '@/utils'
  */
 
 const router = useRouter()
+const route = useRoute()
 const { blogConfig, articleCount, categoryCount, tagCount, viewCount, isMobile } = storeToRefs(useAppStore())
 
 const MOTTO = '把开源项目吃透、改造成自己的——这个过程学到的东西，比看十篇教程都多。'
@@ -59,7 +60,15 @@ const TYPE_PHRASES = [
   'premature optimization is the root of all evil',
   'there are two hard things in computer science',
 ]
-const bestWpm = Number(localStorage.getItem('dkx-best-wpm') || 0)
+// localStorage 在隐私模式/企业策略下会抛 SecurityError, 读写都要包
+const bestWpm = ref((() => {
+  try {
+    return Number(localStorage.getItem('dkx-best-wpm')) || 0
+  }
+  catch {
+    return 0
+  }
+})())
 
 // 测速时输入行实时变色: 前缀全对=绿, 打错=粉
 const inputOk = computed(() => {
@@ -92,10 +101,19 @@ function handleTypeInput(v) {
   }
   if (v === tt.target) {
     settleTypeTest(v)
+    return
   }
+  // 打错给明确反馈, 不让界面像死机
+  let wrong = 0
+  for (let i = 0; i < Math.max(v.length, tt.target.length); i++) {
+    if (v[i] !== tt.target[i]) {
+      wrong++
+    }
+  }
+  entries.value.push(outHtml(`<span class="t-pink">✗ 有 ${wrong} 处不符 — 照着目标句重新输入 (输入 exit 退出)</span>`))
 }
 
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
 
 function outHtml(html) {
   return { kind: 'out', html }
@@ -136,7 +154,12 @@ async function dispatch(low) {
   }
   else if (low === 'sudo hire-me' || low === 'hire-me' || low === 'cat resume.pdf') {
     entries.value.push(outHtml(`<span class="t-amber">▸ 正在打开简历页… ✔</span>`))
-    setTimeout(navTo, 600, '/resume')
+    // 600ms 后跳转, 但用户若已自己点去别处就不再拽人
+    setTimeout(() => {
+      if (route.currentRoute.value.path === '/') {
+        navTo('/resume')
+      }
+    }, 600)
   }
   else if (low === 'fortune') {
     // 一言接口在这里找到了新家: 原来横幅上的打字机一句话
@@ -157,7 +180,11 @@ async function dispatch(low) {
   }
   else if (low === 'annual' || low === 'cat annual.report') {
     entries.value.push(outHtml(`<span class="t-amber">▸ 正在生成你的年度编程报告… ✔</span>`))
-    setTimeout(navTo, 600, '/annual')
+    setTimeout(() => {
+      if (route.currentRoute.value.path === '/') {
+        navTo('/annual')
+      }
+    }, 600)
   }
   else if (low.startsWith('cat ')) {
     entries.value.push(outHtml(`cat: ${esc(low.slice(4))}: No such file or directory<br><span class="t-dim">试试 cat motto.txt</span>`))
@@ -182,17 +209,17 @@ function settleTypeTest(typed) {
   const seconds = Math.max((Date.now() - tt.startTime) / 1000, 1)
   // WPM 标准算法: 每5个字符折算1个词
   const wpm = Math.round(typed.length / 5 / (seconds / 60))
-  const acc = Math.round((typed.length / tt.target.length) * 100)
-  let line = `<span class="t-amber">▸ ${wpm} WPM</span> · 用时 ${seconds.toFixed(1)}s · 准确率 ${acc}%`
-  if (wpm > bestWpm) {
+  let line = `<span class="t-amber">▸ ${wpm} WPM</span> · 用时 ${seconds.toFixed(1)}s`
+  if (wpm > bestWpm.value) {
+    bestWpm.value = wpm
     line += ` <span class="t-cmd">🏆 新纪录!</span>`
     try {
       localStorage.setItem('dkx-best-wpm', String(wpm))
     }
     catch { /* 隐私模式随缘 */ }
   }
-  else if (bestWpm > 0) {
-    line += ` <span class="t-dim">(个人最佳 ${bestWpm} WPM)</span>`
+  else if (bestWpm.value > 0) {
+    line += ` <span class="t-dim">(个人最佳 ${bestWpm.value} WPM)</span>`
   }
   entries.value.push(outHtml(line))
   typeTest.value = null
@@ -220,7 +247,11 @@ async function exec(raw) {
   }
 }
 
-function onEnter() {
+// IME 组合中的回车 (选字) 不当作执行
+function onEnter(e) {
+  if (e?.isComposing || e?.keyCode === 229) {
+    return
+  }
   const v = input.value
   input.value = ''
   if (typeTest.value) {
@@ -231,8 +262,11 @@ function onEnter() {
   exec(v)
 }
 
-// 上下方向键翻历史命令, 真终端的手感
+// 上下方向键翻历史命令, 真终端的手感; 测速模式下禁用 (避免历史灌进测速输入)
 function onKeydown(e) {
+  if (typeTest.value) {
+    return
+  }
   if (e.key === 'ArrowUp') {
     e.preventDefault()
     if (histIdx.value > 0) {
@@ -344,7 +378,7 @@ onBeforeUnmount(() => {
           autocomplete="off" autocapitalize="off" spellcheck="false"
           aria-label="输入命令, help 查看可用命令"
           @input="onTestInput"
-          @keydown.enter="onEnter" @keydown.up.prevent="onKeydown" @keydown.down.prevent="onKeydown"
+          @keydown.enter="onEnter($event)" @keydown.up.prevent="onKeydown" @keydown.down.prevent="onKeydown"
         >
       </div>
     </div>
@@ -427,6 +461,10 @@ onBeforeUnmount(() => {
 
 .t-amber {
   color: #fbbf24;
+}
+
+.t-pink {
+  color: #f472b6;
 }
 
 .t-pill {
