@@ -173,6 +173,8 @@ const handlers = [
     monitor_note: '',
   })],
   ['GET', /^\/front\/online$/, () => ok({ online: 3 })],
+  // AI 助手: mock 模式返回 use_rules=true, 前端回落规则版 (规则库在 AskDKX 组件里)
+  ['POST', /^\/front\/ai\/chat$/, () => ok({ use_rules: true, answer: '' })],
 
   ['GET', /^\/front\/article\/list$/, (params) => {
     let list = state.articles

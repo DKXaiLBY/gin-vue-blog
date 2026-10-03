@@ -832,6 +832,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/front/ai/chat": {
+            "post": {
+                "description": "检索站内内容作为上下文调用 LLM 回答; 未配置 Key 时返回 use_rules 提示前端回落",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Front"
+                ],
+                "summary": "AI 助手问答",
+                "parameters": [
+                    {
+                        "description": "问题",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handle.AIChatReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "0": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handle.Response-map_string_string"
+                        }
+                    }
+                }
+            }
+        },
         "/front/article/archive": {
             "get": {
                 "description": "按时间归档的文章列表",
@@ -3715,6 +3749,18 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "handle.AIChatReq": {
+            "type": "object",
+            "required": [
+                "question"
+            ],
+            "properties": {
+                "question": {
+                    "type": "string",
+                    "maxLength": 200
+                }
+            }
+        },
         "handle.AboutReq": {
             "type": "object",
             "properties": {

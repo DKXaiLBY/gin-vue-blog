@@ -79,6 +79,12 @@ type Config struct {
 		UseHTTPS      bool   // 是否使用https
 		UseCdnDomains bool   // 上传是否使用 CDN 上传加速
 	}
+	AI struct {
+		// OpenAI 兼容接口 (智谱/DeepSeek/通义等均可), Key 留空时 AI 助手回落规则版
+		ApiBase string `mapstructure:"api-base"` // 如 https://open.bigmodel.cn/api/paas/v4
+		ApiKey  string `mapstructure:"api-key"`  // 平台申请的 API Key
+		Model   string `mapstructure:"model"`    // 如 glm-4-flash (免费)
+	}
 }
 
 var Conf *Config
@@ -111,6 +117,9 @@ var envBindings = map[string]string{
 	"mysql.password": "MYSQL_PASSWORD",
 	"redis.addr":     "REDIS_ADDR",
 	"redis.password": "REDIS_PASSWORD",
+	"ai.api-base":    "AI_API_BASE",
+	"ai.api-key":     "AI_API_KEY",
+	"ai.model":       "AI_MODEL",
 }
 
 // 仓库里配置文件自带的示例密钥, 谁都能从 GitHub 上读到,

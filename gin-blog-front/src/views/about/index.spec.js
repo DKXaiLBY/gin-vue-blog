@@ -100,7 +100,8 @@ describe('关于我', () => {
   })
 
   // 外链一律要带 noopener, 否则新窗口能通过 window.opener 操作原页面。
-  // 品牌清洗后 mock 的 about 正文没有外链了, 外链来自页头社交图标(QQ/GitHub/Gitee), 由 store 配置驱动
+  // 品牌清洗后 mock 的 about 正文没有外链了, 外链来自页头社交图标(GitHub/Gitee), 由 store 配置驱动。
+  // QQ 已改为点击复制号码的 button (wpa 临时会话不可靠), 不再是外链
   it('社交外链带 noopener', async () => {
     const appStore = useAppStore()
     appStore.blog_config = {
@@ -113,11 +114,15 @@ describe('关于我', () => {
     const wrapper = mountPage()
     await vi.waitFor(() => expect(wrapper.vm.html).toContain('<h1'))
 
+    // GitHub 是唯一 _blank 外链, 必须带 noopener
     const external = wrapper.findAll('a').filter(a => a.attributes('target') === '_blank')
-    expect(external.length).toBe(2)
+    expect(external.length).toBe(1)
     for (const a of external) {
       expect(a.attributes('rel')).toContain('noopener')
     }
+    // QQ 是复制号码的按钮而不是链接
+    const qqBtn = wrapper.findAll('button').find(b => b.attributes('title') === '点击复制 QQ 号')
+    expect(qqBtn).toBeTruthy()
   })
 
   // 回归: 以前是 const { blogConfig } = useAppStore(), blogConfig 是 getter 且

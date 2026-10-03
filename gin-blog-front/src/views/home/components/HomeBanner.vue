@@ -15,6 +15,22 @@ function scrollDown() {
   emit('scrollDown')
 }
 
+// QQ 号复制: wpa 临时会话链接常因对方未开"允许临时会话"而失败, 复制号码最可靠
+async function copyQQ() {
+  const qq = blogConfig.value.qq
+  if (!qq) {
+    return
+  }
+  try {
+    await navigator.clipboard.writeText(qq)
+    window.$message?.success(`QQ 号 ${qq} 已复制，去 QQ 搜索添加吧`)
+  }
+  catch {
+    // 剪贴板权限被拒时降级为弹窗展示
+    window.$message?.info(`我的 QQ：${qq}`)
+  }
+}
+
 // 按时段问候: 依赖 nowTick 响应式刷新 (30s 一次), 跨过时段问候语会跟着变
 const nowTick = ref(Date.now())
 
@@ -91,15 +107,16 @@ onBeforeUnmount(() => clearInterval(onlineTimer))
         <p class="mt-4 text-muted">
           {{ blogConfig.website_intro }}
         </p>
-        <!-- 社交链接: 没配置的不渲染 -->
+        <!-- 社交链接: 没配置的不渲染; QQ 点击复制号码 (wpa 临时会话依赖双方 QQ 设置, 不可靠) -->
         <div class="mt-6 flex items-center justify-center gap-5 text-2xl md:justify-start">
-          <a
+          <button
             v-if="blogConfig.qq"
-            :href="`http://wpa.qq.com/msgrd?v=3&uin=${blogConfig.qq}&site=qq&menu=yes`"
-            target="_blank" rel="noopener noreferrer" title="QQ"
+            type="button" title="点击复制 QQ 号"
+            class="cursor-pointer transition-300 hover:text-primary"
+            @click="copyQQ"
           >
-            <span class="i-ant-design:qq-circle-filled block transition-300 hover:text-primary" />
-          </a>
+            <span class="i-ant-design:qq-circle-filled block" />
+          </button>
           <a
             v-if="blogConfig.github"
             :href="blogConfig.github" target="_blank" rel="noopener noreferrer" title="GitHub"

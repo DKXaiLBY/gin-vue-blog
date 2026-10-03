@@ -224,10 +224,12 @@ func registerBlogHandler(r *gin.Engine) {
 	// handler 里也拿不到当前用户。
 	base.Use(middleware.JWTAuth(false))
 
-	base.GET("/about", blogInfoAPI.GetAbout) // 获取关于我
-	base.GET("/home", frontAPI.GetHomeInfo)  // 前台首页
-	base.GET("/page", pageAPI.GetList)       // 前台页面
+	base.GET("/about", blogInfoAPI.GetAbout)   // 获取关于我
+	base.GET("/home", frontAPI.GetHomeInfo)    // 前台首页
+	base.GET("/page", pageAPI.GetList)         // 前台页面
 	base.GET("/online", blogInfoAPI.GetOnline) // 当前在线访客数
+	// AI 助手问答: 检索站内内容 + LLM; 未配置 Key 时前端回落规则版
+	base.POST("/ai/chat", blogInfoAPI.AIChat)
 
 	article := base.Group("/article")
 	{

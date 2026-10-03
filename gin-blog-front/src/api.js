@@ -40,6 +40,8 @@ export default {
   getStatus: (config = {}) => request.get('/status', { ...config, silent: true }),
   /** 当前在线访客数 (静默失败) */
   getOnline: (config = {}) => request.get('/online', { ...config, silent: true }),
+  /** AI 助手问答 (检索站内内容 + LLM; 轮询性质的长请求, 静默失败由组件回落规则版) */
+  aiChat: (data = {}) => request.post('/ai/chat', data, { silent: true, timeout: 35000 }),
   /** 说说列表 */
   getTalks: (params = {}) => request.get('/talk/list', { params }),
   /** 说说详情 */

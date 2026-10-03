@@ -1,5 +1,13 @@
 basePath: /api
 definitions:
+  handle.AIChatReq:
+    properties:
+      question:
+        maxLength: 200
+        type: string
+    required:
+    - question
+    type: object
   handle.AboutReq:
     properties:
       content:
@@ -2793,6 +2801,28 @@ paths:
       summary: 获取关于我
       tags:
       - BlogInfo
+  /front/ai/chat:
+    post:
+      consumes:
+      - application/json
+      description: 检索站内内容作为上下文调用 LLM 回答; 未配置 Key 时返回 use_rules 提示前端回落
+      parameters:
+      - description: 问题
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handle.AIChatReq'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: ""
+          schema:
+            $ref: '#/definitions/handle.Response-map_string_string'
+      summary: AI 助手问答
+      tags:
+      - Front
   /front/article/{id}:
     get:
       description: 文章详情, 附带上下篇/推荐/最新文章与点赞浏览评论数, 同一访客一小时内只计一次浏览量

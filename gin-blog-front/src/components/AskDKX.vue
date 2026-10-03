@@ -93,18 +93,40 @@ function matchKB(q) {
   return best
 }
 
+// 规则版回答 (后端未配 LLM Key 或 AI 调用失败时回落)
+async function rulesAnswer(q) {
+  const kb = matchKB(q)
+  if (kb) {
+    return { text: kb.text, to: kb.to }
+  }
+  return fallback(q)
+}
+
+// 优先走后端真 AI (检索站内数据 + LLM); use_rules=true 时回落规则版
 async function ask(q) {
   thinking.value = true
   messages.value.push({ role: 'user', text: q })
   await scrollBottom()
-  // 模拟思考停顿, 回答不至于瞬间弹出显得假
-  const kb = matchKB(q)
-  const answer = kb ? { text: kb.text, to: kb.to } : await fallback(q)
+
+  let answer
+  try {
+    const resp = await api.aiChat({ question: q })
+    if (resp.code === 0 && !resp.data?.use_rules && resp.data?.answer) {
+      answer = { text: resp.data.answer }
+    }
+    else {
+      answer = await rulesAnswer(q)
+    }
+  }
+  catch {
+    answer = await rulesAnswer(q)
+  }
+
   setTimeout(() => {
     messages.value.push({ role: 'bot', text: answer.text, to: answer.to, linkText: answer.linkText })
     thinking.value = false
     scrollBottom()
-  }, 450)
+  }, 350)
 }
 
 function send(e) {

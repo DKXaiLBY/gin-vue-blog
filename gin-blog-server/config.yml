@@ -57,3 +57,7 @@ Qiniu:
   SecretKey: ""
   UseHttps: false
   UseCdnDomains: false
+AI:
+  ApiBase: "" # OpenAI 兼容接口, 如 https://open.bigmodel.cn/api/paas/v4; 留空 = AI 助手回落规则版
+  ApiKey: ""  # 平台申请的 API Key (智谱 glm-4-flash 免费), 也可用环境变量 AI_API_KEY
+  Model: ""   # 如 glm-4-flash

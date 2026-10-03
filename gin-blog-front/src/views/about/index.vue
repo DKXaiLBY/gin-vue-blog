@@ -25,6 +25,21 @@ hljs.registerLanguage('javascript', javascript)
 const appStore = useAppStore()
 const html = ref('')
 
+// QQ 号复制: wpa 临时会话链接常因对方未开"允许临时会话"而失败, 复制号码最可靠
+async function copyQQ() {
+  const qq = appStore.blogConfig.qq
+  if (!qq) {
+    return
+  }
+  try {
+    await navigator.clipboard.writeText(qq)
+    window.$message?.success(`QQ 号 ${qq} 已复制，去 QQ 搜索添加吧`)
+  }
+  catch {
+    window.$message?.info(`我的 QQ：${qq}`)
+  }
+}
+
 onMounted(async () => {
   try {
     const { data } = await api.about()
@@ -62,15 +77,16 @@ onMounted(async () => {
         {{ appStore.blogConfig.website_intro }}
       </p>
 
-      <!-- 社交链接: 没配置的不渲染 -->
+      <!-- 社交链接: 没配置的不渲染; QQ 点击复制号码 -->
       <div class="mt-4 flex items-center gap-5 text-2xl">
-        <a
+        <button
           v-if="appStore.blogConfig.qq"
-          :href="`http://wpa.qq.com/msgrd?v=3&uin=${appStore.blogConfig.qq}&site=qq&menu=yes`"
-          target="_blank" rel="noopener noreferrer" title="QQ"
+          type="button" title="点击复制 QQ 号"
+          class="cursor-pointer transition-300 hover:text-accent"
+          @click="copyQQ"
         >
-          <span class="i-ant-design:qq-circle-filled block transition-300 hover:text-accent" />
-        </a>
+          <span class="i-ant-design:qq-circle-filled block" />
+        </button>
         <a v-if="appStore.blogConfig.github" :href="appStore.blogConfig.github" target="_blank" rel="noopener noreferrer" title="GitHub">
           <span class="i-mdi:github block transition-300 hover:text-accent" />
         </a>
