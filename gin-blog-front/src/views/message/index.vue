@@ -5,7 +5,6 @@ import vueDanmaku from 'vue3-danmaku'
 
 import api from '@/api'
 import { useAppStore, useUserStore } from '@/store'
-import { convertImgUrl } from '@/utils'
 
 const userStore = useUserStore()
 const { pageList } = storeToRefs(useAppStore())
@@ -71,56 +70,58 @@ const coverStyle = computed(() => {
 
 <template>
   <div :style="coverStyle" class="banner-fade-down absolute inset-x-0 h-screen overflow-hidden">
-    <!-- 弹幕输入框 -->
-    <div class="absolute inset-x-1 top-3/10 z-5 mx-auto w-[350px] animate-zoom-in border-1 rounded-3xl px-1 py-5 text-center text-light shadow-2xl lg:w-[420px]">
-      <h1 class="text-2xl font-bold">
-        留言板
-      </h1>
-      <div class="mt-6 h-9 flex justify-center lg:mt-6">
-        <input
-          v-model="content"
-          class="w-3/4 border-1 rounded-2xl bg-transparent px-4 text-sm text-#eee outline-none"
-          placeholder="说点什么吧？"
-          @click.stop="showBtn = true"
-          @keyup.enter="send"
-        >
-        <button
-          v-if="showBtn"
-          class="ml-3 animate-back-in-right border-1 rounded-2xl px-4"
-          @click="send"
-        >
-          发送
-        </button>
+    <!-- 弹幕输入框: 终端风 (dkx 世界观) -->
+    <div class="absolute inset-x-1 top-3/10 z-5 mx-auto w-[350px] animate-zoom-in overflow-hidden border-1 border-[#3b4470] rounded-xl bg-[#0b0d14f0] text-left text-light font-mono shadow-2xl lg:w-[460px]">
+      <div class="flex items-center gap-1.5 border-b border-[#262c4a] bg-[#1a1e36] px-4 py-2.5">
+        <i class="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" /><i class="h-2.5 w-2.5 rounded-full bg-[#febc2e]" /><i class="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+        <span class="ml-2 text-xs text-[#9aa3c7]">guest@dkx-blog: ~/message</span>
       </div>
-      <ul class="ml-5 text-left text-white space-y-3">
-        <li class="mt-6 flex items-center">
-          循环播放：
-          <input v-model="isLoop" type="checkbox">
-        </li>
-        <li class="space-x-3">
-          操作弹幕：
-          <button class="border-1 rounded-lg p-1 text-sm" @click="dmRef.play">
-            播放
+      <div class="px-5 py-4">
+        <p class="text-sm text-[#9ee6a0]">
+          <span class="text-[#818cf8]">guest@blog:~$</span> <span class="text-white">echo "说点什么吧？"</span>
+        </p>
+        <div class="mt-4 flex items-center gap-2">
+          <span class="text-[#818cf8]">$</span>
+          <input
+            v-model="content"
+            class="w-full border-0 bg-transparent text-sm text-[#e8ebf4] caret-[#818cf8] outline-none"
+            placeholder="像发弹幕一样留言…"
+            @click.stop="showBtn = true"
+            @keyup.enter="send"
+          >
+          <button
+            v-if="showBtn"
+            class="shrink-0 border border-[#3b4470] rounded bg-[#1a1f33] px-3 py-1 text-xs text-[#aeb8ff] transition-300 hover:border-[#818cf8]"
+            @click="send"
+          >
+            回车发送
           </button>
-          <button class="border-1 rounded-lg p-1 text-sm" @click="dmRef.pause">
-            暂停
+        </div>
+        <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#8b94ad]">
+          <label class="flex cursor-pointer items-center gap-1">
+            <input v-model="isLoop" type="checkbox" class="accent-[#818cf8]"> 循环
+          </label>
+          <button class="hover:text-[#aeb8ff]" @click="dmRef.play">
+            ▶ 播放
           </button>
-          <button class="border-1 rounded-lg p-1 text-sm" @click="dmRef.stop">
-            停止
+          <button class="hover:text-[#aeb8ff]" @click="dmRef.pause">
+            ⏸ 暂停
           </button>
-        </li>
-        <li class="flex items-center">
-          隐藏弹幕：
-          <input v-model="isHide" type="checkbox">
-        </li>
-      </ul>
+          <button class="hover:text-[#aeb8ff]" @click="dmRef.stop">
+            ⏹ 停止
+          </button>
+          <label class="flex cursor-pointer items-center gap-1">
+            <input v-model="isHide" type="checkbox" class="accent-[#818cf8]"> 隐藏
+          </label>
+        </div>
+      </div>
     </div>
-    <!-- 弹幕列表 -->
-    <div class="absolute inset-0 top-[60px]">
+    <!-- 弹幕列表: 终端命令行风格 -->
+    <div class="absolute inset-0 top-[60px] bg-[#0b0d1480]">
       <vue-danmaku
         ref="dmRef"
         v-model:danmus="danmus"
-        class="h-full w-full"
+        class="h-full w-full font-mono"
         use-slot
         :loop="isLoop"
         :speeds="200"
@@ -129,9 +130,10 @@ const coverStyle = computed(() => {
         :is-suspend="true"
       >
         <template #dm="{ danmu }">
-          <div class="flex items-center rounded-3xl bg-#00000060 px-2 py-1 text-white lg:px-4 lg:py-2">
-            <img class="h-[28px] rounded-full" :src="convertImgUrl(danmu.avatar)" alt="avatar" loading="lazy">
-            <span class="ml-2 text-sm"> {{ `${danmu.nickname} : ${danmu.content}` }}</span>
+          <div class="flex items-center gap-2 whitespace-nowrap border border-[#2e335066] rounded bg-[#0b0d14cc] px-3 py-1.5 text-[13px]">
+            <span class="text-[#818cf8]">{{ danmu.nickname }}@blog</span>
+            <span class="text-[#5f6a85]">:~$</span>
+            <span class="text-[#9ee6a0]">{{ danmu.content }}</span>
           </div>
         </template>
       </vue-danmaku>
@@ -141,6 +143,6 @@ const coverStyle = computed(() => {
 
 <style scoped>
 input::-webkit-input-placeholder {
-  color: #eee;
+  color: #5f6a85;
 }
 </style>

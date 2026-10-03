@@ -26,7 +26,23 @@ onMounted(() => {
   // 挂载全局提示
   window.$message = messageRef.value
   window.$notify = notifyRef.value
+
+  // 标签页离开彩蛋: 切走时标题卖个萌, 回来恢复原标题 (被截图传播的小心机)
+  document.addEventListener('visibilitychange', onVisibilityChange)
 })
+
+// 记住离开前的标题 (可能是文章页的动态标题), 回来时还原
+let titleBeforeHide = null
+function onVisibilityChange() {
+  if (document.hidden) {
+    titleBeforeHide = document.title
+    document.title = '(´･_･`) 去哪了，回来找我呀'
+  }
+  else if (titleBeforeHide) {
+    document.title = titleBeforeHide
+    titleBeforeHide = null
+  }
+}
 
 // 禁止右键菜单
 // document.addEventListener('contextmenu', e => e.preventDefault())

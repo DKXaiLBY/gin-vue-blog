@@ -16,11 +16,14 @@ const notificationStore = useNotificationStore()
 const menuOptions = [
   { text: '首页', icon: 'i-mdi:home', path: '/' },
   { text: '归档', icon: 'i-mdi:archive', path: '/archives' },
+  { text: '项目', icon: 'i-mdi:rocket-launch-outline', path: '/projects' },
+  { text: '说说', icon: 'i-mdi:message-text-outline', path: '/talks' },
+  { text: '简历', icon: 'i-mdi:file-document-outline', path: '/resume' },
+  { text: '历程', icon: 'i-mdi:timeline-outline', path: '/timeline' },
+  { text: '友链', icon: 'i-mdi:vector-link', path: '/links' },
+  { text: '联系我', icon: 'i-mdi:card-account-mail', path: '/contact' },
   { text: '分类', icon: 'i-mdi:menu', path: '/categories' },
   { text: '标签', icon: 'i-mdi:tag', path: '/tags' },
-  { text: '说说', icon: 'i-mdi:message-text-outline', path: '/talks' },
-  { text: '相册', icon: 'i-mdi:view-gallery', path: '/albums' },
-  { text: '友链', icon: 'i-mdi:vector-link', path: '/links' },
   { text: '关于', icon: 'i-mdi:information-outline', path: '/about' },
   { text: '留言', icon: 'i-mdi:forum', path: '/message' },
 ]

@@ -9,11 +9,41 @@ import TerminalHero from './TerminalHero.vue'
 
 const emit = defineEmits(['scrollDown'])
 
+const appStore = useAppStore()
 const { blogConfig } = storeToRefs(useAppStore())
 
 function scrollDown() {
   emit('scrollDown')
 }
+
+// 深色模式流星雨: 纯 CSS 动画, 每 6~14 秒随机一颗; 浅色/减少动态时不渲染
+const meteors = ref([])
+let meteorTimer = null
+
+function spawnMeteor() {
+  if (!appStore.isDark || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return
+  }
+  meteors.value.push({
+    id: Date.now() + Math.random(),
+    left: 20 + Math.random() * 70,
+    delay: 0,
+    duration: 1.2 + Math.random() * 0.8,
+  })
+}
+
+function scheduleMeteor() {
+  meteorTimer = setTimeout(() => {
+    spawnMeteor()
+    scheduleMeteor()
+  }, 6000 + Math.random() * 8000)
+}
+
+onMounted(() => {
+  scheduleMeteor()
+})
+
+onBeforeUnmount(() => clearTimeout(meteorTimer))
 
 // QQ 号复制: wpa 临时会话链接常因对方未开"允许临时会话"而失败, 复制号码最可靠
 async function copyQQ() {
@@ -93,6 +123,14 @@ onBeforeUnmount(() => clearInterval(onlineTimer))
     <div class="pointer-events-none absolute inset-0">
       <div class="absolute h-96 w-96 rounded-full bg-primary/15 blur-3xl -right-24 -top-24" />
       <div class="absolute bottom-0 h-80 w-80 rounded-full bg-primary/10 blur-3xl -left-32" />
+      <!-- 深色模式流星雨 -->
+      <template v-if="appStore.isDark">
+        <span
+          v-for="m in meteors" :key="m.id"
+          class="meteor pointer-events-none absolute"
+          :style="{ left: `${m.left}%`, animationDuration: `${m.duration}s` }"
+        />
+      </template>
     </div>
 
     <div class="mx-auto max-w-[1100px] flex flex-col-reverse items-center gap-10 px-4 pb-16 pt-32 md:flex-row md:pb-24 md:pt-36">
@@ -167,5 +205,37 @@ onBeforeUnmount(() => clearInterval(onlineTimer))
 <style scoped>
 section {
   min-height: 62vh;
+}
+
+/* 深色模式流星: 从右上向左下划过, 带渐隐尾迹 */
+.meteor {
+  top: 6%;
+  width: 2.5px;
+  height: 2.5px;
+  border-radius: 50%;
+  background: #c7d2fe;
+  box-shadow: 0 0 8px 2px rgb(199 210 254 / 60%);
+  animation: meteor-fall linear both;
+}
+
+@keyframes meteor-fall {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+
+  6% {
+    opacity: 1;
+  }
+
+  40% {
+    opacity: 0.9;
+    transform: translate(-160px, 150px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-320px, 300px);
+  }
 }
 </style>

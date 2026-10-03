@@ -2,10 +2,11 @@
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import { storeToRefs } from 'pinia'
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import api from '@/api'
 
+import { useCountUp } from '@/composables/useCountUp'
 import { useAppStore } from '@/store'
 
 /**
@@ -58,6 +59,9 @@ const uptimeText = computed(() => {
   return `${Math.floor(d.asDays())} 天 ${d.hours()} 时 ${d.minutes()} 分 ${d.seconds()} 秒`
 })
 
+// 内容计数: 数据到位后从 0 滚动到目标值
+const { shown: shownCount, setTarget: setCountTarget } = useCountUp()
+
 const rows = computed(() => {
   if (!status.value) {
     return []
@@ -66,9 +70,15 @@ const rows = computed(() => {
     ['Go 版本', status.value.go_version],
     ['堆内存', `${status.value.heap_mb} MB`],
     ['协程数', status.value.goroutines],
-    ['文章 / 说说 / 项目', `${status.value.articles} / ${status.value.talks} / ${status.value.projects}`],
+    ['文章 / 说说 / 项目', `${shownCount.value} / ${status.value.talks} / ${status.value.projects}`],
     ['当前在线', online.value === null ? '-' : `${online.value} 人`],
   ]
+})
+
+watch(() => status.value?.articles, (n) => {
+  if (n) {
+    setCountTarget(n)
+  }
 })
 
 // 宿主机每分钟自检 (monitor.sh 写入 Redis): 有标记才显示, 没装监控就整行隐藏

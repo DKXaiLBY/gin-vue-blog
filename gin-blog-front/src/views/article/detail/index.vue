@@ -14,8 +14,8 @@ import Comment from '@/components/comment/Comment.vue'
 import GiscusComment from '@/components/GiscusComment.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import ULightbox from '@/components/ui/ULightbox.vue'
-import { convertImgUrl, stripMarkdown } from '@/utils'
 import { useAppStore } from '@/store'
+import { convertImgUrl, stripMarkdown } from '@/utils'
 import { addCopyButtons } from '@/utils/code-block'
 import { typesetMath } from '@/utils/mathjax'
 import BannerInfo from './components/BannerInfo.vue'
@@ -191,80 +191,80 @@ const styleVal = computed(() =>
 
 <template>
   <div>
-  <!-- 阅读进度 -->
-  <div
-    class="fixed inset-x-0 top-0 z-999 h-0.5 bg-primary"
-    :style="{ width: `${readProgress}%`, transition: 'width .1s linear' }"
-  />
-  <!-- 头部 -->
-  <div :style="styleVal" class="banner-fade-down absolute inset-x-0 top-0 h-[360px] f-c-c lg:h-[400px]">
-    <BannerInfo v-if="!loading" :article="data" />
-  </div>
-  <!-- 主体内容 -->
-  <main class="flex-1">
-    <div class="card-fade-up grid grid-cols-12 mx-auto mb-3 mt-[380px] gap-4 px-1 lg:mt-[440px] lg:max-w-[1200px]">
-      <!-- 文章主体 -->
-      <div class="card-view col-span-12 mx-2 pt-7 lg:col-span-9 lg:mx-0">
-        <!-- 文章内容 -->
-        <!-- 老文章提示 -->
-        <div
-          v-if="!loading && staleDays"
-          class="mb-5 border-l-4 border-#f0ad4e rounded bg-#f0ad4e/10 px-4 py-2 text-sm lg:mx-10"
-        >
-          本文最后更新于 {{ staleDays }} 天前，部分内容可能已经过时。
-        </div>
-        <article
-          ref="previewRef"
-          class="max-w-none prose prose-truegray lg:mx-10 dark:prose-invert"
-          @click="onPreviewClick"
-          v-html="data.content"
-        />
-        <!-- 图片灯箱 -->
-        <ULightbox :src="lightboxSrc" @close="lightboxSrc = ''" />
-        <!-- 版权声明 -->
-        <Copyright class="my-5 lg:mx-5" />
-        <!-- 标签、转发 -->
-        <Forward :tag-list="data.tags" class="mb-12 lg:mx-5" />
-        <!-- 点赞、打赏 -->
-        <Reward
-          :article-id="data.id"
-          :like-count="data.like_count"
-          class="mb-10"
-        />
-        <!-- 上一篇、下一篇 -->
-        <LastNext
-          :last-article="data.last_article"
-          :next-article="data.next_article"
-          class="lg:mx-5"
-        />
-        <!-- 推荐文章 -->
-        <Recommend
-          :recommend-list="data.recommend_articles"
-          class="mt-7 lg:mx-5"
-        />
-        <!-- 分隔线 -->
-        <hr class="my-10 border-2 border-color-divider border-dashed lg:mx-5">
-        <!-- 文章评论 -->
-        <Comment :type="1" class="lg:mx-5" />
-        <!-- giscus 评论 (site.js 配置后生效) -->
-        <GiscusComment class="lg:mx-5" />
-      </div>
-      <!-- 文章侧边栏 -->
-      <div class="col-span-0 lg:col-span-3">
-        <div class="sticky top-5 hidden lg:block space-y-4">
-          <!-- 目录 -->
-          <!-- TODO: v-if 的方法不太好, 想办法解决父组件接口获取数据, 子组件渲染问题 -->
-          <Catalogue v-if="!loading" :preview-ref="previewRef" />
-          <!-- 最新文章 -->
-          <LatestList :article-list="data.newest_articles" />
-        </div>
-      </div>
+    <!-- 阅读进度 -->
+    <div
+      class="fixed inset-x-0 top-0 z-999 h-0.5 bg-primary"
+      :style="{ width: `${readProgress}%`, transition: 'width .1s linear' }"
+    />
+    <!-- 头部 -->
+    <div :style="styleVal" class="banner-fade-down absolute inset-x-0 top-0 h-[360px] f-c-c lg:h-[400px]">
+      <BannerInfo v-if="!loading" :article="data" />
     </div>
-  </main>
-  <!-- 底部 -->
-  <footer>
-    <AppFooter />
-  </footer>
+    <!-- 主体内容 -->
+    <main class="flex-1">
+      <div class="card-fade-up grid grid-cols-12 mx-auto mb-3 mt-[380px] gap-4 px-1 lg:mt-[440px] lg:max-w-[1200px]">
+        <!-- 文章主体 -->
+        <div class="card-view col-span-12 mx-2 pt-7 lg:col-span-9 lg:mx-0">
+          <!-- 文章内容 -->
+          <!-- 老文章提示 -->
+          <div
+            v-if="!loading && staleDays"
+            class="mb-5 border-l-4 border-#f0ad4e rounded bg-#f0ad4e/10 px-4 py-2 text-sm lg:mx-10"
+          >
+            本文最后更新于 {{ staleDays }} 天前，部分内容可能已经过时。
+          </div>
+          <article
+            ref="previewRef"
+            class="max-w-none prose prose-truegray lg:mx-10 dark:prose-invert"
+            @click="onPreviewClick"
+            v-html="data.content"
+          />
+          <!-- 图片灯箱 -->
+          <ULightbox :src="lightboxSrc" @close="lightboxSrc = ''" />
+          <!-- 版权声明 -->
+          <Copyright class="my-5 lg:mx-5" />
+          <!-- 标签、转发 -->
+          <Forward :tag-list="data.tags" class="mb-12 lg:mx-5" />
+          <!-- 点赞、打赏 -->
+          <Reward
+            :article-id="data.id"
+            :like-count="data.like_count"
+            class="mb-10"
+          />
+          <!-- 上一篇、下一篇 -->
+          <LastNext
+            :last-article="data.last_article"
+            :next-article="data.next_article"
+            class="lg:mx-5"
+          />
+          <!-- 推荐文章 -->
+          <Recommend
+            :recommend-list="data.recommend_articles"
+            class="mt-7 lg:mx-5"
+          />
+          <!-- 分隔线 -->
+          <hr class="my-10 border-2 border-color-divider border-dashed lg:mx-5">
+          <!-- 文章评论 -->
+          <Comment :type="1" class="lg:mx-5" />
+          <!-- giscus 评论 (site.js 配置后生效) -->
+          <GiscusComment class="lg:mx-5" />
+        </div>
+        <!-- 文章侧边栏 -->
+        <div class="col-span-0 lg:col-span-3">
+          <div class="sticky top-5 hidden lg:block space-y-4">
+            <!-- 目录 -->
+            <!-- TODO: v-if 的方法不太好, 想办法解决父组件接口获取数据, 子组件渲染问题 -->
+            <Catalogue v-if="!loading" :preview-ref="previewRef" />
+            <!-- 最新文章 -->
+            <LatestList :article-list="data.newest_articles" />
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- 底部 -->
+    <footer>
+      <AppFooter />
+    </footer>
   </div>
 </template>
 

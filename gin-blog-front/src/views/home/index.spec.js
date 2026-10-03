@@ -8,9 +8,10 @@ import HomePage from './index.vue'
 vi.mock('@/api', () => ({
   default: {
     getArticles: vi.fn(),
-    // 首页还拉分类胶囊和在线人数, mock 里给安全返回
+    // 首页还拉分类胶囊和在线人数+心跳上报, mock 里给安全返回
     getCategorys: vi.fn().mockResolvedValue({ code: 0, data: [] }),
     getOnline: vi.fn().mockResolvedValue({ code: 0, data: { online: 0 } }),
+    report: vi.fn().mockResolvedValue({ code: 0 }),
   },
 }))
 

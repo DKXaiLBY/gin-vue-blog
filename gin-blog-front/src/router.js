@@ -72,11 +72,16 @@ const basicRoutes = [
     },
   },
   {
-    name: 'Album',
+    // 相册已并入说说: 旧链接重定向, 相册页下线
     path: '/albums',
-    component: () => import('@/views/entertainment/album/index.vue'),
+    redirect: '/talks',
+  },
+  {
+    name: 'Contact',
+    path: '/contact',
+    component: () => import('@/views/contact/index.vue'),
     meta: {
-      title: '相册',
+      title: '联系我',
     },
   },
   {
