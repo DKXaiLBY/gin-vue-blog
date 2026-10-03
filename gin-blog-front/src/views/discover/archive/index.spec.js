@@ -8,6 +8,8 @@ import ArchivePage from './index.vue'
 vi.mock('@/api', () => ({
   default: {
     getArchives: vi.fn(),
+    getCategorys: vi.fn(),
+    getTags: vi.fn(),
   },
 }))
 
@@ -40,6 +42,13 @@ describe('归档', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     api.getArchives.mockReset().mockResolvedValue({ code: 0, data: { ...page1 } })
+    api.getCategorys.mockReset().mockResolvedValue({ code: 0, data: [
+      { id: 1, name: '前端', article_count: 3 },
+      { id: 2, name: '后端', article_count: 1 },
+    ] })
+    api.getTags.mockReset().mockResolvedValue({ code: 0, data: [
+      { id: 1, name: 'Vue', article_count: 4 },
+    ] })
   })
 
   it('挂载后按第一页拉取并渲染', async () => {
@@ -130,5 +139,60 @@ describe('归档', () => {
     expect(wrapper.vm.monthGroups).toEqual([])
     expect(wrapper.text()).toContain('还没有文章')
     expect(wrapper.find('nav[aria-label="分页"]').exists()).toBe(false)
+  })
+})
+
+// ===== 档案页 Tab (提案 B 三合一) =====
+describe('档案 Tab', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    api.getArchives.mockReset().mockResolvedValue({ code: 0, data: { ...page1 } })
+    api.getCategorys.mockReset().mockResolvedValue({ code: 0, data: [
+      { id: 1, name: '前端', article_count: 3 },
+    ] })
+    api.getTags.mockReset().mockResolvedValue({ code: 0, data: [
+      { id: 1, name: 'Vue', article_count: 4 },
+    ] })
+  })
+
+  async function switchTab(wrapper, name) {
+    await wrapper.findAll('button').find(b => b.text() === name).trigger('click')
+    await wrapper.vm.$nextTick()
+  }
+
+  it('默认显示时间轴 Tab, 分类/标签懒加载', async () => {
+    const wrapper = mountPage()
+    await vi.waitFor(() => expect(wrapper.vm.archiveList).toHaveLength(2))
+    await switchTab(wrapper, '分类')
+    expect(api.getCategorys).toHaveBeenCalled()
+    expect(wrapper.text()).toContain('前端')
+    await switchTab(wrapper, '标签')
+    expect(api.getTags).toHaveBeenCalled()
+    expect(wrapper.text()).toContain('Vue')
+  })
+
+  it('重复切回已加载的 Tab 不会重新拉取', async () => {
+    const wrapper = mountPage()
+    await vi.waitFor(() => expect(wrapper.vm.archiveList).toHaveLength(2))
+    await switchTab(wrapper, '分类')
+    await switchTab(wrapper, '时间轴')
+    const calls = api.getCategorys.mock.calls.length
+    await switchTab(wrapper, '分类')
+    expect(api.getCategorys.mock.calls.length).toBe(calls)
+  })
+
+  it('分类 Tab 渲染分类卡片', async () => {
+    const wrapper = mountPage()
+    await vi.waitFor(() => expect(wrapper.vm.archiveList).toHaveLength(2))
+    await switchTab(wrapper, '分类')
+    expect(wrapper.text()).toContain('前端')
+    expect(wrapper.text()).toContain('3')
+  })
+
+  it('标签 Tab 渲染标签云', async () => {
+    const wrapper = mountPage()
+    await vi.waitFor(() => expect(wrapper.vm.archiveList).toHaveLength(2))
+    await switchTab(wrapper, '标签')
+    expect(wrapper.text()).toContain('Vue')
   })
 })

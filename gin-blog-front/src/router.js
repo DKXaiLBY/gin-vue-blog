@@ -23,12 +23,13 @@ const basicRoutes = [
     },
   },
   {
-    name: 'Category',
+    // 分类/标签已并入「档案」页 Tab, 旧路由重定向过去
     path: '/categories',
-    component: () => import('@/views/discover/category/index.vue'),
-    meta: {
-      title: '分类',
-    },
+    redirect: '/archives?tab=分类',
+  },
+  {
+    path: '/tags',
+    redirect: '/archives?tab=标签',
   },
   {
     name: 'CategoryArticles',
@@ -39,12 +40,9 @@ const basicRoutes = [
     },
   },
   {
-    name: 'Tag',
+    // 标签已并入「档案」页 Tab, 旧路由重定向过去
     path: '/tags',
-    component: () => import('@/views/discover/tag/index.vue'),
-    meta: {
-      title: '标签',
-    },
+    redirect: '/archives?tab=标签',
   },
   {
     name: 'TagArticles',
