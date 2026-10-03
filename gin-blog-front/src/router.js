@@ -184,11 +184,13 @@ export const router = createRouter({
   scrollBehavior: to => (to.query.comment ? false : { left: 0, top: 0 }),
 })
 
-function setMeta(name, content) {
-  let el = document.head.querySelector(`meta[${name}]`)
+// 属性值必须带引号: meta[og:title] 这种选择器里冒号会让 querySelector 直接抛
+// SyntaxError, 且异常发生在 router.afterEach 里会中断 SPA 导航 —— 页面就"点不开"了
+function setMeta(attr, key, content) {
+  const sel = `${attr}="${key}"`
+  let el = document.head.querySelector(`meta[${sel}]`)
   if (!el) {
     el = document.createElement('meta')
-    const [attr, key] = name.includes(':') ? ['property', name] : ['name', name]
     el.setAttribute(attr, key)
     document.head.appendChild(el)
   }
@@ -200,8 +202,8 @@ router.afterEach((to) => {
   document.title = `${to.meta?.title ?? import.meta.env.VITE_APP_TITLE}`
   // 分享卡片与搜索摘要: 路由有 title 就覆写, 没有则保持 index.html 的站点级兜底
   if (to.meta?.title) {
-    setMeta('description', `${to.meta.title} — DKXaiLBY 的个人博客`)
-    setMeta('og:title', `${to.meta.title} — DKXaiLBY 的个人博客`)
+    setMeta('name', 'description', `${to.meta.title} — DKXaiLBY 的个人博客`)
+    setMeta('property', 'og:title', `${to.meta.title} — DKXaiLBY 的个人博客`)
   }
   NProgress.done()
 })
