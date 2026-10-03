@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 
 import api from '@/api'
 import GitHubHeatmap from '@/components/GitHubHeatmap.vue'
@@ -7,7 +7,6 @@ import AppFooter from '@/components/layout/AppFooter.vue'
 import { stripMarkdown } from '@/utils'
 import Announcement from './components/Announcement.vue'
 import ArticleCard from './components/ArticleCard.vue'
-import AuthorInfo from './components/AuthorInfo.vue'
 import Hero from './components/HomeBanner.vue'
 import TalkingCarousel from './components/TalkingCarousel.vue'
 

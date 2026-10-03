@@ -24,6 +24,12 @@ const isRightClass = computed(() => props.idx % 2 === 0
 // 入场错峰的序号: idx 是全列表下标, 滚动加载后会一直涨,
 // 按每页条数取模才能让每批新追加的卡片各自从 0 开始错峰
 const enterIndex = computed(() => props.idx % PAGE_SIZE)
+
+// 阅读时长估算: 中文 ~300 字/分钟, 不足 1 分钟算 1 分钟
+const readMinutes = computed(() => {
+  const len = (props.article.content || '').replace(/\s/g, '').length
+  return Math.max(1, Math.round(len / 300))
+})
 </script>
 
 <template>
@@ -57,6 +63,11 @@ const enterIndex = computed(() => props.idx % PAGE_SIZE)
           <span class="i-carbon:align-vertical-top mr-1" /> 置顶
         </span>
         <span v-if="article.is_top" class="mx-1.5">|</span>
+        <!-- 阅读时长 -->
+        <span class="flex items-center">
+          <span class="i-mdi:clock-time-four-outline mr-1" /> 约 {{ readMinutes }} 分钟
+        </span>
+        <span class="mx-1.5">|</span>
         <!-- 日期 -->
         <span class="flex items-center">
           <span class="i-mdi-calendar-month-outline mr-1" /> {{ dayjs(article.created_at).format('YYYY-MM-DD') }}

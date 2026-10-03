@@ -120,6 +120,67 @@ function updateShareMeta(rawMd) {
   setMeta('property', 'og:title', title)
 }
 
+// ---- 上次读到哪里: 进度按文章 id 存本地, 再次打开弹出「继续阅读」 ----
+const RESUME_KEY = 'dkx-read-progress'
+const resumePercent = ref(0)
+
+function loadResume() {
+  try {
+    const all = JSON.parse(localStorage.getItem(RESUME_KEY) || '{}')
+    const saved = all[route.params.id]
+    // 10%~90% 之间才值得提示: 太开头没必要, 快读完的提示反而烦
+    if (saved && saved.percent >= 10 && saved.percent <= 90 && saved.title === data.value.title) {
+      resumePercent.value = saved.percent
+    }
+  }
+  catch { /* 本地存储被禁就当没有 */ }
+}
+
+function saveResume() {
+  if (!previewRef.value || !data.value.id) {
+    return
+  }
+  const el = previewRef.value
+  const total = el.getBoundingClientRect().height - window.innerHeight
+  if (total <= 0) {
+    return
+  }
+  const percent = Math.min(100, Math.max(0, Math.round((-el.getBoundingClientRect().top) / total * 100)))
+  try {
+    const all = JSON.parse(localStorage.getItem(RESUME_KEY) || '{}')
+    // 只保留最近 20 篇的进度, 防止无限膨胀
+    const entries = Object.entries(all).sort((a, b) => b[1].ts - a[1].ts).slice(0, 19)
+    all[route.params.id] = { percent, title: data.value.title, ts: Date.now() }
+    const pruned = Object.fromEntries([...entries, [route.params.id, all[route.params.id]]])
+    localStorage.setItem(RESUME_KEY, JSON.stringify(pruned))
+  }
+  catch { /* 存储被禁随缘 */ }
+}
+
+function resumeReading() {
+  const el = previewRef.value
+  if (el) {
+    const target = el.getBoundingClientRect().top + window.scrollY + (el.getBoundingClientRect().height * resumePercent.value / 100) - 120
+    window.scrollTo({ top: target, behavior: 'smooth' })
+  }
+  resumePercent.value = 0
+}
+
+let resumeSaveTimer = null
+// 滚动节流保存进度
+function onScrollSave() {
+  clearTimeout(resumeSaveTimer)
+  resumeSaveTimer = setTimeout(saveResume, 800)
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', onScrollSave, { passive: true })
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', onScrollSave)
+  clearTimeout(resumeSaveTimer)
+})
+
 onMounted(async () => {
   try {
     const resp = await api.getArticleDetail(route.params.id)
@@ -142,6 +203,8 @@ onMounted(async () => {
     }
     // 摘要取解析前的原始 markdown, stripMarkdown 才按 markdown 语义剥干净
     updateShareMeta(resp.data.content ?? '')
+    // 检查有没有上次阅读进度
+    loadResume()
     await nextTick()
     // highlight.js 代码高亮
     document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el))
@@ -200,6 +263,22 @@ const styleVal = computed(() =>
     <div :style="styleVal" class="banner-fade-down absolute inset-x-0 top-0 h-[360px] f-c-c lg:h-[400px]">
       <BannerInfo v-if="!loading" :article="data" />
     </div>
+    <!-- 上次读到哪里 -->
+    <Transition name="fade">
+      <div
+        v-if="resumePercent"
+        class="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-full bg-surface px-5 py-2.5 text-sm shadow-xl ring-1 ring-line"
+      >
+        <span class="i-mdi:book-open-page-variant text-primary" />
+        上次读到 {{ resumePercent }}%
+        <button class="font-bold text-primary" @click="resumeReading">
+          继续阅读
+        </button>
+        <button class="text-muted transition-300 hover:text-main" aria-label="关闭" @click="resumePercent = 0">
+          <span class="i-mdi:close" />
+        </button>
+      </div>
+    </Transition>
     <!-- 主体内容 -->
     <main class="flex-1">
       <div class="card-fade-up grid grid-cols-12 mx-auto mb-3 mt-[380px] gap-4 px-1 lg:mt-[440px] lg:max-w-[1200px]">
@@ -272,5 +351,17 @@ const styleVal = computed(() =>
 /* v-html 里的正文图片可点击放大, 给个可点击的暗示 */
 article.prose :deep(img) {
   cursor: zoom-in;
+}
+
+/* 继续阅读提示条 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s, transform 0.25s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translate(-50%, 12px);
 }
 </style>

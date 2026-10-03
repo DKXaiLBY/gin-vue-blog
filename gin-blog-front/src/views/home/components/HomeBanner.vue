@@ -16,6 +16,9 @@ function scrollDown() {
   emit('scrollDown')
 }
 
+// 生日彩蛋标记: 问候语后缀 🎂 (9.28 建站纪念日)
+const isBirthday = ref(false)
+
 // 深色模式流星雨: 纯 CSS 动画, 每 6~14 秒随机一颗; 浅色/减少动态时不渲染
 const meteors = ref([])
 let meteorTimer = null
@@ -41,9 +44,31 @@ function scheduleMeteor() {
 
 onMounted(() => {
   scheduleMeteor()
+  // 生日彩蛋: 9.28 建站纪念日
+  const today = new Date()
+  if (today.getMonth() === 8 && today.getDate() === 28) {
+    isBirthday.value = true
+    window.$message?.success('🎉 今天是本博客的建站纪念日！')
+  }
 })
 
 onBeforeUnmount(() => clearTimeout(meteorTimer))
+
+// 头像互动彩蛋: 悬停歪头 (CSS), 连点三次终端提示
+const avatarClicks = ref(0)
+let avatarClickTimer = null
+
+function onAvatarClick() {
+  avatarClicks.value++
+  clearTimeout(avatarClickTimer)
+  avatarClickTimer = setTimeout(() => {
+    avatarClicks.value = 0
+  }, 1200)
+  if (avatarClicks.value >= 3) {
+    avatarClicks.value = 0
+    window.$message?.info('喵？戳我干嘛 —— 去下面的终端里敲 help 玩玩 🐾')
+  }
+}
 
 // QQ 号复制: wpa 临时会话链接常因对方未开"允许临时会话"而失败, 复制号码最可靠
 async function copyQQ() {
@@ -137,7 +162,7 @@ onBeforeUnmount(() => clearInterval(onlineTimer))
       <!-- 左: 自我介绍 -->
       <div class="flex-1 text-center md:text-left">
         <p class="mb-3 inline-block rounded-full bg-primary/10 px-4 py-1 text-sm text-primary">
-          👋 {{ greeting }}，我是
+          👋 {{ greeting }}，我是 <span v-if="isBirthday">· 🎂 今天一岁啦</span>
         </p>
         <h1 class="text-4xl font-bold md:text-5xl">
           {{ blogConfig.website_author }}
@@ -190,7 +215,8 @@ onBeforeUnmount(() => clearInterval(onlineTimer))
         <div class="absolute inset-0 m-auto h-64 w-64 rounded-full bg-primary/10 blur-2xl md:h-80 md:w-80" />
         <img
           :src="AVATAR_SRC" alt="DKXaiLBY 的头像"
-          class="relative h-56 w-56 rounded-[2.5rem] object-cover shadow-2xl md:h-72 md:w-72"
+          class="avatar-easter-egg relative h-56 w-56 rounded-[2.5rem] object-cover shadow-2xl md:h-72 md:w-72"
+          @click="onAvatarClick"
         >
       </div>
     </div>
@@ -216,6 +242,16 @@ section {
   background: #c7d2fe;
   box-shadow: 0 0 8px 2px rgb(199 210 254 / 60%);
   animation: meteor-fall linear both;
+}
+
+/* 头像互动彩蛋: 悬停歪头 */
+.avatar-easter-egg {
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.avatar-easter-egg:hover {
+  transform: scale(1.06) rotate(-4deg);
 }
 
 @keyframes meteor-fall {
