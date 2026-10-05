@@ -147,7 +147,7 @@ function scrollToArticles() {
           </div>
 
           <!-- 加载状态 -->
-          <div v-if="loading" class="min-h-10 f-c-c">
+          <div v-if="loading && articleList.length" class="min-h-10 f-c-c">
             <span class="animate-pulse text-xl text-muted">loading...</span>
           </div>
           <div v-else-if="!finished" class="mt-2 min-h-10 f-c-c lg:mt-5">

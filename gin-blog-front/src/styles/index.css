@@ -41,13 +41,13 @@
   --c-divider: #ebebf4;
   --c-body-bg: #f6f6fa;
 
-  /* 动效调音 (v3.46): 交互过渡全站只用这三档时长 + 两条缓动;
-     长于 400ms 的只有氛围循环动画(流星/呼吸/跑马灯), 不走 token */
+  /* 动效调音 (v3.46): 手写交互过渡只用这三档时长 + 一条标准缓动;
+     UnoCSS 工具类基线 transition-300/duration-400 已对齐档位;
+     长于 400ms 的只有入场编排(卡片浮起/横幅下落)与氛围循环(流星/光标/spinner) */
   --d-fast: 150ms;
   --d-norm: 250ms;
   --d-slow: 400ms;
   --e-out: cubic-bezier(0.22, 0.7, 0.3, 1);
-  --e-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 html.dark {

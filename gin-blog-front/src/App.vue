@@ -33,8 +33,8 @@ onMounted(() => {
   // 控制台彩蛋: 给打开 F12 的人一点小惊喜 (v3.46)
   // eslint-disable-next-line no-console -- 彩蛋本身就是打给控制台看的
   console.log(
-    '%c\n  ┌──────────────────────────────┐\n  │  你都打开控制台了，            │\n  │  这份好奇心我收下了。          │\n  │                              │\n  │  $ sudo hire-me              │\n  └──────────────────────────────┘\n\n  => 跳转 /resume 查看我的简历\n',
-    'color:#5cff9d;font-family:monospace;font-size:13px;line-height:1.7',
+    '%c\n  DKXaiLBY@blog:~$ 你都打开控制台了，这份好奇心我收下了。\n  DKXaiLBY@blog:~$ sudo hire-me\n\n  => 跳转 /resume 查看我的简历\n',
+    'color:#5cff9d;font-family:monospace;font-size:13px;line-height:1.8',
   )
 })
 

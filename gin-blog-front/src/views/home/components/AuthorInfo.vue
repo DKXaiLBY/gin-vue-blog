@@ -29,7 +29,7 @@ async function copyQQ() {
 <template>
   <div class="card-view card-enter hidden text-center lg:block space-y-5">
     <div class="mt-4 flex justify-center">
-      <img class="w-[105px] duration-600 hover:rotate-360" :src="convertImgUrl(blogConfig.website_avatar)" alt="author avatar">
+      <img class="w-[105px] duration-400 hover:rotate-360" :src="convertImgUrl(blogConfig.website_avatar)" alt="author avatar">
     </div>
     <div class="space-y-1">
       <p class="text-2xl">

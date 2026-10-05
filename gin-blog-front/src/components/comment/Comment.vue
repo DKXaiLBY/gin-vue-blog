@@ -52,13 +52,17 @@ async function getComments() {
     // * 全局加载更多, 0.8s 延时
     await new Promise((resolve) => {
       loadTimer = setTimeout(() => {
-        params.page_num === 1
-          ? commentList.value = resp.data.page_data
-          : commentList.value.push(...resp.data.page_data)
-        commentCount.value = resp.data.total
-        params.page_num++
-        listLoading.value = false
-        resolve()
+        try {
+          params.page_num === 1
+            ? commentList.value = resp.data?.page_data ?? []
+            : commentList.value.push(...(resp.data?.page_data ?? []))
+          commentCount.value = resp.data?.total ?? 0
+        }
+        finally {
+          params.page_num++
+          listLoading.value = false
+          resolve()
+        }
       }, 800)
     })
   }
@@ -233,7 +237,7 @@ const isLike = computed(() => id => userStore.commentLikeSet.includes(id))
       @after-submit="reloadComments"
     />
     <!-- 首屏评论骨架: 接口有 0.8s 人为延时, 先把版式占住 (v3.46 调音) -->
-    <div v-if="!commentCount && listLoading" class="mt-7 space-y-5" aria-busy="true">
+    <div v-if="listLoading && !commentCount" class="mt-7 space-y-5" aria-busy="true">
       <div v-for="i of 2" :key="i" class="flex animate-pulse gap-3 rounded-lg p-1">
         <div class="h-[40px] w-[40px] shrink-0 rounded-full bg-surface-soft" />
         <div class="flex-1 pt-1 space-y-2">
@@ -243,7 +247,7 @@ const isLike = computed(() => id => userStore.commentLikeSet.includes(id))
       </div>
     </div>
     <!-- 评论详情 -->
-    <div v-if="commentCount">
+    <div v-else-if="commentCount">
       <!-- 评论数量 -->
       <p class="mb-4 mt-7 flex items-center text-xl font-bold">
         <span> {{ commentCount }} 评论 </span>

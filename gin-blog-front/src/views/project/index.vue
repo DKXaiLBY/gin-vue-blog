@@ -62,7 +62,7 @@ onMounted(async () => {
             :src="convertImgUrl(p.cover)"
             :alt="p.name"
             loading="lazy"
-            class="h-full w-full object-cover transition-500 group-hover:scale-105"
+            class="h-full w-full object-cover transition-400 group-hover:scale-105"
           >
         </div>
         <div class="p-5 space-y-3">

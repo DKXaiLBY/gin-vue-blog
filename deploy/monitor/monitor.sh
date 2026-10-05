@@ -63,7 +63,7 @@ if [ -n "$disk_used" ] && [ "$disk_used" -ge "$DISK_THRESHOLD" ]; then
     reasons="${reasons}根分区使用${disk_used}%; "
 fi
 
-# ---- 状态机: 翻转才推送 ----
+# ---- 状态机: 翻转才记日志 ----
 prev=$(cat "$STATE_FILE" 2>/dev/null || echo "OK")
 ts=$(date +%s)
 
