@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>动效调音台 · 交互提案</title>
+<style>
+:root{
+  --c-primary:#6366f1; --c-accent:#ec4899;
+  --t-fast:150ms; --t-norm:250ms; --t-slow:400ms;
+  --e-out:cubic-bezier(.22,.7,.3,1);
+  --e-spring:cubic-bezier(.34,1.56,.64,1);
+  --mono:ui-monospace,"Cascadia Code",Consolas,monospace;
+}
+[data-theme="dark"]{
+  --bg:#0b0e16; --panel:#12151f; --panel-2:#171b28; --line:#262b3d;
+  --ink:#e8eaf6; --ink-dim:#9aa0b8; --ok:#34d399; --warn:#fbbf24; --bad:#f87171;
+}
+[data-theme="light"]{
+  --bg:#f5f6fb; --panel:#ffffff; --panel-2:#f0f1f9; --line:#e3e5f0;
+  --ink:#1e2130; --ink-dim:#6b7089; --ok:#059669; --warn:#d97706; --bad:#dc2626;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Microsoft YaHei",sans-serif;
+  transition:background var(--t-norm) var(--e-out),color var(--t-norm) var(--e-out);
+  padding-bottom:86px}
+.wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+h1{font-size:26px;letter-spacing:.02em}
+.sub{color:var(--ink-dim);font-size:14px;margin-top:8px;line-height:1.8}
+header{padding:34px 0 10px}
+section{margin-top:38px}
+.sec-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.sec-tag{font-family:var(--mono);font-size:11px;color:var(--c-accent);
+  border:1px solid var(--c-accent);border-radius:99px;padding:3px 10px;letter-spacing:.1em}
+.sec-title{font-size:19px;font-weight:700}
+.sec-desc{color:var(--ink-dim);font-size:13px;margin-top:8px;line-height:1.9}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:20px;margin-top:14px;transition:background var(--t-norm),border-color var(--t-norm)}
+.row-label{font-family:var(--mono);font-size:12px;color:var(--ink-dim);margin:18px 0 10px;letter-spacing:.08em}
+.row-label:first-child{margin-top:0}
+
+/* ---------- 顶部控制条 ---------- */
+.controls{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 82%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:10px 0;margin-top:18px}
+.controls .wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{font-family:inherit;font-size:13px;padding:8px 16px;border:0;cursor:pointer;
+  background:transparent;color:var(--ink-dim);transition:all var(--t-fast) var(--e-out)}
+.seg button.on{background:var(--c-primary);color:#fff}
+.theme-btn{margin-left:auto;font-size:13px;border:1px solid var(--line);background:transparent;
+  color:var(--ink-dim);border-radius:10px;padding:8px 14px;cursor:pointer}
+.mode-hint{font-family:var(--mono);font-size:12px;color:var(--ink-dim)}
+.mode-hint b{color:var(--c-accent)}
+
+/* ---------- 组件：卡片 ---------- */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:16px;cursor:pointer}
+.card .t{font-weight:700;font-size:14.5px;line-height:1.55}
+.card .d{color:var(--ink-dim);font-size:12.5px;line-height:1.8;margin-top:8px}
+.card .meta{display:flex;gap:8px;margin-top:12px;align-items:center}
+.chip{font-family:var(--mono);font-size:11px;color:var(--c-primary);border:1px solid var(--c-primary);
+  border-radius:99px;padding:2px 9px}
+.card .time{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ink-dim)}
+body.mode-after .card{transition:transform var(--t-norm) var(--e-out),border-color var(--t-norm) var(--e-out),box-shadow var(--t-norm) var(--e-out)}
+body.mode-after .card:hover{transform:translateY(-4px);border-color:var(--c-primary);
+  box-shadow:0 12px 30px color-mix(in srgb,var(--c-primary) 16%,transparent)}
+body.mode-before .card:nth-child(1){transition:transform 83ms linear}
+body.mode-before .card:nth-child(2){transition:transform .68s ease-in-out}
+body.mode-before .card:nth-child(3){transition:none}
+body.mode-before .card:hover{transform:translateY(-7px) scale(1.045);border-color:var(--c-accent)}
+body.mode-before .card:nth-child(2):hover{transform:translateY(-2px)}
+
+/* ---------- 组件：按钮 ---------- */
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.btn{font-family:inherit;font-size:13.5px;border-radius:10px;padding:10px 20px;cursor:pointer;border:1px solid transparent}
+.btn.primary{background:var(--c-primary);color:#fff}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--ink)}
+body.mode-after .btn{transition:background var(--t-fast) var(--e-out),transform var(--t-fast) var(--e-out),box-shadow var(--t-fast) var(--e-out),border-color var(--t-fast) var(--e-out)}
+body.mode-after .btn.primary:hover{box-shadow:0 8px 22px color-mix(in srgb,var(--c-primary) 38%,transparent);filter:brightness(1.08)}
+body.mode-after .btn:active{transform:scale(.955)}
+body.mode-after .btn.ghost:hover{border-color:var(--c-primary);color:var(--c-primary)}
+body.mode-before .btn.primary:hover{filter:brightness(1.3)}
+body.mode-before .btn.ghost:hover{background:var(--c-accent);color:#fff}
+
+/* ---------- 组件：开关 ---------- */
+.switches{display:flex;gap:26px;flex-wrap:wrap}
+.sw-item{display:flex;align-items:center;gap:10px;font-size:13.5px}
+.sw{width:46px;height:26px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;border:0;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff}
+body.mode-before .sw.on::after{left:23px}
+body.mode-after .sw{transition:background var(--t-norm) var(--e-out)}
+body.mode-after .sw.on{background:var(--c-primary)}
+body.mode-after .sw::after{transition:left var(--t-norm) var(--e-spring)}
+body.mode-after .sw.on::after{left:23px}
+
+/* ---------- 骨架屏 ---------- */
+.load-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.load-pane{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:16px;min-height:210px;position:relative}
+.load-pane h4{font-size:13px;font-family:var(--mono);color:var(--ink-dim);font-weight:400;margin-bottom:12px}
+.li{display:flex;gap:10px;align-items:center;padding:9px 6px;border-radius:8px}
+.li .av{width:34px;height:34px;border-radius:50%;flex:none}
+.li .ln{height:11px;border-radius:6px;flex:1}
+.li .ln.s{max-width:42%}
+.li .txt{font-size:12.5px;color:var(--ink-dim)}
+.spinner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.spin{width:30px;height:30px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--c-primary);animation:rot .8s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.sk .av,.sk .ln{background:linear-gradient(100deg,var(--line) 40%,color-mix(in srgb,var(--ink) 14%,var(--line)) 50%,var(--line) 60%);
+  background-size:220% 100%;animation:shim 1.15s linear infinite}
+@keyframes shim{from{background-position:130% 0}to{background-position:-90% 0}}
+.pane-done .li .txt{animation:rise var(--t-norm) var(--e-out) both}
+.pane-done .li:nth-child(2) .txt{animation-delay:70ms}
+.pane-done .li:nth-child(3) .txt{animation-delay:140ms}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+body.mode-before .pane-done .li .txt{animation:none}
+.replay{margin-top:12px;width:100%}
+
+/* ---------- 复制反馈 ---------- */
+.copy-box{display:flex;align-items:center;gap:10px;background:var(--panel-2);border:1px solid var(--line);
+  border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:13px}
+.copy-box .dollar{color:var(--ink-dim)}
+.copy-ic{margin-left:auto;width:34px;height:34px;border-radius:8px;border:1px solid var(--line);
+  background:transparent;color:var(--ink-dim);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
+body.mode-after .copy-ic{transition:all var(--t-fast) var(--e-out)}
+body.mode-after .copy-ic:hover{border-color:var(--c-primary);color:var(--c-primary)}
+.copy-ic.done{border-color:var(--ok);color:var(--ok)}
+body.mode-after .copy-ic.done{animation:pop var(--t-norm) var(--e-spring)}
+@keyframes pop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+body.mode-before .copy-ic.done{animation:none}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);z-index:90;
+  background:var(--panel-2);border:1px solid var(--line);color:var(--ink);font-size:13px;
+  border-radius:10px;padding:10px 18px;pointer-events:none;opacity:0}
+body.mode-after .toast.show{animation:toastIn var(--t-norm) var(--e-out) forwards}
+body.mode-before .toast.show{opacity:1}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,14px)}to{opacity:1;transform:translate(-50%,0)}}
+
+/* ---------- 提交按钮状态机 ---------- */
+.submit-btn{min-width:132px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.submit-btn .dots i{display:inline-block;width:5px;height:5px;border-radius:50%;background:#fff;margin:0 2px;animation:bnc 1s infinite}
+.submit-btn .dots i:nth-child(2){animation-delay:.15s}
+.submit-btn .dots i:nth-child(3){animation-delay:.3s}
+@keyframes bnc{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+body.mode-before .dots i{animation:none}
+
+/* ---------- 空状态 ---------- */
+.search-box{width:100%;font-family:inherit;font-size:14px;color:var(--ink);background:var(--panel-2);
+  border:1px solid var(--line);border-radius:10px;padding:12px 14px;outline:none}
+body.mode-after .search-box{transition:border-color var(--t-fast) var(--e-out),box-shadow var(--t-fast) var(--e-out)}
+body.mode-after .search-box:focus{border-color:var(--c-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--c-primary) 18%,transparent)}
+.empty{display:none;margin-top:12px;border:1px dashed var(--line);border-radius:10px;padding:18px;text-align:center;
+  font-family:var(--mono);font-size:13px;color:var(--ink-dim);line-height:2}
+.empty.show{display:block}
+body.mode-after .empty.show{animation:rise var(--t-norm) var(--e-out) both}
+body.mode-before .empty.show{animation:none}
+.empty b{color:var(--c-accent)}
+.empty .sug{display:inline-block;margin:0 4px;color:var(--c-primary);cursor:pointer}
+
+/* ---------- 减法体检 ---------- */
+.chaos-wrap{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start}
+.chaos-stage{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;height:250px;
+  position:relative;overflow:hidden;perspective:700px}
+.chaos-card{position:absolute;inset:26px;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:16px;transform-style:preserve-3d}
+.chaos-card .t{font-weight:700;font-size:14px}
+.chaos-card .d{color:var(--ink-dim);font-size:12px;line-height:1.8;margin-top:8px}
+.chaos-card.fx-tilt{transition:transform .25s var(--e-out)}
+.chaos-stage:hover .chaos-card.fx-tilt{transform:rotateX(7deg) rotateY(-9deg) translateZ(6px)}
+.chaos-card.fx-spot::before{content:"";position:absolute;inset:0;border-radius:12px;
+  background:radial-gradient(160px circle at var(--mx,50%) var(--my,50%),color-mix(in srgb,var(--c-primary) 24%,transparent),transparent 70%);
+  opacity:0;transition:opacity var(--t-norm)}
+.chaos-stage:hover .chaos-card.fx-spot::before{opacity:1}
+.meteor{position:absolute;top:-12px;width:2px;height:2px;border-radius:50%;background:#fff;
+  box-shadow:0 0 7px 2px color-mix(in srgb,var(--c-accent) 70%,transparent);opacity:0}
+.fx-meteor .meteor{animation:fall 2.6s linear infinite}
+.meteor.m2{left:70%;animation-delay:1.3s!important}
+.fx-meteor .meteor.m1{left:30%}
+@keyframes fall{0%{opacity:0;transform:translate(0,0)}6%{opacity:1}100%{opacity:0;transform:translate(-130px,300px)}}
+.chaos-ctrl .chipset{display:flex;gap:8px;flex-wrap:wrap}
+.fx-chip{font-family:var(--mono);font-size:12px;border:1px solid var(--line);background:transparent;
+  color:var(--ink-dim);border-radius:99px;padding:7px 14px;cursor:pointer;transition:all var(--t-fast) var(--e-out)}
+.fx-chip.on{border-color:var(--c-accent);color:var(--c-accent);background:color-mix(in srgb,var(--c-accent) 10%,transparent)}
+.meter{margin-top:14px;font-family:var(--mono);font-size:13px;display:flex;align-items:center;gap:10px}
+.meter .bar{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.meter .bar i{display:block;height:100%;width:0;border-radius:99px;background:var(--ok);transition:width var(--t-norm) var(--e-out),background var(--t-norm)}
+.meter .pct{min-width:64px;text-align:right}
+.meter-note{margin-top:10px;font-size:12.5px;color:var(--ink-dim);line-height:1.9}
+.preset-row{display:flex;gap:10px;margin-top:14px}
+
+/* ---------- 彩蛋 ---------- */
+.console-mock{background:#0d1117;border:1px solid #30363d;border-radius:10px;font-family:var(--mono);
+  font-size:12.5px;color:#c9d1d9;padding:0;overflow:hidden}
+.console-mock .bar{display:flex;gap:6px;align-items:center;padding:9px 13px;border-bottom:1px solid #30363d;color:#8b949e;font-size:11px}
+.console-mock pre{margin:0;padding:16px;line-height:1.7;white-space:pre-wrap}
+.console-mock .g{color:#7ee787}
+.console-mock .p{color:#d2a8ff}
+.term-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.term-chips .chip{cursor:default;color:var(--ink-dim);border-color:var(--line)}
+.term-chips .chip b{color:var(--c-primary);font-weight:400}
+
+/* ---------- 底部选择栏 ---------- */
+.pickbar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:color-mix(in srgb,var(--panel) 88%,transparent);
+  backdrop-filter:blur(10px);border-top:1px solid var(--line)}
+.pickbar .wrap{display:flex;gap:14px;align-items:center;padding:13px 20px;flex-wrap:wrap}
+.pickbar .info{font-size:13px;color:var(--ink-dim)}
+.pickbar .info b{color:var(--c-accent)}
+.pickbar .list{font-family:var(--mono);font-size:12px;color:var(--ink)}
+.want{margin-left:auto;font-size:12px;font-family:var(--mono);border:1px solid var(--line);background:transparent;
+  color:var(--ink-dim);border-radius:99px;padding:6px 13px;cursor:pointer;flex:none}
+.want.on{border-color:var(--ok);color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}
+
+footer{margin-top:46px;padding-bottom:20px;color:var(--ink-dim);font-size:12px;line-height:2}
+@media (max-width:820px){
+  .cards,.load-grid,.chaos-wrap{grid-template-columns:1fr}
+  .theme-btn{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body class="mode-after">
+
+<header class="wrap">
+  <h1>动效调音台 · 交互提案</h1>
+  <p class="sub">核心玩法，右上角那个全局开关。整页所有组件都能在<b>散装模式（还原现状的问题）</b>和<b>调音模式（统一规格后）</b>之间切换，亲手摸一遍就知道差距在哪。所有方案不加新花活，只做质感和反馈。右上角还能切明暗主题，两套主题下规格都成立。</p>
+</header>
+
+<div class="controls">
+  <div class="wrap">
+    <div class="seg" id="modeSeg">
+      <button data-mode="mode-before" type="button">散装模式</button>
+      <button data-mode="mode-after" class="on" type="button">调音模式</button>
+    </div>
+    <span class="mode-hint" id="modeHint">当前 <b>调音模式</b>，时长只有 150/250/400ms 三档</span>
+    <button class="theme-btn" id="themeBtn" type="button">切换明暗</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ================= 01 调音对比 ================= -->
+<section>
+  <div class="sec-head">
+    <span class="sec-tag">ROUTE 01</span><span class="sec-title">统一调音，同一批组件，两种规格</span>
+    <button class="want on" data-want="统一动效规格（时长三档+缓动两条）" type="button">想要 ✓</button>
+  </div>
+  <p class="sec-desc">切到散装模式再逐个悬停，感受三张卡片各自的「脾气」，有的快得像出错，有的慢半拍，有的一下弹过头。切回调音模式，三张卡的动作完全一致，这就是「乐队感」。按钮和开关同理。</p>
+  <div class="panel">
+    <div class="row-label">卡片悬停（文章卡）</div>
+    <div class="cards">
+      <div class="card"><div class="t">gin-vue-blog 二开实录：从 0 到四容器上线</div><div class="d">fork 掉上游之后，我把部署管线、监控和回滚全部重做了一遍……</div><div class="meta"><span class="chip">部署</span><span class="time">约 8 分钟</span></div></div>
+      <div class="card"><div class="t">Vue3 setup 静默失败的排查笔记</div><div class="d">组件不渲染、控制台零报错，最后靠一个反常点定位……</div><div class="meta"><span class="chip">Vue3</span><span class="time">约 6 分钟</span></div></div>
+      <div class="card"><div class="t">mysqldump 恢复演练差点覆盖正式库</div><div class="d">dump 头部自带 USE 语句，恢复到哪个库它自己说了算……</div><div class="meta"><span class="chip">MySQL</span><span class="time">约 5 分钟</span></div></div>
+    </div>
+    <div class="row-label" style="margin-top:22px">按钮（悬停 + 按下）</div>
+    <div class="btn-row">
+      <button class="btn primary" type="button">主要操作</button>
+      <button class="btn ghost" type="button">次要操作</button>
+    </div>
+    <div class="row-label" style="margin-top:22px">开关（通知 / 星雨 / 音乐）</div>
+    <div class="switches">
+      <label class="sw-item"><button class="sw on" type="button" aria-label="通知开关"></button>评论通知</label>
+      <label class="sw-item"><button class="sw" type="button" aria-label="星雨开关"></button>流星雨</label>
+      <label class="sw-item"><button class="sw" type="button" aria-label="音乐开关"></button>背景音乐</label>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 等待与反馈 ================= -->
+<section>
+  <div class="sec-head">
+    <span class="sec-tag">ROUTE 02</span><span class="sec-title">动效有用化，每一帧都在干活</span>
+    <button class="want on" data-want="骨架屏（列表/评论/说说加载）" type="button">想要 ✓</button>
+  </div>
+  <p class="sec-desc">这一区全是「等待」和「反馈」场景。骨架屏解决的是感知等待，微反馈解决的是「我点了到底有没有生效」。同样切全局开关对比：散装模式下它们退化成转圈和瞬间跳变。</p>
+
+  <div class="panel">
+    <div class="row-label">骨架屏 vs 转圈（点「重播加载」反复感受）</div>
+    <div class="load-grid">
+      <div class="load-pane">
+        <h4>现状 · spinner</h4>
+        <div class="pane" data-mode="spin"><div class="spinner"><div class="spin"></div></div></div>
+        <button class="btn ghost replay" data-replay="spin" type="button">重播加载</button>
+      </div>
+      <div class="load-pane">
+        <h4>提案 · 骨架屏</h4>
+        <div class="pane" data-mode="sk"></div>
+        <button class="btn ghost replay" data-replay="sk" type="button">重播加载</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="row-label">复制反馈（点右边图标，真站点里 QQ 号/代码块都适用）</div>
+    <div class="copy-box"><span class="dollar">$</span> echo "联系 QQ: 304-xxxx-xxxx"<button class="copy-ic" id="copyIc" type="button" title="复制">⧉</button></div>
+  </div>
+
+  <div class="panel">
+    <div class="row-label">提交按钮状态机（评论 / 登录 / 留言通用）</div>
+    <div class="btn-row">
+      <button class="btn primary submit-btn" id="submitBtn" type="button"><span id="submitTxt">发表评论</span></button>
+      <span class="mode-hint">散装模式下它只会干巴巴地换字，调音模式下有 loading 和打勾</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="row-label">空状态（随便输点什么再删掉，或输入乱码）</div>
+    <input class="search-box" id="searchBox" type="text" placeholder='搜索文章，试试输入 "aaaa"' />
+    <div class="empty" id="emptyBox">$ search <b id="emptyQ"></b><br>0 results。要不要看看 <span class="sug">终端 Hero</span> 和 <span class="sug">年度报告</span>？</div>
+  </div>
+
+  <div class="panel" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+    <div class="row-label" style="margin:0">全局提示 toast（右下角事件也用它）</div>
+    <button class="btn ghost" id="toastBtn" type="button">弹一个 toast</button>
+  </div>
+</section>
+
+<!-- ================= 03 减法体检 ================= -->
+<section>
+  <div class="sec-head">
+    <span class="sec-tag">ROUTE 03</span><span class="sec-title">同屏打架审计 · 减法也是调音</span>
+    <button class="want on" data-want="同屏动效减法审计（首页动效分层）" type="button">想要 ✓</button>
+  </div>
+  <p class="sec-desc">右侧卡片开了四个动效，把鼠标放上去感受「全都动 = 没有重点」。然后用 chips 逐个关掉，左边的「同屏运动指数」会实时变化。经验值，悬停时保持 1 项主运动最舒服，流星雨属于背景层不算悬停冲突但常驻低调。</p>
+  <div class="panel">
+    <div class="chaos-wrap">
+      <div class="chaos-ctrl">
+        <div class="chipset">
+          <button class="fx-chip on" data-fx="spot" type="button">聚光 follow</button>
+          <button class="fx-chip on" data-fx="tilt" type="button">3D 倾斜</button>
+          <button class="fx-chip on" data-fx="meteor" type="button">流星雨</button>
+          <button class="fx-chip" data-fx="stagger" type="button">交错入场</button>
+        </div>
+        <div class="meter"><span>同屏运动</span><div class="bar"><i id="meterBar"></i></div><span class="pct" id="meterPct">3 项</span></div>
+        <div class="meter-note" id="meterNote"></div>
+        <div class="preset-row">
+          <button class="btn ghost" id="presetAll" type="button">当前首页（全开）</button>
+          <button class="btn primary" id="presetGood" type="button">推荐配置</button>
+        </div>
+      </div>
+      <div class="chaos-stage" id="chaosStage">
+        <div class="meteor m1"></div><div class="meteor m2"></div>
+        <div class="chaos-card fx-spot fx-tilt" id="chaosCard">
+          <div class="t">把每一次滚动，都变成一场坠落。</div>
+          <div class="d">这是首页卡片的模拟。四个开关分别对应站内已有的四类动效，试出你觉得最舒服的组合，我把「推荐配置」应用到真站。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 彩蛋 ================= -->
+<section>
+  <div class="sec-head">
+    <span class="sec-tag">ROUTE 05</span><span class="sec-title">零成本彩蛋 · 控制台与终端</span>
+    <button class="want on" data-want="devtools console 终端彩蛋" type="button">想要 ✓</button>
+  </div>
+  <p class="sec-desc">给打开 F12 的人准备的。面试官Inspect你的站时看到这个，印象分不亏。点下面按钮，然后按 F12 打开控制台看真的。</p>
+  <div class="panel">
+    <div class="console-mock">
+      <div class="bar"><span style="color:#ff5f57">●</span><span style="color:#febc2e">●</span><span style="color:#28c840">●</span>&nbsp;Console</div>
+      <pre><span class="g">DKXaiLBY@blog:~$</span> cat .well-known/secret
+
+  <span class="p">┌────────────────────────────────┐</span>
+  <span class="p">│</span>  你都打开控制台了，              <span class="p">│</span>
+  <span class="p">│</span>  这份好奇心我收下了。            <span class="p">│</span>
+  <span class="p">│</span>                                <span class="p">│</span>
+  <span class="p">│</span>  $ sudo hire-me                <span class="p">│</span>
+  <span class="p">└────────────────────────────────┘</span>
+
+  <span class="g">=&gt;</span> 跳转到 /resume</pre>
+    </div>
+    <div class="btn-row" style="margin-top:14px">
+      <button class="btn primary" id="consoleBtn" type="button">真的往控制台打一条</button>
+      <span class="mode-hint">打完按 F12 看</span>
+    </div>
+    <div class="term-chips">
+      <span class="chip">终端新命令候选 <b>fortune</b>（已有）</span>
+      <span class="chip"><b>weather</b> 报个广州天气</span>
+      <span class="chip"><b>uptime</b> 站点已运行 N 天</span>
+      <span class="chip"><b>whois dkx</b> 关于我速览</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  全部演示为单文件零依赖，直接双击打开。<br>
+  看完把底部勾选清单告诉我（或直接说「推荐配置全上」），我按清单出施工方案：先 git tag 备份，改完本地预览给你过，再走镜像部署。
+</footer>
+
+</div>
+
+<div class="toast" id="toast">已复制到剪贴板（演示环境仅播放动画）</div>
+
+<div class="pickbar">
+  <div class="wrap">
+    <span class="info">已选 <b id="pickCount">4</b> 项</span>
+    <span class="list" id="pickList">统一动效规格、骨架屏、同屏减法审计、console 彩蛋</span>
+  </div>
+</div>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+
+/* 全局模式开关 */
+const hintMap={
+  'mode-before':'当前 <b>散装模式</b>，时长随缘、缓动乱飞，还原现状的问题',
+  'mode-after':'当前 <b>调音模式</b>，时长只有 150/250/400ms 三档',
+};
+$('#modeSeg').addEventListener('click',e=>{
+  const btn=e.target.closest('button[data-mode]');if(!btn)return;
+  $$('#modeSeg button').forEach(b=>b.classList.toggle('on',b===btn));
+  document.body.classList.remove('mode-before','mode-after');
+  document.body.classList.add(btn.dataset.mode);
+  $('#modeHint').innerHTML=hintMap[btn.dataset.mode];
+});
+
+/* 主题 */
+$('#themeBtn').addEventListener('click',()=>{
+  const h=document.documentElement;
+  h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';
+});
+
+/* 骨架屏 */
+const skHTML='<div class="li sk"><div class="av"></div><div style="flex:1"><div class="ln"></div><div class="ln s" style="margin-top:8px"></div></div></div>'.repeat(3);
+const doneHTML=title=>['今天上线了动效调音方案','档案页三合一深链修复记录','给博客加了一套 AI 摘要'].map((t,i)=>
+  `<div class="li"><div class="av" style="background:var(--c-primary);opacity:${.85-i*.22}"></div><div class="txt">${title?'':''}${t}</div></div>`).join('');
+function renderPane(pane,mode,done){
+  if(mode==='spin'){
+    pane.innerHTML=done?'<div class="li" style="justify-content:center"><div class="txt">加载完成（内容瞬间蹦出）</div></div>':'<div class="spinner"><div class="spin"></div></div>';
+  }else{
+    pane.innerHTML=done?'<div class="pane-done">'+doneHTML()+'</div>':skHTML;
+    pane.firstElementChild&&pane.firstElementChild.classList.add(done?'pane-done':'sk');
+    if(done)pane.querySelectorAll('.li').forEach(li=>li.classList.add('pane-done'));
+  }
+  pane.dataset.done=done?'1':'';
+}
+function replay(btn){
+  const pane=btn.parentElement.querySelector('.pane');
+  const mode=btn.dataset.replay;
+  renderPane(pane,mode,false);
+  setTimeout(()=>renderPane(pane,mode,true),1100);
+}
+$$('section .pane').forEach(p=>{
+  renderPane(p,p.dataset.mode,false);
+  setTimeout(()=>renderPane(p,p.dataset.mode,true),1100);
+});
+$$('[data-replay]').forEach(b=>b.addEventListener('click',()=>replay(b)));
+
+/* 复制反馈 */
+const copyIc=$('#copyIc');let copyTimer;
+copyIc.addEventListener('click',()=>{
+  try{navigator.clipboard&&navigator.clipboard.writeText('DKXaiLBY blog demo');}catch(e){}
+  copyIc.classList.add('done');copyIc.textContent='✓';
+  showToast();
+  clearTimeout(copyTimer);
+  copyTimer=setTimeout(()=>{copyIc.classList.remove('done');copyIc.textContent='⧉';},1600);
+});
+let toastTimer;
+function showToast(){
+  const t=$('#toast');t.classList.remove('show');void t.offsetWidth;t.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1800);
+}
+$('#toastBtn').addEventListener('click',showToast);
+
+/* 提交状态机 */
+const submitBtn=$('#submitBtn'),submitTxt=$('#submitTxt');let busy=false;
+submitBtn.addEventListener('click',()=>{
+  if(busy)return;busy=true;
+  const before=document.body.classList.contains('mode-before');
+  if(before){
+    submitTxt.textContent='提交中...';
+    setTimeout(()=>{submitTxt.textContent='已提交 ✓';setTimeout(()=>{submitTxt.textContent='发表评论';busy=false;},1200);},900);
+  }else{
+    submitTxt.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';
+    submitBtn.style.filter='brightness(.9)';
+    setTimeout(()=>{
+      submitBtn.style.filter='';
+      submitTxt.textContent='已发表 ✓';submitBtn.style.background='var(--ok)';
+      setTimeout(()=>{submitTxt.textContent='发表评论';submitBtn.style.background='';busy=false;},1300);
+    },1100);
+  }
+});
+
+/* 空状态 */
+const searchBox=$('#searchBox'),emptyBox=$('#emptyBox'),emptyQ=$('#emptyQ');
+searchBox.addEventListener('input',()=>{
+  const v=searchBox.value.trim();
+  if(v){emptyQ.textContent='"'+v+'"';emptyBox.classList.add('show');}
+  else{emptyBox.classList.remove('show');}
+});
+
+/* 减法体检 */
+const stage=$('#chaosStage'),card=$('#chaosCard'),bar=$('#meterBar'),pct=$('#meterPct'),note=$('#meterNote');
+const fxNotes={spot:'聚光跟鼠标',tilt:'3D 倾斜',meteor:'流星雨',stagger:'交错入场'};
+function applyFx(){
+  card.classList.toggle('fx-spot',stage.dataset.spot==='1');
+  card.classList.toggle('fx-tilt',stage.dataset.tilt==='1');
+  stage.classList.toggle('fx-meteor',stage.dataset.meteor==='1');
+  if(stage.dataset.stagger==='1'&&!card.dataset.staggered){
+    card.dataset.staggered='1';
+    card.animate([{opacity:0,transform:'translateY(14px)'},{opacity:1,transform:'none'}],{duration:420,easing:'cubic-bezier(.22,.7,.3,1)'});
+  }
+  const n=['spot','tilt','meteor','stagger'].filter(k=>stage.dataset[k]==='1').length;
+  const hoverN=['spot','tilt','stagger'].filter(k=>stage.dataset[k]==='1').length;
+  const meteorOn=stage.dataset.meteor==='1';
+  bar.style.width=(n/4*100)+'%';
+  bar.style.background=hoverN<=1?'var(--ok)':hoverN===2?'var(--warn)':'var(--bad)';
+  pct.textContent=n+' 项';
+  note.textContent=hoverN<=1
+    ?(meteorOn?'✓ 推荐状态。悬停只剩聚光一项主运动，流星雨是背景层，不打架。':'✓ 悬停时只有一项主运动，重点清晰。')
+    :hoverN===2?'两项悬停动效同时发生，还行，但已经要注意主次了。'+(meteorOn?'（流星雨是背景层，不算在悬停冲突里）':'')
+    :hoverN===3?'三种悬停动效同时发生，眼睛已经不知道看哪了。'
+    :'';
+}
+$$('.fx-chip').forEach(ch=>ch.addEventListener('click',()=>{
+  const k=ch.dataset.fx;
+  const on=ch.classList.toggle('on');
+  if(k==='stagger'&&!on)card.dataset.staggered='';
+  stage.dataset[k]=on?'1':'';
+  applyFx();
+}));
+['spot','tilt','meteor'].forEach(k=>stage.dataset[k]='1');
+applyFx();
+stage.addEventListener('pointermove',e=>{
+  const r=card.getBoundingClientRect();
+  card.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');
+  card.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');
+});
+$('#presetAll').addEventListener('click',()=>{
+  $$('.fx-chip').forEach(c=>{c.classList.add('on');stage.dataset[c.dataset.fx]='1';});
+  applyFx();
+});
+$('#presetGood').addEventListener('click',()=>{
+  $$('.fx-chip').forEach(c=>{
+    const on=c.dataset.fx==='spot'||c.dataset.fx==='meteor';
+    c.classList.toggle('on',on);
+    stage.dataset[c.dataset.fx]=on?'1':'';
+  });
+  card.dataset.staggered='';
+  applyFx();
+});
+
+/* console 彩蛋 */
+$('#consoleBtn').addEventListener('click',()=>{
+  console.log('%c\n  ┌──────────────────────────────┐\n  │  你都打开控制台了，            │\n  │  这份好奇心我收下了。          │\n  │                              │\n  │  $ sudo hire-me              │\n  └──────────────────────────────┘\n\n  => 跳转到 /resume\n','color:#5cff9d;font-family:monospace;font-size:13px');
+  showToast();
+  const t=$('#toast');t.textContent='已打到控制台，按 F12 查看';
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.classList.remove('show');t.textContent='已复制到剪贴板（演示环境仅播放动画）';},2200);
+});
+
+/* 想要清单 */
+function refreshPick(){
+  const on=$$('.want.on');
+  $('#pickCount').textContent=on.length;
+  $('#pickList').textContent=[...on].map(b=>b.dataset.want).join('、')||'（还没选，点各区块的「想要 ✓」）';
+}
+$$('.want').forEach(b=>b.addEventListener('click',()=>{b.classList.toggle('on');refreshPick();}));
+refreshPick();
+</script>
+</body>
+</html>
