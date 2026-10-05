@@ -9,7 +9,7 @@ const projects = ref([])
 const loading = ref(true)
 
 // 项目卡聚光 + 3D 倾斜
-const { bindTilt } = useTiltSpotlight({ maxTilt: 4 })
+const { bindTilt } = useTiltSpotlight({ tilt: false })
 
 onMounted(async () => {
   try {
@@ -111,7 +111,7 @@ onMounted(async () => {
   inset: 0;
   background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgb(129 140 248 / 12%), transparent 45%);
   opacity: 0;
-  transition: opacity 0.25s;
+  transition: opacity var(--d-norm) var(--e-out);
   pointer-events: none;
 }
 

@@ -42,4 +42,5 @@ const rows = [
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${rows.join('\n')}\n</urlset>\n`
 writeFileSync(OUT, xml)
+// eslint-disable-next-line no-console -- CLI 脚本, 控制台输出就是它的结果
 console.log(`sitemap.xml 已生成: ${STATIC_ROUTES.length} 条静态路由 + ${articles.length} 篇文章 → ${esc(OUT)}`)

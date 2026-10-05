@@ -267,11 +267,11 @@ const styleVal = computed(() =>
     <Transition name="fade">
       <div
         v-if="resumePercent"
-        class="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-full bg-surface px-5 py-2.5 text-sm shadow-xl ring-1 ring-line"
+        class="fixed bottom-6 left-1/2 z-40 flex items-center gap-3 rounded-full bg-surface px-5 py-2.5 text-sm shadow-xl ring-1 ring-line -translate-x-1/2"
       >
         <span class="i-mdi:book-open-page-variant text-primary" />
         上次读到 {{ resumePercent }}%
-        <button class="font-bold text-primary" @click="resumeReading">
+        <button class="text-primary font-bold" @click="resumeReading">
           继续阅读
         </button>
         <button class="text-muted transition-300 hover:text-main" aria-label="关闭" @click="resumePercent = 0">
@@ -356,7 +356,7 @@ article.prose :deep(img) {
 /* 继续阅读提示条 */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.25s, transform 0.25s;
+  transition: opacity var(--d-norm) var(--e-out), transform var(--d-norm) var(--e-out);
 }
 
 .fade-enter-from,

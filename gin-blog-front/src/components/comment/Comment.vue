@@ -232,6 +232,16 @@ const isLike = computed(() => id => userStore.commentLikeSet.includes(id))
       :topic-id="topicId"
       @after-submit="reloadComments"
     />
+    <!-- 首屏评论骨架: 接口有 0.8s 人为延时, 先把版式占住 (v3.46 调音) -->
+    <div v-if="!commentCount && listLoading" class="mt-7 space-y-5" aria-busy="true">
+      <div v-for="i of 2" :key="i" class="flex animate-pulse gap-3 rounded-lg p-1">
+        <div class="h-[40px] w-[40px] shrink-0 rounded-full bg-surface-soft" />
+        <div class="flex-1 pt-1 space-y-2">
+          <div class="h-3.5 w-1/4 rounded bg-surface-soft" />
+          <div class="h-3.5 w-3/4 rounded bg-surface-soft" />
+        </div>
+      </div>
+    </div>
     <!-- 评论详情 -->
     <div v-if="commentCount">
       <!-- 评论数量 -->
@@ -250,7 +260,7 @@ const isLike = computed(() => id => userStore.commentLikeSet.includes(id))
         class="my-1 flex scroll-mt-24 rounded-lg p-1 transition-300"
         :class="highlightId === comment.id ? 'bg-primary/8 ring-2 ring-primary/40' : ''"
       >
-        <img :src="convertImgUrl(comment.user?.info?.avatar)" class="h-[40px] w-[40px] duration-600 hover:rotate-360" loading="lazy">
+        <img :src="convertImgUrl(comment.user?.info?.avatar)" class="h-[40px] w-[40px] duration-400 hover:rotate-360" loading="lazy">
         <div class="ml-3 flex flex-1 flex-col">
           <!-- 评论人名称: 根据是否有 website 显示不同效果 -->
           <div>
@@ -290,7 +300,7 @@ const isLike = computed(() => id => userStore.commentLikeSet.includes(id))
             class="mt-2 flex scroll-mt-24 rounded-lg p-1 transition-300"
             :class="highlightId === reply.id ? 'bg-primary/8 ring-2 ring-primary/40' : ''"
           >
-            <img :src="convertImgUrl(reply.user?.info?.avatar)" class="h-[40px] w-[40px] duration-600 hover:rotate-360" loading="lazy">
+            <img :src="convertImgUrl(reply.user?.info?.avatar)" class="h-[40px] w-[40px] duration-400 hover:rotate-360" loading="lazy">
             <div class="ml-2 flex flex-1 flex-col">
               <!-- 回复人名称 -->
               <div>

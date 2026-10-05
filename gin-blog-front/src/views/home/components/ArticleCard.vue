@@ -11,7 +11,7 @@ const props = defineProps({
 })
 
 // 卡片聚光 + 3D 倾斜 (桌面端微交互)
-const { bindTilt } = useTiltSpotlight({ maxTilt: 3 })
+const { bindTilt } = useTiltSpotlight({ tilt: false })
 
 // 与首页 params.page_size 保持一致
 const PAGE_SIZE = 8
@@ -109,7 +109,7 @@ const readMinutes = computed(() => {
   inset: 0;
   background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgb(129 140 248 / 12%), transparent 45%);
   opacity: 0;
-  transition: opacity 0.25s;
+  transition: opacity var(--d-norm) var(--e-out);
   pointer-events: none;
 }
 

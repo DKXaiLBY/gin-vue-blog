@@ -237,7 +237,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
   color: #fff;
   cursor: pointer;
   box-shadow: 0 8px 24px rgb(99 102 241 / 40%);
-  transition: transform 0.2s;
+  transition: transform var(--d-norm) var(--e-out);
 }
 
 .ai-fab:hover {
@@ -370,7 +370,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
 
 .ai-slide-enter-active,
 .ai-slide-leave-active {
-  transition: opacity 0.2s, transform 0.2s;
+  transition: opacity var(--d-norm) var(--e-out), transform var(--d-norm) var(--e-out);
 }
 
 .ai-slide-enter-from,

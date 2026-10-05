@@ -3,12 +3,8 @@
 # DKXaiLBY 博客 · 宿主机自检脚本 (cron 每分钟跑一次)
 # 探活: HTTP 打 /api/front/status (顺带验证 DB 链路, 因为接口内部要 COUNT)
 # 检查: 宿主机内存 / 磁盘占用
-# 状态机: OK<->FAIL 只在状态翻转时推送一次, 不刷屏; 每次结果写 Redis 供状态页展示
-#
-# 推送渠道 (可选): 在 /opt/blog/monitor/notify.conf 里配一个即可
-#   Server酱: NOTIFY_TYPE=serverchan  NOTIFY_KEY= SCT_sendkey
-#   Bark:     NOTIFY_TYPE=bark       NOTIFY_KEY= 你的设备key
-#   都不配 = 只记日志和 Redis, 不推送
+# 状态机: OK<->FAIL 只在状态翻转时记一次日志, 不刷屏; 每次结果写 Redis 供状态页展示
+# (v3.46: 推送渠道已移除 —— 用户不需要告警推送, 状态页可见即可)
 #
 # 日志: /opt/blog/monitor/monitor.log (只记状态翻转和错误, 很小)
 # ============================================================
@@ -16,30 +12,12 @@
 MONITOR_DIR="/opt/blog/monitor"
 STATE_FILE="$MONITOR_DIR/state"
 LOG_FILE="$MONITOR_DIR/monitor.log"
-NOTIFY_CONF="$MONITOR_DIR/notify.conf"
 PROBE_URL="http://127.0.0.1:8081/api/front/status"
 REDIS_CONTAINER="gvb-redis"
 MEM_THRESHOLD_MB=100   # 可用内存低于此值告警
 DISK_THRESHOLD=90      # 根分区使用率高于此百分比告警
 
 mkdir -p "$MONITOR_DIR"
-
-# ---- 通知: 读配置, 没配置就只记日志 ----
-notify() {
-    local title="$1" desc="$2"
-    echo "$(date '+%F %T') [NOTIFY] $title - $desc" >> "$LOG_FILE"
-    [ -f "$NOTIFY_CONF" ] && . "$NOTIFY_CONF"
-    case "$NOTIFY_TYPE" in
-        serverchan)
-            [ -n "$NOTIFY_KEY" ] && curl -fsS -m 10 \
-                "https://sctapi.ftqq.com/${NOTIFY_KEY}.send?title=${title}&desp=${desc}" >/dev/null 2>&1
-            ;;
-        bark)
-            [ -n "$NOTIFY_KEY" ] && curl -fsS -m 10 \
-                "https://api.day.app/${NOTIFY_KEY}/${title}/${desc}" >/dev/null 2>&1
-            ;;
-    esac
-}
 
 # ---- 写 Redis 供状态页展示 (Redis 挂了不影响主流程) ----
 # 密码不进本脚本: 从部署 .env 里运行时发现鉴权变量并临时 source, 用完即弃
@@ -93,14 +71,12 @@ if [ -n "$reasons" ]; then
     write_redis "{\"ts\":$ts,\"ok\":false,\"reason\":\"${reasons%%; }\"}"
     if [ "$prev" = "OK" ]; then
         echo "$(date '+%F %T') [FAIL] $reasons" >> "$LOG_FILE"
-        notify "博客监控告警" "$reasons"
     fi
     echo "FAIL" > "$STATE_FILE"
 else
     write_redis "{\"ts\":$ts,\"ok\":true,\"reason\":\"\"}"
     if [ "$prev" = "FAIL" ]; then
         echo "$(date '+%F %T') [RECOVER] 全部恢复正常" >> "$LOG_FILE"
-        notify "博客监控恢复" "服务与资源已全部恢复正常"
     fi
     echo "OK" > "$STATE_FILE"
 fi

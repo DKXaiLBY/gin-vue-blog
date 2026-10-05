@@ -49,12 +49,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 <style scoped>
 .lb-enter-active,
 .lb-leave-active {
-  transition: opacity 0.2s;
+  transition: opacity var(--d-norm) var(--e-out);
 }
 
 .lb-enter-active img,
 .lb-leave-active img {
-  transition: transform 0.2s;
+  transition: transform var(--d-norm) var(--e-out);
 }
 
 .lb-enter-from,

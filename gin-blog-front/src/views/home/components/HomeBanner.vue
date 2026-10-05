@@ -247,7 +247,7 @@ section {
 /* 头像互动彩蛋: 悬停歪头 */
 .avatar-easter-egg {
   cursor: pointer;
-  transition: transform 0.3s;
+  transition: transform var(--d-norm) var(--e-out);
 }
 
 .avatar-easter-egg:hover {

@@ -29,6 +29,13 @@ onMounted(() => {
 
   // 标签页离开彩蛋: 切走时标题卖个萌, 回来恢复原标题 (被截图传播的小心机)
   document.addEventListener('visibilitychange', onVisibilityChange)
+
+  // 控制台彩蛋: 给打开 F12 的人一点小惊喜 (v3.46)
+  // eslint-disable-next-line no-console -- 彩蛋本身就是打给控制台看的
+  console.log(
+    '%c\n  ┌──────────────────────────────┐\n  │  你都打开控制台了，            │\n  │  这份好奇心我收下了。          │\n  │                              │\n  │  $ sudo hire-me              │\n  └──────────────────────────────┘\n\n  => 跳转 /resume 查看我的简历\n',
+    'color:#5cff9d;font-family:monospace;font-size:13px;line-height:1.7',
+  )
 })
 
 // 记住离开前的标题 (可能是文章页的动态标题), 回来时还原
@@ -80,11 +87,11 @@ function onVisibilityChange() {
 <style scoped>
 /* 页面转场: 旧页快速淡出, 新页从下方 8px 浮入; 总时长控制在 0.3s 内不拖沓 */
 .page-enter-active {
-  transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+  transition: opacity var(--d-fast) var(--e-out), transform var(--d-fast) var(--e-out);
 }
 
 .page-leave-active {
-  transition: opacity 0.12s ease-in;
+  transition: opacity var(--d-fast) var(--e-out);
 }
 
 .page-enter-from {

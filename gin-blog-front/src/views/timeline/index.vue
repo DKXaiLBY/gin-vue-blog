@@ -177,7 +177,7 @@ function select(i) {
   background: var(--c-surface);
   border: 3px solid var(--dot);
   margin-bottom: 10px;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform var(--d-fast) var(--e-out), box-shadow var(--d-fast) var(--e-out);
 }
 
 .stop:hover .dot,
@@ -223,7 +223,7 @@ function select(i) {
 /* 详情卡切换动画 */
 .station-fade-enter-active,
 .station-fade-leave-active {
-  transition: opacity 0.18s, transform 0.18s;
+  transition: opacity var(--d-fast) var(--e-out), transform var(--d-fast) var(--e-out);
 }
 
 .station-fade-enter-from,

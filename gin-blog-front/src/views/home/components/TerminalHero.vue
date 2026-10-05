@@ -478,7 +478,7 @@ onBeforeUnmount(() => {
   margin: 2px 4px 2px 0;
   cursor: pointer;
   font-family: inherit;
-  transition: border-color 0.2s, color 0.2s;
+  transition: border-color var(--d-norm) var(--e-out), color var(--d-norm) var(--e-out);
 }
 
 .t-pill:hover {
@@ -500,7 +500,7 @@ onBeforeUnmount(() => {
   font: inherit;
   caret-color: #818cf8;
   padding: 0;
-  transition: color 0.12s;
+  transition: color var(--d-fast) var(--e-out);
 }
 
 /* 打字测速: 前缀全对=绿, 打错=粉 */
@@ -524,7 +524,7 @@ onBeforeUnmount(() => {
   font-size: 11px;
   cursor: pointer;
   font-family: inherit;
-  transition: border-color 0.2s, color 0.2s;
+  transition: border-color var(--d-norm) var(--e-out), color var(--d-norm) var(--e-out);
 }
 
 .t-hint:hover {

@@ -135,6 +135,14 @@ function scrollToArticles() {
           <TalkingCarousel :style="{ '--i': 0 }" />
           <!-- 文章列表 -->
           <div class="space-y-5">
+            <!-- 首屏骨架: 版式先占住, 内容回来位置基本不动 (v3.46 调音) -->
+            <template v-if="loading && !articleList.length">
+              <div
+                v-for="i of 2" :key="i"
+                class="h-[430px] w-full animate-pulse rounded-xl bg-surface-soft md:h-[280px]"
+                aria-hidden="true"
+              />
+            </template>
             <ArticleCard v-for="(item, idx) in articleList" :key="item.id" :article="item" :idx="idx" />
           </div>
 

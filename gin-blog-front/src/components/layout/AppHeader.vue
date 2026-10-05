@@ -264,7 +264,7 @@ html.dark .nav-capsule {
   display: inline-block;
   // margin: 0 0 0 1rem;
   a {
-    transition: all 0.2s;
+    transition: all var(--d-norm) var(--e-out);
   }
   a::after {
     position: absolute;
@@ -275,7 +275,7 @@ html.dark .nav-capsule {
     height: 3px;
     background-color: #80c8f8;
     content: "";
-    transition: all 0.3s ease-in-out;
+    transition: all var(--d-norm) var(--e-out);
   }
   .menu-btn {
     cursor: pointer;
@@ -297,7 +297,7 @@ html.dark .nav-capsule {
   margin-top: 8px;
   box-shadow: 0 5px 20px -4px rgba(0, 0, 0, 0.5);
   background-color: var(--c-surface);
-  animation: submenu 0.3s 0.1s ease both;
+  animation: submenu var(--d-norm) 0.1s var(--e-out) both;
   // 面板底色是 --c-surface, 文字必须自己定成 --c-text:
   // 否则会继承 .nav 的白字(横幅上是白的), 落到白色面板上就看不见了。
   // 原来只给 a 定了颜色, 通知下拉里是 li/p/span, 所以只有那一块是白字
