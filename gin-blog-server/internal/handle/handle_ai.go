@@ -85,7 +85,7 @@ func aiRetrieve(c *gin.Context, question string) string {
 		Desc  string `gorm:"column:desc"`
 	}
 	if err := db.Table("article").
-		Select("title, desc").
+		Select("title, `desc`").
 		Where("status = ? AND is_delete = 0 AND (title LIKE ? OR desc LIKE ?)", model_STATUS_PUBLIC(), like, like).
 		Order("id DESC").Limit(aiContextPerSource).Find(&articles).Error; err == nil {
 		for _, a := range articles {
