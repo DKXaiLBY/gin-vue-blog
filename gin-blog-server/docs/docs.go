@@ -866,6 +866,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/front/ai/summary/{id}": {
+            "get": {
+                "description": "LLM 生成文章 3 句话摘要; Redis 缓存 7 天; 未配置 Key 时返回 enabled=false 前端隐藏入口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Front"
+                ],
+                "summary": "文章 AI 摘要",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "文章 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "0": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handle.Response-map_string_string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handle.Response-string"
+                        }
+                    }
+                }
+            }
+        },
         "/front/article/archive": {
             "get": {
                 "description": "按时间归档的文章列表",

@@ -157,6 +157,34 @@ function saveResume() {
   catch { /* 存储被禁随缘 */ }
 }
 
+// AI 摘要 (v3.48): 服务端 Redis 缓存 7 天, enabled=false 时入口隐藏
+const summaryShow = ref(false)
+const summaryLoading = ref(false)
+const summaryText = ref('')
+
+async function loadSummary() {
+  if (summaryLoading.value) {
+    return
+  }
+  summaryShow.value = true
+  summaryLoading.value = true
+  try {
+    const resp = await api.aiSummary(route.params.id)
+    if (!resp.data || resp.data.enabled === false) {
+      summaryShow.value = false
+      return
+    }
+    summaryText.value = resp.data.summary ?? ''
+  }
+  catch (err) {
+    summaryShow.value = false
+    console.error(err)
+  }
+  finally {
+    summaryLoading.value = false
+  }
+}
+
 function resumeReading() {
   const el = previewRef.value
   if (el) {
@@ -292,6 +320,26 @@ const styleVal = computed(() =>
           >
             本文最后更新于 {{ staleDays }} 天前，部分内容可能已经过时。
           </div>
+          <!-- AI 摘要 (v3.48) -->
+          <div v-if="!loading && summaryShow" class="mb-5 border-l-4 border-primary rounded bg-primary/5 px-4 py-3 text-sm leading-7 lg:mx-10">
+            <p class="mb-1 flex items-center gap-1.5 font-bold">
+              <span class="i-mdi:stars text-primary" />
+              AI 摘要
+              <span class="ml-auto text-xs text-muted font-normal">由 GLM 生成，仅供参考</span>
+            </p>
+            <p :class="{ 'animate-pulse': summaryLoading }">
+              {{ summaryLoading ? '正在阅读全文并提炼要点…' : summaryText }}
+            </p>
+          </div>
+          <button
+            v-if="!loading && !summaryShow"
+            class="mb-5 flex items-center gap-1.5 border border-line rounded-full px-4 py-1.5 text-sm transition-300 lg:mx-10 hover:border-primary hover:text-primary"
+            :disabled="summaryLoading"
+            @click="loadSummary"
+          >
+            <span class="i-mdi:stars text-primary" />
+            {{ summaryLoading ? 'AI 正在阅读全文…' : 'AI 摘要' }}
+          </button>
           <article
             ref="previewRef"
             class="max-w-none prose prose-truegray lg:mx-10 dark:prose-invert"

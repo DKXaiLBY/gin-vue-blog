@@ -230,6 +230,8 @@ func registerBlogHandler(r *gin.Engine) {
 	base.GET("/online", blogInfoAPI.GetOnline) // 当前在线访客数
 	// AI 助手问答: 检索站内内容 + LLM; 未配置 Key 时前端回落规则版
 	base.POST("/ai/chat", blogInfoAPI.AIChat)
+	// 文章 AI 摘要: Redis 缓存 7 天; 未配置 Key 时返回 enabled=false 前端隐藏入口
+	base.GET("/ai/summary/:id", blogInfoAPI.AISummary)
 
 	article := base.Group("/article")
 	{
