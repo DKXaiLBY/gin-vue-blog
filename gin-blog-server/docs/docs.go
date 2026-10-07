@@ -889,13 +889,7 @@ const docTemplate = `{
                     "0": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/handle.Response-map_string_string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handle.Response-string"
+                            "$ref": "#/definitions/handle.Response-handle_aiSummaryResp"
                         }
                     }
                 }
@@ -5553,6 +5547,27 @@ const docTemplate = `{
                 }
             }
         },
+        "handle.Response-handle_aiSummaryResp": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "响应数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/handle.aiSummaryResp"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "响应消息",
+                    "type": "string"
+                }
+            }
+        },
         "handle.Response-int64": {
             "type": "object",
             "properties": {
@@ -6089,6 +6104,20 @@ const docTemplate = `{
                 "count": {
                     "description": "独立访客数",
                     "type": "integer"
+                }
+            }
+        },
+        "handle.aiSummaryResp": {
+            "type": "object",
+            "properties": {
+                "cached": {
+                    "type": "boolean"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "summary": {
+                    "type": "string"
                 }
             }
         },

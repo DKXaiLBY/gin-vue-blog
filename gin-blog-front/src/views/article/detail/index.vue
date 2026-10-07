@@ -160,6 +160,7 @@ function saveResume() {
 // AI 摘要 (v3.48): 服务端 Redis 缓存 7 天, enabled=false 时入口隐藏
 const summaryShow = ref(false)
 const summaryLoading = ref(false)
+const summaryFailed = ref(false)
 const summaryText = ref('')
 
 async function loadSummary() {
@@ -167,6 +168,7 @@ async function loadSummary() {
     return
   }
   summaryShow.value = true
+  summaryFailed.value = false
   summaryLoading.value = true
   try {
     const resp = await api.aiSummary(route.params.id)
@@ -174,10 +176,17 @@ async function loadSummary() {
       summaryShow.value = false
       return
     }
-    summaryText.value = resp.data.summary ?? ''
+    const text = resp.data.summary ?? ''
+    // 空摘要视为失败 (后端已兜底, 这里防串)
+    if (!text) {
+      throw new Error('empty summary')
+    }
+    summaryText.value = text
   }
   catch (err) {
-    summaryShow.value = false
+    // 面板留在原地提示失败, 并重新亮出按钮允许重试
+    summaryFailed.value = true
+    summaryText.value = '摘要暂时不可用，稍后再试。'
     console.error(err)
   }
   finally {
@@ -332,9 +341,8 @@ const styleVal = computed(() =>
             </p>
           </div>
           <button
-            v-if="!loading && !summaryShow"
+            v-if="!loading && (!summaryShow || summaryFailed)"
             class="mb-5 flex items-center gap-1.5 border border-line rounded-full px-4 py-1.5 text-sm transition-300 lg:mx-10 hover:border-primary hover:text-primary"
-            :disabled="summaryLoading"
             @click="loadSummary"
           >
             <span class="i-mdi:stars text-primary" />

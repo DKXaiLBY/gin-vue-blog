@@ -1193,6 +1193,19 @@ definitions:
         description: 响应消息
         type: string
     type: object
+  handle.Response-handle_aiSummaryResp:
+    properties:
+      code:
+        description: 业务状态码
+        type: integer
+      data:
+        allOf:
+        - $ref: '#/definitions/handle.aiSummaryResp'
+        description: 响应数据
+      message:
+        description: 响应消息
+        type: string
+    type: object
   handle.Response-int64:
     properties:
       code:
@@ -1537,6 +1550,15 @@ definitions:
       count:
         description: 独立访客数
         type: integer
+    type: object
+  handle.aiSummaryResp:
+    properties:
+      cached:
+        type: boolean
+      enabled:
+        type: boolean
+      summary:
+        type: string
     type: object
   map_string_int:
     additionalProperties:
@@ -2838,11 +2860,7 @@ paths:
         "0":
           description: ""
           schema:
-            $ref: '#/definitions/handle.Response-map_string_string'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handle.Response-string'
+            $ref: '#/definitions/handle.Response-handle_aiSummaryResp'
       summary: 文章 AI 摘要
       tags:
       - Front
