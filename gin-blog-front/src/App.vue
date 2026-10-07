@@ -11,7 +11,11 @@ import { useAppStore, useUserStore } from '@/store'
 import { reportVisit } from '@/utils/visit-report'
 
 // AI 悬浮球异步懒挂载: 首屏渲染不解析聊天逻辑, 空闲时再补 (v3.47 性能冲分)
-const AskDKX = defineAsyncComponent(() => import('@/components/AskDKX.vue'))
+// 异步加载失败(发版瞬间旧 chunk 404/弱网超时)自动重试一次
+function loadAskDKX() {
+  return import('@/components/AskDKX.vue')
+}
+const AskDKX = defineAsyncComponent(() => loadAskDKX().catch(() => new Promise(resolve => setTimeout(resolve, 2000)).then(loadAskDKX)))
 const showAskDKX = ref(false)
 
 const appStore = useAppStore()
@@ -73,14 +77,14 @@ function onVisibilityChange() {
     <!-- 顶部导航栏 -->
     <AppHeader />
     <!-- 中间内容(包含底部信息) -->
-    <article class="flex flex-1 flex-col">
+    <div class="flex flex-1 flex-col">
       <RouterView v-slot="{ Component, route }">
         <!-- 页面转场: 快速淡入+轻微上移, out-in 避免两页同屏闪烁 -->
         <Transition name="page" mode="out-in">
           <component :is="Component" :key="route.path" />
         </Transition>
       </RouterView>
-    </article>
+    </div>
   </div>
   <!-- 右下角悬浮工具条: 主题切换 / 回到顶部 -->
   <SideTools />

@@ -39,7 +39,7 @@ onUnmounted(() => clearInterval(timer))
 <template>
   <div class="card-view card-enter">
     <div class="flex text-center">
-      <button class="i-mdi-chat-outline text-xl" type="button" aria-label="说说" />
+      <button class="i-mdi-chat-outline text-xl" type="button" aria-label="换一条说说" @click="rotate" />
       <div class="flex-1">
         {{ sentence }}
       </div>

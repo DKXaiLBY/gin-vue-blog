@@ -222,6 +222,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
 
 <style scoped>
 .ai-fab {
+  /* v3.47: 懒挂载入场动画, 免「凭空蹦出」 */
+  animation: fab-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes fab-in {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+
   position: fixed;
   right: 18px;
   bottom: 190px;

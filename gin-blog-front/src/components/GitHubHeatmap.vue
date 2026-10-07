@@ -14,7 +14,7 @@ const failed = ref(false)
 
 <template>
   <div v-if="username" class="card-view">
-    <h3 class="mb-3 flex items-center gap-1.5 font-bold">
+    <h2 class="mb-3 flex items-center gap-1.5 text-base font-bold">
       <span class="i-mdi:github" />
       GitHub 活跃
       <a
@@ -22,7 +22,7 @@ const failed = ref(false)
         target="_blank" rel="noopener"
         class="ml-auto text-xs text-muted font-normal hover:text-primary"
       >@{{ username }}</a>
-    </h3>
+    </h2>
     <img
       v-if="!failed"
       :src="`https://ghchart.rshah.org/818cf8/${username}`"
