@@ -428,7 +428,7 @@ onBeforeUnmount(() => {
 .term-title {
   margin-left: 8px;
   font-size: 11px;
-  color: #5f6a85;
+  color: #97a3c0; /* v3.47: 提对比度过 a11y AA */
 }
 
 .term-body {

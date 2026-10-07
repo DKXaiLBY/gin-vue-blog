@@ -1,7 +1,6 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { defineAsyncComponent, onMounted, ref } from 'vue'
 
-import AskDKX from '@/components/AskDKX.vue'
 import CommandPalette from '@/components/CommandPalette.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import GlobalModal from '@/components/modal/index.vue'
@@ -10,6 +9,10 @@ import UToast from '@/components/ui/UToast.vue'
 
 import { useAppStore, useUserStore } from '@/store'
 import { reportVisit } from '@/utils/visit-report'
+
+// AI 悬浮球异步懒挂载: 首屏渲染不解析聊天逻辑, 空闲时再补 (v3.47 性能冲分)
+const AskDKX = defineAsyncComponent(() => import('@/components/AskDKX.vue'))
+const showAskDKX = ref(false)
 
 const appStore = useAppStore()
 const userStore = useUserStore()
@@ -29,6 +32,11 @@ onMounted(() => {
 
   // 标签页离开彩蛋: 切走时标题卖个萌, 回来恢复原标题 (被截图传播的小心机)
   document.addEventListener('visibilitychange', onVisibilityChange)
+
+  // 空闲后挂载 AI 悬浮球 (App 生命周期内常驻, 无需清理)
+  window.setTimeout(() => {
+    showAskDKX.value = true
+  }, 1500)
 
   // 控制台彩蛋: 给打开 F12 的人一点小惊喜 (v3.46)
   // eslint-disable-next-line no-console -- 彩蛋本身就是打给控制台看的
@@ -79,7 +87,7 @@ function onVisibilityChange() {
   <!-- Ctrl+K 命令面板 -->
   <CommandPalette />
   <!-- Ask DKX AI 助手挂件 -->
-  <AskDKX />
+  <AskDKX v-if="showAskDKX" />
   <!-- 全局弹窗 -->
   <GlobalModal />
 </template>

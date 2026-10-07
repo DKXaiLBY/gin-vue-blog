@@ -104,14 +104,14 @@ function scrollToArticles() {
     <Hero @scroll-down="scrollToArticles" />
 
     <!-- 内容区 -->
-    <div id="articles" class="mx-auto mb-8 max-w-[1230px] px-3">
+    <main id="articles" class="mx-auto mb-8 max-w-[1230px] px-3">
       <!-- 分类胶囊栏 -->
       <div class="[scrollbar-width:none] mb-8 flex items-center gap-2.5 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
         <button
           class="shrink-0 rounded-full px-4 py-1.5 text-sm transition-300"
           :class="activeCategoryId === 0
             ? 'bg-primary text-white'
-            : 'bg-surface text-muted hover:text-primary'"
+            : 'bg-surface text-main hover:text-primary'"
           @click="selectCategory(0)"
         >
           最新
@@ -121,7 +121,7 @@ function scrollToArticles() {
           class="shrink-0 rounded-full px-4 py-1.5 text-sm transition-300"
           :class="activeCategoryId === cat.id
             ? 'bg-primary text-white'
-            : 'bg-surface text-muted hover:text-primary'"
+            : 'bg-surface text-main hover:text-primary'"
           @click="selectCategory(cat.id)"
         >
           {{ cat.name }}
@@ -179,7 +179,7 @@ function scrollToArticles() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
     <!-- 底部 -->
     <AppFooter />
   </div>

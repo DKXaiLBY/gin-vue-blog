@@ -174,7 +174,7 @@ onBeforeUnmount(() => clearInterval(onlineTimer))
         <div class="mt-6 flex items-center justify-center gap-5 text-2xl md:justify-start">
           <button
             v-if="blogConfig.qq"
-            type="button" title="点击复制 QQ 号"
+            type="button" title="点击复制 QQ 号" aria-label="点击复制 QQ 号"
             class="cursor-pointer transition-300 hover:text-primary"
             @click="copyQQ"
           >

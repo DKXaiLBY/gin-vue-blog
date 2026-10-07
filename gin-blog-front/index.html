@@ -39,8 +39,9 @@
   <!-- 腾讯验证码 -->
   <!-- <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script> -->
 
-  <!-- mathjax 配置: 真正的 MathJax 由 utils/mathjax.js 在正文含公式时才动态加载 -->
-  <script src="/js/mathjax.js"></script>
+  <!-- mathjax 配置: 真正的 MathJax 由 utils/mathjax.js 在正文含公式时才动态加载;
+       defer 保证配置先于动态加载执行, 同时不再阻塞首屏渲染 (v3.47) -->
+  <script src="/js/mathjax.js" defer></script>
 
   <!-- 主题要在首屏渲染前定好, 否则深色模式下会先闪一下白底 -->
   <script>

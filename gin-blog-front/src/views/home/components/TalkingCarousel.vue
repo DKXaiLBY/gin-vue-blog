@@ -39,11 +39,11 @@ onUnmounted(() => clearInterval(timer))
 <template>
   <div class="card-view card-enter">
     <div class="flex text-center">
-      <button class="i-mdi-chat-outline text-xl" />
+      <button class="i-mdi-chat-outline text-xl" type="button" aria-label="说说" />
       <div class="flex-1">
         {{ sentence }}
       </div>
-      <RouterLink to="/talks" class="animate-arrow i-mdi-chevron-double-right text-2xl" />
+      <RouterLink to="/talks" class="animate-arrow i-mdi-chevron-double-right text-2xl" aria-label="查看全部说说" />
     </div>
   </div>
 </template>
