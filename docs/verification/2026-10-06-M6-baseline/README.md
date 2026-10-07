@@ -34,3 +34,24 @@
 ## 与终点线的关系
 
 ⑤ 要求 Performance ≥90 且 Accessibility ≥90。HTTPS/redirects 两项属于 Best Practices/SEO（不在 ⑤ 门内），仍由 M3 域名解锁。
+
+## M6 弹药清单（侦察到行号，2026-10-06 补）
+
+| # | 修法 | 位置 | 细节 |
+| --- | --- | --- | --- |
+| 1 | mathjax 配置脚本加 `defer` | gin-blog-front/index.html:43 | 它只是配置片段（真正的 MathJax 由 utils/mathjax.js 按需加载），同步阻塞渲染 451ms；defer 后仍在 DOMContentLoaded 前执行，晚于它的动态加载不受影响 |
+| 2 | 热力图提速二段走 | src/components/GitHubHeatmap.vue:31 | 已有 loading=lazy 但仍拖视觉完成度；先做其余四刀后复测，SI 仍 >6s 则把 ghchart 外链换成服务器端缓存的本地图片 |
+| 3 | 标题跳级 | GitHubHeatmap.vue:24 | `<h3>`GitHub 活跃`</h3>` 改 h2（样式不变） |
+| 4 | 无名字按钮/链接 | TalkingCarousel.vue（chat 图标 button、/talks 箭头 link）、SideTools 两个图标按钮 | 补 aria-label |
+| 5 | 对比度 | ArticleCard 卡片 .term-title 灰字、首页分类胶囊 text-muted | 提亮一档 |
+| 6 | main 地标 | home/index.vue 模板根 div 换 main | 消 landmark-one-main |
+| 7 | 图片尺寸 | ArticleCard 封面 img、HomeBanner 头像 img | 补 width/height 或 aspect-ratio |
+
+## M4 前置侦察：项目线上地址盘点（供用户做兜底确认）
+
+| 项目 | 线上地址 | 建议 |
+| --- | --- | --- |
+| LoveGirl | 无（repo 有） | 用户本机/模拟器截图，或博客截图兜底 |
+| 个人博客 | http://47.121.119.191 ✓ | M6 性能优化后截图最佳 |
+| SparkKeeper | 无、无 repo | 博客截图兜底或用户本机截图 |
+| Tomato | http://47.121.119.191:3000/download ✓ | 直接截官网下载页 |
