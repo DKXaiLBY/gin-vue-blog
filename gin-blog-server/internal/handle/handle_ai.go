@@ -86,7 +86,7 @@ func aiRetrieve(c *gin.Context, question string) string {
 	}
 	if err := db.Table("article").
 		Select("title, `desc`").
-		Where("status = ? AND is_delete = 0 AND (title LIKE ? OR desc LIKE ?)", model_STATUS_PUBLIC(), like, like).
+		Where("status = ? AND is_delete = 0 AND (title LIKE ? OR `desc` LIKE ?)", model_STATUS_PUBLIC(), like, like).
 		Order("id DESC").Limit(aiContextPerSource).Find(&articles).Error; err == nil {
 		for _, a := range articles {
 			b.WriteString("- 文章《" + a.Title + "》：" + aiTruncate(a.Desc, 120) + "\n")
