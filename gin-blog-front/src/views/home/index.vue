@@ -110,7 +110,7 @@ function scrollToArticles() {
         <button
           class="shrink-0 rounded-full px-4 py-1.5 text-sm transition-300"
           :class="activeCategoryId === 0
-            ? 'bg-primary text-white'
+            ? 'bg-#4f46e5 text-white dark:bg-primary dark:text-#131320'
             : 'bg-surface text-main hover:text-primary'"
           @click="selectCategory(0)"
         >
@@ -120,7 +120,7 @@ function scrollToArticles() {
           v-for="cat of categories" :key="cat.id"
           class="shrink-0 rounded-full px-4 py-1.5 text-sm transition-300"
           :class="activeCategoryId === cat.id
-            ? 'bg-primary text-white'
+            ? 'bg-#4f46e5 text-white dark:bg-primary dark:text-#131320'
             : 'bg-surface text-main hover:text-primary'"
           @click="selectCategory(cat.id)"
         >

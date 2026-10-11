@@ -83,6 +83,7 @@ function close() {
           <button
             v-if="dismissButton"
             class="absolute right-5 top-5 h-6 w-6 rounded-full bg-surface-soft p-1 text-main hover:bg-line focus:outline-none focus:ring-2 focus:ring-gray-500"
+            aria-label="关闭"
             @click="close"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor">

@@ -90,10 +90,10 @@ async function logout() {
         <button :title="appStore.isDark ? '切换浅色模式' : '切换深色模式'" @click="appStore.toggleTheme()">
           <span :class="appStore.isDark ? 'i-mdi:weather-sunny' : 'i-mdi:weather-night'" />
         </button>
-        <button @click="appStore.setSearchFlag(true)">
+        <button type="button" aria-label="搜索" @click="appStore.setSearchFlag(true)">
           <span class="i-ic:round-search" />
         </button>
-        <button @click="appStore.setCollapsed(true)">
+        <button type="button" aria-label="打开菜单" @click="appStore.setCollapsed(true)">
           <span class="i-ic:sharp-menu" />
         </button>
       </div>
