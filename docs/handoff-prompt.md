@@ -8,7 +8,7 @@
 
 **项目速览：**
 - 基于开源项目 gin-vue-blog 深度二开（Vue3 前台 + Vue3 后台 + Go 后端），Docker 四容器部署在阿里云 ECS
-- 线上地址：http://47.121.119.191（站点名「阵雨」，作者 DKXaiLBY）
+- 线上地址：http://47.121.119.191（站名 DKXaiLBY）
 - 管理后台：http://47.121.119.191/admin/（密码我已自行修改）
 - GitHub：https://github.com/DKXaiLBY/gin-vue-blog（origin 指向 fork；upstream 才是原仓库 szluyu99，别搞混）
 - 服务器：阿里云 ECS root@47.121.119.191（SSH 免密），代码在 /opt/blog，Docker 四容器运行中

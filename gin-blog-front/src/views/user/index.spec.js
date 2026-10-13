@@ -18,7 +18,7 @@ vi.mock('vue-router', () => ({ useRouter: () => ({ push }) }))
 
 const userData = {
   id: 7,
-  nickname: '阵雨',
+  nickname: 'DKXaiLBY',
   avatar: 'public/uploaded/a.jpg',
   website: 'https://a.com',
   intro: '我的简介',
@@ -48,7 +48,7 @@ describe('个人中心', () => {
     store.setToken('t')
 
     const wrapper = mountPage()
-    await vi.waitFor(() => expect(wrapper.vm.form.nickname).toBe('阵雨'))
+    await vi.waitFor(() => expect(wrapper.vm.form.nickname).toBe('DKXaiLBY'))
 
     expect(wrapper.vm.form.avatar).toBe('public/uploaded/a.jpg')
     expect(wrapper.vm.form.intro).toBe('我的简介')
@@ -63,7 +63,7 @@ describe('个人中心', () => {
     store.setToken('t')
 
     const wrapper = mountPage()
-    await vi.waitFor(() => expect(wrapper.vm.form.nickname).toBe('阵雨'))
+    await vi.waitFor(() => expect(wrapper.vm.form.nickname).toBe('DKXaiLBY'))
     await wrapper.vm.updateUserInfo()
 
     // FE2: 存进库的必须是 public/uploaded/a.jpg, 不能是带域名或带前导 / 的展示地址

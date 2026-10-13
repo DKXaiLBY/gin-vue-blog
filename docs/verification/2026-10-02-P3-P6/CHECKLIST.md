@@ -30,7 +30,7 @@
 | 检查项 | 结果 |
 |---|---|
 | nginx 安全头 | X-Content-Type-Options / X-Frame-Options / Referrer-Policy / Permissions-Policy 全部上线（curl 验证），限流未破坏，原配置备份 `.bak-20261002` ✅ |
-| 备份恢复演练 | **真实覆盖恢复发生**（dump 含 `USE gvb`，管道恢复进正式库）——数据一致性验证无损（HEX 级检查），view_count 计数回滚为唯一实际损失；站名「阵雨」短暂回滚后已修复 ✅ |
+| 备份恢复演练 | **真实覆盖恢复发生**（dump 含 `USE gvb`，管道恢复进正式库）——数据一致性验证无损（HEX 级检查），view_count 计数回滚为唯一实际损失；站名短暂回滚为上游默认值后已修复 ✅ |
 | 演练教训（已写入 handoff） | 恢复临时库必须先剥掉 dump 头部的 CREATE DATABASE/USE，或 `sed` 过滤；恢复验证必须显式 `--default-character-set=utf8mb4`（否则 latin1 显示假象误判乱码）✅ |
 | GHCR 评估 | ghcr.io 本机与服务器均不可达（000）→ 维持 save\|gzip\|scp\|load 手动部署为标准流程 ✅ |
 | 上游同步 | 家宽阻断窗口，挂后台重试（不阻塞）✅ |

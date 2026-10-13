@@ -40,7 +40,7 @@ describe('useUserStore', () => {
       code: 0,
       data: {
         id: 1,
-        nickname: '阵雨',
+        nickname: 'DKXaiLBY',
         avatar: 'public/uploaded/a.png',
         website: 'https://example.com',
         intro: '简介',
@@ -54,7 +54,7 @@ describe('useUserStore', () => {
     store.setToken('fake-token')
     await store.getUserInfo()
 
-    expect(store.nickname).toBe('阵雨')
+    expect(store.nickname).toBe('DKXaiLBY')
     // 头像存原始相对路径, 拼后端地址是展示时才做的事:
     // 存绝对 URL 会被个人中心当表单初值写回库
     expect(store.avatar).toBe('public/uploaded/a.png')
@@ -68,7 +68,7 @@ describe('useUserStore', () => {
       code: 0,
       data: {
         id: 1,
-        nickname: '阵雨',
+        nickname: 'DKXaiLBY',
         avatar: '',
         website: '',
         intro: '',

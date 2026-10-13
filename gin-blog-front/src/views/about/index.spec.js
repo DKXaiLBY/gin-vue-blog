@@ -76,7 +76,7 @@ describe('关于我', () => {
 
     const appStore = useAppStore()
     appStore.blog_config = {
-      website_author: '阵雨',
+      website_author: 'DKXaiLBY',
       website_intro: '往事随风而去',
       website_avatar: '/images/common/header.jpeg',
       github: 'https://github.com/szluyu99',
@@ -86,7 +86,7 @@ describe('关于我', () => {
     appStore.blogInfo = { article_count: 13, category_count: 3, tag_count: 6, view_count: 42 }
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.text()).toContain('阵雨')
+    expect(wrapper.text()).toContain('DKXaiLBY')
     expect(wrapper.text()).toContain('往事随风而去')
 
     // 三项统计各自链到对应页面, 访问量没有对应页面所以不做链接
