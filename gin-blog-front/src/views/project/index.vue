@@ -23,6 +23,40 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+// App 类项目二维码: 桌面访客扫码直达, qrcode 库动态加载不进首屏包
+const qrShow = ref(false)
+const qrLoading = ref(false)
+const qrFailed = ref(false)
+const qrDataUrl = ref('')
+const qrProject = ref(null)
+
+async function showQR(p) {
+  qrProject.value = p
+  qrShow.value = true
+  qrLoading.value = true
+  qrFailed.value = false
+  try {
+    const QRCode = await import('qrcode')
+    const url = await QRCode.toDataURL(p.url, {
+      width: 240,
+      margin: 2,
+      color: { dark: '#1a1a2e', light: '#ffffff' },
+    })
+    // 慢链路竞态守卫: await 期间用户已关窗或切看别的项目, 本次结果作废
+    if (qrProject.value !== p || !qrShow.value) {
+      return
+    }
+    qrDataUrl.value = url
+  }
+  catch (err) {
+    console.error(err)
+    qrFailed.value = true
+  }
+  finally {
+    qrLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -66,8 +100,14 @@ onMounted(async () => {
           >
         </div>
         <div class="p-5 space-y-3">
-          <h2 class="text-xl font-bold">
+          <h2 class="flex items-center gap-2 text-xl font-bold">
             {{ p.name }}
+            <span
+              v-if="p.is_app" aria-hidden="true"
+              class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary font-normal"
+            >
+              <span class="i-mdi:cellphone" /> 移动端应用
+            </span>
           </h2>
           <div class="flex flex-wrap gap-1.5">
             <span
@@ -81,14 +121,24 @@ onMounted(async () => {
           <p class="min-h-6 text-sm text-muted leading-6">
             {{ p.intro }}
           </p>
-          <div class="flex gap-3 pt-1">
+          <div class="flex flex-wrap gap-3 pt-1">
             <a
               v-if="p.url"
               :href="p.url" target="_blank" rel="noopener"
               class="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-sm text-white transition-300 hover:bg-accent"
             >
-              <span class="i-mdi:open-in-new" /> 在线预览
+              <span :class="p.is_app ? 'i-mdi:cellphone-arrow-down' : 'i-mdi:open-in-new'" />
+              {{ p.is_app ? '获取 App' : '在线预览' }}
             </a>
+            <!-- 二维码: 手机扫码直达, 桌面看手机应用的最顺路径 -->
+            <button
+              v-if="p.is_app && p.url"
+              type="button"
+              class="hidden items-center gap-1 border border-line rounded-lg px-3 py-1.5 text-sm transition-300 md:inline-flex hover:border-primary hover:text-primary"
+              @click="showQR(p)"
+            >
+              <span class="i-mdi:qrcode" /> 扫码获取
+            </button>
             <a
               v-if="p.repo_url"
               :href="p.repo_url" target="_blank" rel="noopener"
@@ -100,6 +150,45 @@ onMounted(async () => {
         </div>
       </article>
     </div>
+
+    <!-- App 项目二维码弹窗 -->
+    <Transition name="fade">
+      <div
+        v-if="qrShow"
+        role="dialog" aria-modal="true" :aria-label="`${qrProject?.name ?? ''}扫码直达`"
+        class="fixed inset-0 z-50 f-c-c bg-black/50"
+        @click.self="qrShow = false"
+        @keydown.esc="qrShow = false"
+      >
+        <div class="card-view w-72 p-6 text-center">
+          <p class="mb-1 text-lg font-bold">
+            {{ qrProject?.name }}
+          </p>
+          <p class="mb-4 break-all text-xs text-muted">
+            手机扫码直达 · {{ qrProject?.url }}
+          </p>
+          <div v-if="qrLoading" class="h-60 f-c-c">
+            <span class="animate-pulse text-muted">生成中…</span>
+          </div>
+          <div v-else-if="qrFailed" class="h-60 f-c-c text-sm text-muted">
+            二维码生成失败，稍后再试
+          </div>
+          <img
+            v-else
+            :src="qrDataUrl"
+            :alt="`${qrProject?.name ?? ''}下载链接二维码`"
+            class="mx-auto h-60 w-60 rounded-lg bg-white p-2"
+          >
+          <button
+            type="button"
+            class="mt-4 text-sm text-muted transition-300 hover:text-main"
+            @click="qrShow = false"
+          >
+            关闭
+          </button>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 

@@ -3904,6 +3904,9 @@ const docTemplate = `{
                 "intro": {
                     "type": "string"
                 },
+                "is_app": {
+                    "type": "boolean"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -6857,6 +6860,10 @@ const docTemplate = `{
                 "intro": {
                     "description": "一句话介绍",
                     "type": "string"
+                },
+                "is_app": {
+                    "description": "移动端 App: 前端显示徽章/「获取App」按钮/二维码",
+                    "type": "boolean"
                 },
                 "name": {
                     "type": "string"

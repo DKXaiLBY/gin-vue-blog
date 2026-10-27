@@ -14,6 +14,7 @@ type Project struct {
 	Intro     string `gorm:"type:varchar(500)" json:"intro"`      // 一句话介绍
 	TechStack string `gorm:"type:varchar(255)" json:"tech_stack"` // 技术栈, 逗号分隔
 	Sort      int    `gorm:"default:0" json:"sort"`               // 展示顺序, 越小越靠前
+	IsApp     bool   `gorm:"default:0" json:"is_app"`             // 移动端 App: 前端显示徽章/「获取App」按钮/二维码
 }
 
 func GetProjectList(db *gorm.DB, num, size int, keyword string) (list []Project, total int64, err error) {
@@ -38,7 +39,7 @@ func GetFrontProjectList(db *gorm.DB) (list []Project, err error) {
 	return list, err
 }
 
-func SaveOrUpdateProject(db *gorm.DB, id int, name, cover, url, repoUrl, intro, techStack string, sort int) (*Project, error) {
+func SaveOrUpdateProject(db *gorm.DB, id int, name, cover, url, repoUrl, intro, techStack string, sort int, isApp bool) (*Project, error) {
 	project := Project{
 		Model:     Model{ID: id},
 		Name:      name,
@@ -48,13 +49,14 @@ func SaveOrUpdateProject(db *gorm.DB, id int, name, cover, url, repoUrl, intro, 
 		Intro:     intro,
 		TechStack: techStack,
 		Sort:      sort,
+		IsApp:     isApp,
 	}
 
 	// Select 指定列更新: gorm 用 struct 更新时默认跳过零值字段,
 	// 不指定列的话清空简介/把排序改回 0 都不会落库
 	var result *gorm.DB
 	if id > 0 {
-		result = db.Model(&project).Select("name", "cover", "url", "repo_url", "intro", "tech_stack", "sort").Updates(&project)
+		result = db.Model(&project).Select("name", "cover", "url", "repo_url", "intro", "tech_stack", "sort", "is_app").Updates(&project)
 	} else {
 		result = db.Create(&project)
 	}

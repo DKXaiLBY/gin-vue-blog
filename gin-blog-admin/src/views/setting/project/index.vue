@@ -1,5 +1,5 @@
 <script setup>
-import { NButton, NForm, NFormItem, NImage, NInput, NInputNumber, NPopconfirm } from 'naive-ui'
+import { NButton, NForm, NFormItem, NImage, NInput, NInputNumber, NPopconfirm, NSwitch } from 'naive-ui'
 import { h, onMounted, ref } from 'vue'
 
 import api from '@/api'
@@ -73,6 +73,14 @@ const columns = [
     width: 80,
     align: 'center',
     ellipsis: { tooltip: true },
+    render(row) {
+      return row.is_app
+        ? h('span', { class: 'inline-flex items-center gap-1' }, [
+            row.name,
+            h('span', { class: 'rounded bg-indigo-100 px-1 text-xs text-indigo-600 dark:bg-indigo-900 dark:text-indigo-300' }, 'App'),
+          ])
+        : row.name
+    },
   },
   {
     title: '技术栈',
@@ -225,6 +233,17 @@ const columns = [
         </NFormItem>
         <NFormItem label="展示顺序" path="sort">
           <NInputNumber v-model:value="modalForm.sort" :min="0" class="w-full" />
+        </NFormItem>
+        <NFormItem label="移动端应用" path="is_app">
+          <NSwitch v-model:value="modalForm.is_app">
+            <template #checked>
+              App
+            </template>
+            <template #unchecked>
+              网页
+            </template>
+          </NSwitch>
+          <span class="ml-2 text-xs text-gray-400">App 项目前台显示「获取App」按钮与扫码直达</span>
         </NFormItem>
       </NForm>
     </CrudModal>

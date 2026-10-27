@@ -19,6 +19,7 @@ type AddOrEditProjectReq struct {
 	Intro     string `json:"intro"`
 	TechStack string `json:"tech_stack"`
 	Sort      int    `json:"sort"`
+	IsApp     bool   `json:"is_app"`
 }
 
 // @Summary 条件查询项目列表
@@ -84,7 +85,7 @@ func (*Project) SaveOrUpdate(c *gin.Context) {
 		return
 	}
 
-	project, err := model.SaveOrUpdateProject(GetDB(c), req.ID, req.Name, req.Cover, req.Url, req.RepoUrl, req.Intro, req.TechStack, req.Sort)
+	project, err := model.SaveOrUpdateProject(GetDB(c), req.ID, req.Name, req.Cover, req.Url, req.RepoUrl, req.Intro, req.TechStack, req.Sort, req.IsApp)
 	if err != nil {
 		ReturnError(c, g.ErrDbOp, err)
 		return
