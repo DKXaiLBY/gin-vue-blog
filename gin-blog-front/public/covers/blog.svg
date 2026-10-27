@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" font-family="ui-monospace,Consolas,monospace">
+  <!-- 个人博客 · 封面 (终端风/indigo) -->
+  <defs>
+    <linearGradient id="bg-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e1020"/>
+      <stop offset="1" stop-color="#151830"/>
+    </linearGradient>
+    <radialGradient id="bg-glow" cx="0.3" cy="0.2" r="0.9">
+      <stop offset="0" stop-color="#818cf8" stop-opacity="0.25"/>
+      <stop offset="0.5" stop-color="#818cf8" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#818cf8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#bg-bg)"/>
+  <rect width="800" height="450" fill="url(#bg-glow)"/>
+  <!-- 终端窗 -->
+  <rect x="60" y="70" width="460" height="250" rx="14" fill="#0a0c18" stroke="#818cf8" stroke-opacity="0.4"/>
+  <circle cx="88" cy="98" r="6" fill="#ff5f57"/>
+  <circle cx="110" cy="98" r="6" fill="#febc2e"/>
+  <circle cx="132" cy="98" r="6" fill="#28c840"/>
+  <text x="88" y="150" fill="#818cf8" font-size="17">$ sudo hire-me</text>
+  <text x="88" y="180" fill="#c7cdf8" font-size="15">✔ 207 tests green</text>
+  <text x="88" y="208" fill="#c7cdf8" font-size="15">✔ docker ×4 containers</text>
+  <text x="88" y="236" fill="#c7cdf8" font-size="15">✔ a11y 100 / glm ai</text>
+  <rect x="88" y="256" width="10" height="18" fill="#818cf8">
+    <animate attributeName="opacity" values="1;0;1" dur="1.2s" repeatCount="indefinite"/>
+  </rect>
+  <!-- 四容器积木 -->
+  <g font-size="13" text-anchor="middle">
+    <rect x="580" y="150" width="80" height="46" rx="8" fill="#1c2038" stroke="#818cf8" stroke-opacity="0.5"/>
+    <text x="620" y="178" fill="#a5b4fc">web</text>
+    <rect x="672" y="150" width="80" height="46" rx="8" fill="#1c2038" stroke="#818cf8" stroke-opacity="0.5"/>
+    <text x="712" y="178" fill="#a5b4fc">server</text>
+    <rect x="580" y="206" width="80" height="46" rx="8" fill="#1c2038" stroke="#818cf8" stroke-opacity="0.5"/>
+    <text x="620" y="234" fill="#a5b4fc">mysql</text>
+    <rect x="672" y="206" width="80" height="46" rx="8" fill="#1c2038" stroke="#818cf8" stroke-opacity="0.5"/>
+    <text x="712" y="234" fill="#a5b4fc">redis</text>
+  </g>
+  <!-- 标签 -->
+  <rect x="60" y="356" width="100" height="30" rx="15" fill="#818cf8" fill-opacity="0.12" stroke="#818cf8" stroke-opacity="0.4"/>
+  <text x="110" y="376" fill="#a5b4fc" font-size="15" text-anchor="middle">Vue3</text>
+  <rect x="170" y="356" width="90" height="30" rx="15" fill="#818cf8" fill-opacity="0.12" stroke="#818cf8" stroke-opacity="0.4"/>
+  <text x="215" y="376" fill="#a5b4fc" font-size="15" text-anchor="middle">Go·Gin</text>
+  <rect x="270" y="356" width="110" height="30" rx="15" fill="#818cf8" fill-opacity="0.12" stroke="#818cf8" stroke-opacity="0.4"/>
+  <text x="325" y="376" fill="#a5b4fc" font-size="15" text-anchor="middle">Docker</text>
+  <rect x="390" y="356" width="110" height="30" rx="15" fill="#818cf8" fill-opacity="0.12" stroke="#818cf8" stroke-opacity="0.4"/>
+  <text x="445" y="376" fill="#a5b4fc" font-size="15" text-anchor="middle">glm-4-flash</text>
+  <text x="740" y="416" fill="#575d80" font-size="14" text-anchor="end">gin-vue-blog · by DKXaiLBY</text>
+</svg>

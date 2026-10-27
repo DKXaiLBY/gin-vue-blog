@@ -24,6 +24,12 @@ onMounted(async () => {
   }
 })
 
+// 项目详情弹窗: 点卡片看完整介绍
+const detailP = ref(null)
+function openDetail(p) {
+  detailP.value = p
+}
+
 // App 类项目二维码: 桌面访客扫码直达, qrcode 库动态加载不进首屏包
 const qrShow = ref(false)
 const qrLoading = ref(false)
@@ -87,9 +93,13 @@ async function showQR(p) {
     <div v-else class="grid gap-6 md:grid-cols-2">
       <article
         v-for="(p, i) in projects" :key="p.id"
-        class="tilt-card project-card card-enter group relative overflow-hidden rounded-xl bg-surface shadow-md transition-shadow duration-300 hover:shadow-xl"
+        role="button" tabindex="0"
+        class="tilt-card project-card card-enter group relative cursor-pointer overflow-hidden rounded-xl bg-surface shadow-md transition-shadow duration-300 hover:shadow-xl"
         :style="{ '--i': i }"
         v-bind="bindTilt"
+        :aria-label="`查看 ${p.name} 详情`"
+        @click="openDetail(p)"
+        @keydown.enter="openDetail(p)"
       >
         <div class="h-44 overflow-hidden bg-surface-soft">
           <img
@@ -118,7 +128,7 @@ async function showQR(p) {
               {{ t }}
             </span>
           </div>
-          <p class="min-h-6 text-sm text-muted leading-6">
+          <p class="line-clamp-2 min-h-6 text-sm text-muted leading-6">
             {{ p.intro }}
           </p>
           <div class="flex flex-wrap gap-3 pt-1">
@@ -126,6 +136,7 @@ async function showQR(p) {
               v-if="p.url"
               :href="p.url" target="_blank" rel="noopener"
               class="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-sm text-white transition-300 hover:bg-accent"
+              @click.stop
             >
               <span :class="p.is_app ? 'i-mdi:cellphone-arrow-down' : 'i-mdi:open-in-new'" />
               {{ p.is_app ? '获取 App' : '在线预览' }}
@@ -135,7 +146,7 @@ async function showQR(p) {
               v-if="p.is_app && p.url"
               type="button"
               class="hidden items-center gap-1 border border-line rounded-lg px-3 py-1.5 text-sm transition-300 md:inline-flex hover:border-primary hover:text-primary"
-              @click="showQR(p)"
+              @click.stop="showQR(p)"
             >
               <span class="i-mdi:qrcode" /> 扫码获取
             </button>
@@ -143,6 +154,7 @@ async function showQR(p) {
               v-if="p.repo_url"
               :href="p.repo_url" target="_blank" rel="noopener"
               class="inline-flex items-center gap-1 border border-line rounded-lg px-3 py-1.5 text-sm transition-300 hover:border-primary hover:text-primary"
+              @click.stop
             >
               <span class="i-mdi:github" /> 源码
             </a>
@@ -150,6 +162,78 @@ async function showQR(p) {
         </div>
       </article>
     </div>
+
+    <!-- 项目详情弹窗 -->
+    <Transition name="fade">
+      <div
+        v-if="detailP"
+        role="dialog" aria-modal="true" :aria-label="`${detailP.name} 项目详情`"
+        class="fixed inset-0 z-50 f-c-c bg-black/50 p-4"
+        @click.self="detailP = null"
+        @keydown.esc="detailP = null"
+      >
+        <div class="card-view max-h-[86vh] max-w-lg w-full overflow-y-auto">
+          <img
+            :src="convertImgUrl(detailP.cover)"
+            :alt="`${detailP.name} 封面`"
+            class="mb-4 aspect-video w-full rounded-xl object-cover"
+          >
+          <h2 class="flex items-center gap-2 text-2xl font-bold">
+            {{ detailP.name }}
+            <span
+              v-if="detailP.is_app" aria-hidden="true"
+              class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary font-normal"
+            >
+              <span class="i-mdi:cellphone" /> 移动端应用
+            </span>
+          </h2>
+          <div class="mt-3 flex flex-wrap gap-1.5">
+            <span
+              v-for="t in (detailP.tech_stack || '').split(',').map(s => s.trim()).filter(Boolean)"
+              :key="t"
+              class="rounded bg-surface-soft px-2 py-0.5 text-xs text-muted"
+            >
+              {{ t }}
+            </span>
+          </div>
+          <p class="mt-4 text-sm text-muted leading-7">
+            {{ detailP.intro }}
+          </p>
+          <div class="mt-5 flex flex-wrap gap-3">
+            <a
+              v-if="detailP.url"
+              :href="detailP.url" target="_blank" rel="noopener"
+              class="inline-flex items-center gap-1 rounded-lg bg-primary px-4 py-2 text-sm text-white transition-300 hover:bg-accent"
+            >
+              <span :class="detailP.is_app ? 'i-mdi:cellphone-arrow-down' : 'i-mdi:open-in-new'" />
+              {{ detailP.is_app ? '获取 App' : '在线预览' }}
+            </a>
+            <button
+              v-if="detailP.is_app && detailP.url"
+              type="button"
+              class="hidden items-center gap-1 border border-line rounded-lg px-4 py-2 text-sm transition-300 md:inline-flex hover:border-primary hover:text-primary"
+              @click="showQR(detailP); detailP = null"
+            >
+              <span class="i-mdi:qrcode" /> 扫码获取
+            </button>
+            <a
+              v-if="detailP.repo_url"
+              :href="detailP.repo_url" target="_blank" rel="noopener"
+              class="inline-flex items-center gap-1 border border-line rounded-lg px-4 py-2 text-sm transition-300 hover:border-primary hover:text-primary"
+            >
+              <span class="i-mdi:github" /> 源码
+            </a>
+          </div>
+          <button
+            type="button"
+            class="mt-5 text-sm text-muted transition-300 hover:text-main"
+            @click="detailP = null"
+          >
+            关闭
+          </button>
+        </div>
+      </div>
+    </Transition>
 
     <!-- App 项目二维码弹窗 -->
     <Transition name="fade">
