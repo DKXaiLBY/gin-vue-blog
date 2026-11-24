@@ -44,12 +44,6 @@ export default {
       desc: 'Node.js/TypeScript 编写的定时自动化工具：每日随机时间调度、干跑演练模式、容器化部署，配套 Web 状态页。',
       tech: 'Node.js · TypeScript · Docker',
     },
-    {
-      name: 'Tomato —— 安卓应用与自分发官网',
-      time: '2026',
-      desc: '安卓应用及配套官网：不走应用商店的自分发模式，官网动态读取版本接口并提供二维码下载。',
-      tech: 'Android · Node.js',
-    },
   ],
 
   awards: [],

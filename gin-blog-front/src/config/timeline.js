@@ -51,7 +51,7 @@ export default [
   {
     date: '2026.06.29',
     title: 'AI 工作流起飞日 🚀',
-    desc: 'Codex 首日爆发：一天开出 25 个会话——情侣 App 与番茄专注的产品第一性原理推演、五维度 QA 自动化检测协议、灵动岛与博客项目同日开工。',
+    desc: 'Codex 首日爆发：一天开出 25 个会话——情侣 App 的产品第一性原理推演、五维度 QA 自动化检测协议、灵动岛与博客项目同日开工。',
     type: 'project',
     major: true,
   },
@@ -66,13 +66,6 @@ export default [
     title: '自研「对抗式开发流程」',
     desc: '豆包/Codex/WorkBuddy 出方案 → 主力 AI 施工 → 独立会话扮演敌意代码审查员专门挑刺 → 攻不破才合并。这套流程贯穿了之后所有项目。',
     type: 'other',
-    major: true,
-  },
-  {
-    date: '2026.07.12',
-    title: '番茄专注正式发版期',
-    desc: 'WorkBuddy/豆包工作台 12 个工作区：自习室重写为沉浸专注室、对抗式 QA 审查、每版配发版总览文档——工程化拉满的一段。',
-    type: 'project',
     major: true,
   },
   {

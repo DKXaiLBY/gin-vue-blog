@@ -8,7 +8,7 @@
 
 - 🚀 [LoveGirl](https://github.com/DKXaiLBY/lovegirl_flutter)：情侣互动 App，Flutter 全栈，170+ 次构建持续迭代
 - 🌱 本博客：基于 gin-vue-blog 深度二开——修安全漏洞、自研模块、部署运维，过程写成了[文章](/article/4)
-- 🤖 SparkKeeper / Tomato：定时自动化工具与安卓应用自分发
+- 🤖 SparkKeeper：定时自动化工具
 
 ### 这个博客的特别之处
 
