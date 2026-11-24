@@ -22,7 +22,6 @@ const { blogConfig, articleCount, categoryCount, tagCount, viewCount, isMobile }
 const MOTTO = '把开源项目吃透、改造成自己的——这个过程学到的东西，比看十篇教程都多。'
 const PROJECTS = [
   { label: 'LoveGirl', to: '/projects' },
-  { label: '番茄专注', to: '/projects' },
   { label: '博客', to: '/' },
   { label: 'SparkKeeper', to: '/projects' },
 ]

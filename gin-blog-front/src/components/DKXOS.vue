@@ -26,7 +26,6 @@ const { blogConfig, articleCount, viewCount, isMobile } = storeToRefs(useAppStor
 
 const ICONS = [
   { label: 'LoveGirl.apk', icon: '💕', to: '/projects' },
-  { label: '番茄专注.exe', icon: '🍅', to: '/projects' },
   { label: '博客.lnk', icon: '📝', to: '/' },
   { label: '说说.txt', icon: '💬', to: '/talks' },
   { label: '简历.pdf', icon: '📄', to: '/resume' },

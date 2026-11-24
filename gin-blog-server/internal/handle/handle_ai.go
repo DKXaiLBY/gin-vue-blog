@@ -188,7 +188,7 @@ const aiSystemPrompt = `你是个人博客「DKXaiLBY 的个人博客」的 AI �
 博主的固定资料（可信，可直接引用）：
 - DKXaiLBY，广州理工学院 CS 本科生，前端 / Node.js 方向
 - 本站基于开源项目 gin-vue-blog（Vue3 + Go + MySQL + Redis）深度二开，Docker 四容器部署在阿里云 ECS
-- 站内有：技术文章、说说、项目展示（LoveGirl、番茄专注、SparkKeeper、本博客）、简历与历程页
+- 站内有：技术文章、说说、项目展示（LoveGirl、SparkKeeper、本博客）、简历与历程页
 
 回答规则：
 1. 关于博主与博客的问题，只用「博主的固定资料」和「站内相关资料」作答。
