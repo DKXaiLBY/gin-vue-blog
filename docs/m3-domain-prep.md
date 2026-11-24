@@ -1,42 +1,57 @@
-# v3.49 · 域名与门面 · 预备作战清单（备案通过后执行）
+# v3.49 · 域名与门面 · 施工图纸 v2（香港新机，免备案）
 
-> 域名已定稿：**lbyaidkx.top**（用户已购，实名/备案审核中，2026-10-06）
-> 本文是 M3/v3.49 冲刺的施工图纸，**备案通过前不做任何线上域名操作**（铁律 #8）
-> 用户随消息贴出的疑似 DNS API 凭证已提醒重置，本流程全程手动控制台操作，不使用 API
+> **2026-11-24 方案变更**：博客迁往**香港**新服务器。境外服务器不需要 ICP 备案，域名解析切过去后即可签发 HTTPS 证书。
+> 原路径（内地 ECS + ICP 备案）作废：备案自 10-06 起始终未通过，且现有服务器（47.121.119.191）即将到期。
+> 新机地址未定（用户购买中）。**新机到位前，旧机保持现状不动**（铁律 #8 仍然有效）。
 
-## 第一段 · 用户侧（现在就可以做的）
+## 第一段 · 用户侧（买机器时注意）
 
-1. **等实名认证通过**（.top 注册后必须实名才能解析，用户说约两天）
-2. **提交 ICP 备案**：阿里云 App → ICP 备案 → 新增网站
-   - 主体：用户本人（和 ECS 同一账号）
-   - 网站域名：lbyaidkx.top
-   - 服务器：选现有 ECS（产品核验码在 ECS 控制台「备案】授权」处生成）
-   - 网站内容选「博客/个人空间」，备注如实写个人技术博客
-   - 周期：初审 1~2 天 + 管局审核 1~13 个工作日（短信通知结果）
-3. **备案通过前**：站点保持 http://47.121.119.191 不动，不加解析、不开 HTTPS
-4. （可选）注销旧域名的动作不急，等新域名 HTTPS 稳定跑一周后再办
+1. 地域选**香港**；系统 **Ubuntu 24.04**；系统盘 **≥60G**；内存 **≥2G**
+2. 防火墙/安全组只放行 **22 / 80 / 443**（数据库端口不要对公网开）
+3. 把本机 SSH 公钥绑定到新机（公钥在本机 `~/.ssh/id_rsa.pub`），或买完后在控制台执行一条命令加入
+4. 把新机公网 IP 发我；**先不要改域名解析**（等我通知切换）
+5. 旧机在切换完成并稳定一周前不要释放（回滚兜底）
 
-## 第二段 · 我接手（备案通过后，一次冲刺 v3.49）
+## 第二段 · 我接手（新机到位后一次冲刺 v3.49）
 
-按序执行，每步验证：
+### A. 备份与传输（旧机 → 新机）
 
-1. **DNS 解析**（阿里云控制台，用户或我远程指挥手动加）
-   - `A 记录：@ → 47.121.119.191`
-   - `A 记录：www → 47.121.119.191`
-   - TTL 默认 10 分钟
-2. **验证解析生效**：`ping lbyaidkx.top` 与 `dig` 双地确认
-3. **TLS 证书**：用 Let's Encrypt / 免费证书（宝塔或 acme.sh 在宿主机签），证书文件落位 `/opt/blog/deploy/start/server.crt|key`（compose 已挂载）
-4. **开启 HTTPS**：`/opt/blog/deploy/start` 的 `.env` 设 `USE_HTTPS=true`、`SERVER_NAME=lbyaidkx.top` → `docker compose up -d gvb-web` → 验证 https://lbyaidkx.top 与 www 跳转
-5. **HTTP→HTTPS 跳转**：nginx conf 已带 ssl template 分支，确认 301
-6. **全站资源检查**：文章图片/头像/封面都是相对或同域路径，无 http://47.121.119.191 硬编码（grep 验证）
-7. **sitemap 重生成**：`node gin-blog-front/scripts/gen-sitemap.mjs https://lbyaidkx.top` → 提交进 web 镜像 → 重新部署
-8. **搜索引擎提交**：Google Search Console（HTTPS 前缀资源）、Bing Webmaster、百度站长（备案域名才能收）逐个提交 sitemap
-9. **OG 分享图**：制作 1200×630 品牌分享图（DKXaiLBY 终端风），落 `public/og-image.png`，index.html OG 标签更新 → 部署
-10. **验收**：HTTPS 访问 / www 跳转 / sitemap 可拉 / 分享卡片预览（微信/QQ 调试）→ 打 tag v3.49-stable → 回填 roadmap
+1. 旧机执行 `/opt/blog/backup.sh` 做全量备份；打包 `/opt/blog`（**必须带上 `deploy/start/.env.secrets`**，AI 密钥只在服务器上有）
+2. 导出博客四个容器**实际正在使用的镜像**（按容器的镜像 ID 导出，不要按 tag——`start-gvb-web:latest` 的归属与 v3.51 对不上，tag 不可信）
+3. 传输到新机 `/opt/blog`
+
+### B. 新机初始化
+
+4. 安装 Docker + compose，导入镜像，`docker compose up -d`
+5. 恢复数据库（mysqldump 恢复要剥掉头部的 CREATE DATABASE/USE 并显式指定 utf8mb4，见 docs/handoff.md 陷阱清单）与上传文件
+6. 验证 `127.0.0.1:8081` 首页是 v3.51 产物（入口 `index-D9QrvFT-.js`）；AI 问答 `use_rules=false`（**香港出口访问智谱 API 是否可达未知，必须第一时间实测**）
+
+### C. 接入层
+
+7. 系统 nginx（systemd 管理、开机自启）：80/443 → `127.0.0.1:8081`，保留 limit_req 与安全头；**不装宝塔**
+8. 通知用户改域名解析：A 记录 `@` / `www` → 新 IP
+9. 证书：Let's Encrypt（certbot --nginx 或 acme.sh），HTTP → HTTPS 301，自动续期
+
+### D. 域名收尾
+
+10. 去掉 IP 硬编码（仓库内 7 文件 19 处）：`public/robots.txt`、`public/sitemap.xml`×9、`scripts/gen-sitemap.mjs` 默认值×2、`link/components/AddLink.vue` 示例、`deploy/tomato-download.html`×2、`deploy/content/project-blog.json` 与 `project-tomato.json`（线上数据库 project.url 同步改）
+11. `.env` 设 `USE_HTTPS=true`；重跑 `node gin-blog-front/scripts/gen-sitemap.mjs https://lbyaidkx.top`
+12. OG 分享图 1200×630 + `index.html` OG 标签
+13. 搜索引擎提交：Google Search Console / Bing Webmaster / 百度站长
+
+### E. 定时任务
+
+14. 每日 3:00 备份、每分钟自检（cron）；备份定期拉到本机（`D:\Projects\Personal\blog-server-backups\`，仓库外）
+
+### F. 验收与发布
+
+15. HTTPS 访问 / www 跳转 / HTTP 301 / sitemap 可拉 / 分享卡片 → 打 tag v3.49-stable → 回填 roadmap
 
 ## 风险与注意
 
-- **.top 无 HSTS 预载**，HTTP 阶段可访问，无 .dev/.app 的强制 HTTPS 坑，选型安全 ✓
-- 证书续期：acme.sh 自动续（80 端口验证需在续期时临时放行或用 DNS 验证）
-- 备案号必须挂网站页脚（AppFooter 加一行「X ICP 备 XXXXXXXX 号」）——备案通过后拿到号我来加
-- 切换当天可能在搜索引擎侧出现短暂双源（IP + 域名），sitemap 提交后 1~2 周收敛
+- **智谱 API（open.bigmodel.cn）从香港出口的可达性未知**——迁移后第一件事验证；不通则 AI 退回规则版，需另想办法
+- 香港到内地延迟略高（几十毫秒），Lighthouse 性能分可能略降
+- **切换顺序**：新机全通 → 改解析 → 旧机保留兜底。回滚 = 把解析改回旧 IP
+- **数据库最终同步**：改解析前在旧机停写导出一次，避免丢最后几分钟的留言/说说
+- **旧机上有其他操作者**（LoveGirl 项目活跃、11-24 00:19 有人重启过博客容器）——动旧机前确认没人在用
+- LoveGirl 与番茄官网是用户的另外两个项目，默认不迁不动，等用户明确指令
