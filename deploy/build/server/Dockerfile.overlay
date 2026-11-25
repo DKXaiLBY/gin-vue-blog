@@ -1,0 +1,7 @@
+# 增量打包: 基于线上正在运行的 server 镜像, 只替换后端二进制
+# 适用场景: 本机没有可用的 Docker, 后端在本地交叉编译(linux/amd64)后传到服务器打包
+# 用法: docker build --build-arg BASE=<当前 server 镜像 ID> -f Dockerfile -t start-gvb-server:<版本> <含 server 二进制的目录>
+ARG BASE
+FROM ${BASE}
+
+COPY --chmod=755 server /gvb/server

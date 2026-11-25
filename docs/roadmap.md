@@ -20,7 +20,7 @@
 | --- | --- | --- |
 | ① | HTTPS 新域名可访问（域名 lbyaidkx.top 已购已实名；博客迁往香港新机后切解析、签证书、sitemap/搜索引擎提交/OG 图） | ⬜ 等香港新服务器（免备案，用户购买中） |
 | ② | AI 助手真数据（智谱 key + 只答 DKX 相关定制 + 文章 AI 摘要） | ✅ v3.48 上线（2026-10-07；2026-11-24 复验健康） |
-| ③ | 项目截图全部真实（4 张占位图替换；没线上地址的用博客截图兜底） | 🟡 品牌封面已上线（v3.51）；真实截图等 LoveGirl/SparkKeeper 做完 |
+| ③ | 项目截图全部真实（现共 3 个项目；没线上地址的用博客截图兜底） | 🟡 品牌封面已上线（v3.51）；Tomato 项目已于 v3.51.1 下线；真实截图等 LoveGirl/SparkKeeper 做完 |
 | ④ | 技术文章 ≥5 篇上线（3 篇已定稿 docs/article-drafts/，等口吻校准后发布） | 🟡 线上 1 篇 + 草稿 3 篇（等用户校准后发布） |
 | ⑤ | Lighthouse ≥90（性能 + 可访问性；基线已测：移动端性能 60 / 可访问性 82） | 🟡 性能 75 / 可访问性 100（v3.47）；差打字动画取舍 |
 | ⑥ | 前台测试全绿 + lint 零错误（32 文件 / 207 用例，v3.46 复验通过） | ✅ 持续保持 |
@@ -65,7 +65,7 @@ git tag 备份 + 服务器镜像 rollback tag
 4. 密码类敏感操作与后台设置由用户自己做；我做到「准备好命令/配置」为止
 5. git push 失败 = 家宽阻断，用 scripts/push-retry.sh 后台重试（150s × 10 次）
 6. 其余 13+ 条陷阱清单见 docs/handoff.md §五，动工前重读
-7. 服务器上 lovegirl-web/lovegirl-mysql/MongoDB//opt/tomat 是用户另一个项目，不要动
+7. 服务器上 lovegirl 系容器、MongoDB、/opt/love-girl 是用户另一个项目，不要动（番茄官网与数据已按用户 2026-11-24 指令删除，旧服务器上不再有番茄）
 8. 备案完成前站点保持现有 IP 访问方式不变，不做任何会让线上变动的域名实验
 
 ## 六、目标提示词 v3（新会话粘贴用）
@@ -95,7 +95,7 @@ M1/v3.46 动效质感版已上线（动效 token 三档、首页+评论骨架屏
 我的依赖项（AI key / 新域名 / 文章校准 / 截图确认）已就位的优先插队；未就位就做无依赖的，并在每次会话开始时提醒我还欠什么。
 
 ◆ 铁律
-动代码前双备份；动效只做调音与反馈不加花活；文章按 khazix-writer 文风（副本在 docs/article-drafts/references/）；密码与后台操作我自己来；push 失败用 scripts/push-retry.sh 后台重试；服务器上 lovegirl 系容器和 /opt/tomat 是我另一个项目不要动；旧域名注销过渡期不做任何域名实验，备案完成前保持 IP 访问不变；其余陷阱见 docs/handoff.md。
+动代码前双备份；动效只做调音与反馈不加花活；文章按 khazix-writer 文风（副本在 docs/article-drafts/references/）；密码与后台操作我自己来；push 失败用 scripts/push-retry.sh 后台重试；服务器上 lovegirl 系容器和 /opt/love-girl 是我另一个项目不要动（番茄相关已按我的指令全部删除）；旧域名注销过渡期不做任何域名实验，迁移到香港新机完成前保持 IP 访问不变；其余陷阱见 docs/handoff.md。
 ```
 
 ## 七、进度日志
@@ -112,3 +112,5 @@ M1/v3.46 动效质感版已上线（动效 token 三档、首页+评论骨架屏
 - 2026-11-24 **线上事故排查与恢复（三周未巡检发现）**。①博客公网 80 端口自 **2026-11-03 08:35 服务器重启起中断 20 天**——宝塔 nginx 未随开机启动（`systemctl is-enabled nginx`=disabled，`/etc/rc3.d/S01nginx` 存在但未生效；`nginx -t` 通过），容器因自动重启策略正常，所以番茄页 3000 端口一直没事掩盖了问题；已 `/etc/init.d/nginx start` 恢复，外部复验首页/项目页/封面均 200。根因未确证（怀疑开机时磁盘已满导致 nginx 写 pid/日志失败）。②**磁盘 100%**（40G 仅剩 232M）：`/var/lib/docker` 16G，130 个镜像中 **114 个是无标签的悬空镜像**，带标签的全是博客自己的历史版本（start-gvb-web×14 / server×8 / mysql×2）与基础镜像；`/tmp` 1.6G 为顶层大文件（未查清）。清理方案 = `docker image prune -f`（**不可加 -a**，会删光 rollback 标签），预计回收 10G+——**不可逆操作，等用户确认**。③域名 `lbyaidkx.top` 实测仍 `403 Non-compliance ICP Filing`（阿里云 Beaver 拦截），**ICP 备案仍未通过**；宝塔已有 `vhost/nginx/lbyaidkx.top.conf`（11-03 开机时生成，@/www → 127.0.0.1:8081，含 acme-challenge webroot），备案通过后只需签证书 + 加 443。④AI 复验健康（1.9s，`use_rules=false`）。**新铁律：每次会话开始先做线上健康检查**（本机 curl 80 端口；异常时 SSH 看 `ss -lntp` 的 80 监听）。
 - 2026-11-24 **磁盘清理完成 + 换服务器盘点**（用户授权"清理掉吧"）。①`docker image prune -f` 清掉 116 个无标签且零容器引用的废弃层（预检：无在途构建、悬空镜像与容器引用交集为 0），**实际回收 5.23G**（远低于表观 14.7G——废弃层之间大量共享，估算别按表观大小报），磁盘 100%→72%（可用 11G），8 容器全部正常。清理前磁盘已跌到 **62M**，且 gvb-web/gvb-server 在 00:19:55 被第三方重启（restarts=0，非我所为；线上复验仍是 v3.51 产物 + AI 真模型）——服务器上另有活跃操作者（LoveGirl 项目）。②未动的可回收项（不在授权范围）：`/tmp/tomato-server-config.tar.gz` 1.65G（11-05 番茄项目备份包）、博客旧版本镜像 tag。③公网可达性：80/8080/3000/3001 开放；3306/3307/888 被安全组拦截。④**新需求：服务器快过期，用户要换新服务器**。盘点：ecs.e-c1m1.large 2 核 1.6G/40G/Ubuntu 24.04.2；博客 = `/opt/blog` 251M + compose 项目 `start`（web 8081/server 8765/mysql 33066/redis 63799 全收 127.0.0.1）+ 宝塔 nginx `gvb-blog.conf`/`lbyaidkx.top.conf` + cron（3:00 备份、每分钟自检）；番茄官网 = `/opt/tomat`（node 3000）+ `/opt/tomato-server` 1.7G；LoveGirl = `/opt/love-girl` 6.3G + compose `love-girl`（web 8080/server 3001/mysql 3307）+ QA 容器 3002 + 备份 cron 4:30（用户项目，默认不碰）；另有宝塔面板 888、宿主机 MySQL 3306。建议新机：系统盘 ≥60G、内存 ≥2G（LoveGirl 同迁则 4G）、不装宝塔（本次事故源头，改系统 nginx + systemd 开机自启）。⑤**换机与备案的顺序约束**：ICP 备案绑定具体服务器（需包年包月且剩余 ≥3 个月才能出备案服务码）→ **先定新机再提交备案**；香港/海外地域免备案（域名 + HTTPS 当天可用，代价是国内访问延迟略高）。⑥待用户决定：地域、到期时间、搬迁范围。nginx 开机自启加固不做（旧机将废弃，新机一步到位）。
 - 2026-11-24 **地域定案：香港（免备案）**（用户原话「服务器的地址还没有确定，打算是香港」）。①**ICP 备案路径作废**——境外服务器不需要备案，M3/v3.49 改为「香港新机到位 → 迁移 → 切解析 → 签 HTTPS」；终点线①从「等备案」变为「等新机」。图纸重写为 `docs/m3-domain-prep.md` v2（用户侧购买要点 / 迁移步骤 A~F / 风险），本表 M3 行与终点线表格同步更新（顺手修正了 ②③④⑤ 四行早已过期的状态）。②仓库硬编码旧 IP 盘点：**7 文件 19 处**（`public/robots.txt`、`public/sitemap.xml`×9、`scripts/gen-sitemap.mjs` 默认值×2、`link/components/AddLink.vue`、`deploy/tomato-download.html`×2、`deploy/content/project-blog.json` 与 `project-tomato.json`），迁移时统一换成 `https://lbyaidkx.top`。③**番茄范围待确认**：用户说「番茄的内容也删除掉吧」，但范围有歧义（只是不搬迁 / 现在从旧机删除番茄服务与数据 / 删博客里的番茄内容），删除不可逆——**未执行任何删除，已列选项请用户确认**。若番茄官网不迁移，博客项目页 Tomato 卡片的「获取 App」链接会变死链，需同步删卡片或改链接。④博客数据本机备份：`D:\Projects\Personal\blog-server-backups\2026-11-24\`（数据库 + 上传文件，仓库外）。⑤仍欠用户：旧机到期时间。
+- 2026-11-24 **番茄删除 · 服务器侧**（用户明确选「现在就删」）。盘点：真实目录是 `/opt/tomato-server`（1.7G，pm2 守护 `tomato-server`，监听 3000；铁律里写的 `/opt/tomat` 并不存在）+ `/root/tomato-server/releases`（25M）+ MongoDB `tomato_app` 库 + `/tmp/tomato-server-config.tar.gz`（1.65G）。执行：防护检查（无挂载点、无容器依赖）→ `pm2 delete` → 删两目录与备份包 → 临时启动 mongod 删 `tomato_app` 后停回（实例内无其他业务库）→ `pm2 save --force`（列表为空时 pm2 拒绝保存）。结果：3000 端口释放，磁盘 64%（可用 14G），博客与 LoveGirl 容器全部正常。发现：mongod 自 11-22 起崩溃未运行；当前日志近 5000 行里有 99 次下载请求。**未删（不在授权字面范围，已告知用户待定）**：`/tmp/tomato_mongo_dump/` 与 `/tmp/tomato_mongo_dump.tar.gz`（番茄库 11-05 备份，<300K）、pm2 番茄日志、MongoDB 程序与空数据目录。
+- 2026-11-25 **番茄删除 · 博客侧，v3.51.1 完成上线**。代码 12 处分两组提交：A 组 `3e88ed2`（卡片/封面 + 指向它的引用：终端胶囊、桌面图标、AI 规则回答与后端资料档案）、B 组 `63049d2`（简历项目经历、历程站点、关于我、说说文本——独立内容记录，可单独 revert）；测试 32 文件 207 用例全绿，lint 零错误。线上数据（每条带内容校验，各命中 1 行）：删 project id=4、删 talk id=18、talk id=6/7 去掉番茄字样、config 的 about 行改写；项目剩 3 个、说说剩 19 条、番茄提及归零。**更正：project/talk 表没有 deleted_at 列，是物理删除**（我曾说成软删除，错），恢复靠备份——变更前全量备份 + 5 行原值在 `D:\Projects\Personal\blog-server-backups\2026-11-24-pre-tomato\`。**部署方式**：本机 Docker Desktop 损坏（缺 `resources\docker-desktop.iso` 与 `wsl\docker-wsl-cli.iso`，11-06 被删，回收站无），改走「本地编译 + 服务器增量打包」通道（`scripts/v3511-build.sh` + `scripts/v3511-remote-deploy.sh`，见 CHANGELOG v3.51.1），带回滚的部署一次通过。验收：入口 `index-BnvZCQSz.js`；项目页 3 卡片 / 简历无番茄 / 历程 18 站 / 关于我显示「SparkKeeper：定时自动化工具」/ 说说 19 条；AI 被问番茄答「没有记录」（真模型）；后台 200；`/covers/tomato.svg` 返回的是首页 HTML（前台 SPA 兜底，图片已删）。**重大认知更正：此前记录的「第三方重启博客容器」是我自己的 git push 触发的 GitHub Actions 自动部署**——`.github/workflows/deploy.yml` 在 push to main 时云端构建 web/server 镜像并部署到服务器，现已跑通（11-24 的 00:19 与 11:43 两次容器重建分别对应我推送的 `33a7040`/`f37c851` 与 `c76e9ed`）。**每次 push（含纯文档）都会重建线上容器**，推送前合并提交；建议给 deploy.yml 加路径过滤或改手动触发（待用户同意）。铁律 #7 相应更新：番茄已不存在，仍不要动的是 lovegirl 系。用户告知：**旧机约 12-09 到期（还剩约 15 天）**。

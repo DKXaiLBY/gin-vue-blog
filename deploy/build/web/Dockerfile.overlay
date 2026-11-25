@@ -1,0 +1,9 @@
+# 增量打包: 基于线上正在运行的 web 镜像, 只替换前台静态资源 (保留 /admin 后台目录)
+# 适用场景: 本机没有可用的 Docker, 前端产物在本地编译后传到服务器打包
+# 用法: docker build --build-arg BASE=<当前 web 镜像 ID> -f Dockerfile -t start-gvb-web:<版本> <含 dist_blog 的目录>
+ARG BASE
+FROM ${BASE}
+
+# 先清掉旧的前台文件(否则已删除的资源例如旧封面仍会留在站点里), admin 子目录原样保留
+RUN find /usr/share/nginx/html -mindepth 1 -maxdepth 1 ! -name admin -exec rm -rf {} +
+COPY dist_blog/ /usr/share/nginx/html/
